@@ -26,26 +26,24 @@
   "shortcuts": [
     {
       "label": "General Ledger Setup",
-      "type": "DocType",
+      "type": "Workspace",
       "link_to": "General Ledger Setup",
-      "doc_view": "List",
       "color": "Blue"
     },
     {
       "label": "Treatments",
-      "type": "DocType",
+      "type": "Workspace",
       "link_to": "Treatments",
-      "doc_view": "List",
       "color": "Blue"
     },
     {
       "label": "States",
-      "type": "DocType",
+      "type": "Workspace",
       "link_to": "States",
-      "doc_view": "List",
       "color": "Blue"
     }
   ],
   "title": "Tunisian Accounting"
 }
+
 

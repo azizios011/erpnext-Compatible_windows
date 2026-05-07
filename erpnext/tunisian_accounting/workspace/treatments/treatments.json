@@ -1,0 +1,35 @@
+{
+  "content": "[{\"id\":\"header_treatments\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Treatments</span>\",\"col\":12}},{\"id\":\"card_treatments\",\"type\":\"card\",\"data\":{\"card_name\":\"Treatments\",\"col\":12}}]",
+  "creation": "2026-05-07 00:00:00.000000",
+  "custom_blocks": [],
+  "docstatus": 0,
+  "doctype": "Workspace",
+  "for_user": "",
+  "hide_custom": 0,
+  "icon": "list",
+  "idx": 0,
+  "indicator_color": "blue",
+  "is_hidden": 0,
+  "label": "Treatments",
+  "links": [
+    {
+      "label": "Treatments",
+      "type": "Link",
+      "link_type": "DocType",
+      "link_to": "Treatments"
+    }
+  ],
+  "modified": "2026-05-07 00:00:00.000000",
+  "modified_by": "Administrator",
+  "module": "Tunisian Accounting",
+  "name": "Treatments",
+  "number_cards": [],
+  "owner": "Administrator",
+  "parent_page": "Tunisian Accounting",
+  "public": 1,
+  "quick_lists": [],
+  "roles": [],
+  "sequence_id": 2.0,
+  "shortcuts": [],
+  "title": "Treatments"
+}
