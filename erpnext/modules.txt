@@ -1,6 +1,22 @@
 Accounts
-Tunisian Accounting
+CRM
+Buying
+Projects
+Selling
 Setup
+Manufacturing
+Stock
+Support
 Utilities
+Assets
+Portal
+Maintenance
 Regional
+ERPNext Integrations
+Quality Management
+Communication
+Telephony
 Bulk Transaction
+Subcontracting
+EDI
+Tunisian Accounting
