@@ -7,9 +7,29 @@
   "public": 1,
   "is_hidden": 0,
   "parent_page": "",
-  "icon": "folder-open",
+  "icon": "balance-scale",
+  "indicator_color": "Blue",
   "content": "[]",
-  "shortcuts": [],
+  "shortcuts": [
+    {
+      "label": "Setup",
+      "type": "Workspace",
+      "link_to": "Setup",
+      "color": "Blue"
+    },
+    {
+      "label": "Treatments",
+      "type": "Workspace",
+      "link_to": "Treatments",
+      "color": "Blue"
+    },
+    {
+      "label": "States",
+      "type": "Workspace",
+      "link_to": "States",
+      "color": "Blue"
+    }
+  ],
   "links": [],
   "roles": []
 }
