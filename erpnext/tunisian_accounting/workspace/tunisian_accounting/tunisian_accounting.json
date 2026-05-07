@@ -1,49 +1,15 @@
 {
-  "content": "[{\"id\":\"header_ta\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Tunisian Accounting</span>\",\"col\":12}},{\"id\":\"shortcut_gl\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"General Ledger Setup\",\"col\":3}},{\"id\":\"shortcut_treatments\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Treatments\",\"col\":3}},{\"id\":\"shortcut_states\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"States\",\"col\":3}}]",
-  "creation": "2026-05-07 00:00:00.000000",
-  "custom_blocks": [],
-  "docstatus": 0,
   "doctype": "Workspace",
-  "for_user": "",
-  "hide_custom": 0,
-  "icon": "balance-scale",
-  "idx": 0,
-  "indicator_color": "green",
-  "is_hidden": 0,
-  "label": "Tunisian Accounting",
-  "links": [],
-  "modified": "2026-05-07 00:00:00.000000",
-  "modified_by": "Administrator",
-  "module": "Tunisian Accounting",
   "name": "Tunisian Accounting",
-  "number_cards": [],
-  "owner": "Administrator",
-  "parent_page": "",
+  "title": "Tunisian Accounting",
+  "label": "Tunisian Accounting",
+  "module": "Tunisian Accounting",
   "public": 1,
-  "quick_lists": [],
-  "roles": [],
-  "sequence_id": 1.0,
-  "shortcuts": [
-    {
-      "label": "General Ledger Setup",
-      "type": "Workspace",
-      "link_to": "General Ledger Setup",
-      "color": "Blue"
-    },
-    {
-      "label": "Treatments",
-      "type": "Workspace",
-      "link_to": "Treatments",
-      "color": "Blue"
-    },
-    {
-      "label": "States",
-      "type": "Workspace",
-      "link_to": "States",
-      "color": "Blue"
-    }
-  ],
-  "title": "Tunisian Accounting"
+  "is_hidden": 0,
+  "parent_page": "",
+  "icon": "folder-open",
+  "content": "[]",
+  "shortcuts": [],
+  "links": [],
+  "roles": []
 }
-
-

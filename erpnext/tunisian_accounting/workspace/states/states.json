@@ -1,35 +1,23 @@
 {
-  "content": "[{\"id\":\"header_states\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">States</span>\",\"col\":12}},{\"id\":\"card_states\",\"type\":\"card\",\"data\":{\"card_name\":\"States\",\"col\":12}}]",
-  "creation": "2026-05-07 00:00:00.000000",
-  "custom_blocks": [],
-  "docstatus": 0,
   "doctype": "Workspace",
-  "for_user": "",
-  "hide_custom": 0,
-  "icon": "map",
-  "idx": 0,
-  "indicator_color": "blue",
-  "is_hidden": 0,
+  "name": "States",
+  "title": "States",
   "label": "States",
-  "links": [
+  "module": "Tunisian Accounting",
+  "public": 1,
+  "is_hidden": 0,
+  "parent_page": "Tunisian Accounting",
+  "icon": "flag",
+  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">States</span>\",\"col\":12}},{\"id\":\"sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"States\",\"col\":3}}]",
+  "shortcuts": [
     {
       "label": "States",
-      "type": "Link",
-      "link_type": "DocType",
-      "link_to": "States"
+      "type": "DocType",
+      "link_to": "States",
+      "doc_view": "List",
+      "color": "Blue"
     }
   ],
-  "modified": "2026-05-07 00:00:00.000000",
-  "modified_by": "Administrator",
-  "module": "Tunisian Accounting",
-  "name": "States",
-  "number_cards": [],
-  "owner": "Administrator",
-  "parent_page": "Tunisian Accounting",
-  "public": 1,
-  "quick_lists": [],
-  "roles": [],
-  "sequence_id": 3.0,
-  "shortcuts": [],
-  "title": "States"
+  "links": [],
+  "roles": []
 }
