@@ -8,8 +8,16 @@
   "is_hidden": 0,
   "parent_page": "Tunisian Accounting",
   "icon": "setting-gear",
-  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Setup</span>\",\"col\":12}}]",
-  "shortcuts": [],
+  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Setup</span>\",\"col\":12}},{\"id\":\"sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Chart of Accounts\",\"col\":3}}]",
+  "shortcuts": [
+    {
+      "label": "Chart of Accounts",
+      "type": "DocType",
+      "link_to": "Chart of Accounts",
+      "doc_view": "List",
+      "color": "Blue"
+    }
+  ],
   "links": [],
   "roles": []
 }
