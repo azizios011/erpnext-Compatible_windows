@@ -1,0 +1,1 @@
+erpnext.tunisian_accounting.patches.set_tunisian_accounting_desktop_folder
