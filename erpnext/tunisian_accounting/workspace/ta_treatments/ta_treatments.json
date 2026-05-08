@@ -1,0 +1,23 @@
+{
+  "doctype": "Workspace",
+  "name": "TA Treatments",
+  "title": "Treatments",
+  "label": "Treatments",
+  "module": "Tunisian Accounting",
+  "public": 1,
+  "is_hidden": 0,
+  "parent_page": "Tunisian Accounting",
+  "icon": "heart",
+  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Treatments</span>\",\"col\":12}},{\"id\":\"sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Entry of entries\",\"col\":3}}]",
+  "shortcuts": [
+    {
+      "label": "Entry of entries",
+      "type": "DocType",
+      "link_to": "Entry of entries",
+      "doc_view": "List",
+      "color": "Blue"
+    }
+  ],
+  "links": [],
+  "roles": []
+}
