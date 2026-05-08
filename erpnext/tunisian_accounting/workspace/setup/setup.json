@@ -1,8 +1,8 @@
 {
   "doctype": "Workspace",
-  "name": "Tunisian Accounting Setup",
-  "title": "Tunisian Accounting Setup",
-  "label": "Tunisian Accounting Setup",
+  "name": "Accounting Setup",
+  "title": "Accounting Setup",
+  "label": "Setup",
   "module": "Tunisian Accounting",
   "public": 1,
   "is_hidden": 0,
