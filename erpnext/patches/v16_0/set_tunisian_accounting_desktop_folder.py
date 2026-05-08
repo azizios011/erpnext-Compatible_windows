@@ -3,6 +3,16 @@ import frappe
 
 FOLDER_LABEL = "Tunisian Accounting"
 CHILD_WORKSPACES = ["Tunisian Accounting Setup", "Treatments", "States"]
+HIDE_ICONS = [
+    "Assets",
+    "Buying",
+    "Manufacturing",
+    "Projects",
+    "Quality",
+    "Selling",
+    "Stock",
+    "Subcontracting",
+]
 
 
 def _upsert_icon(label: str, values: dict):
@@ -41,6 +51,11 @@ def execute():
                 "standard": 1,
             },
         )
+
+    # Hide selected ERPNext workspace icons from Desk Home
+    for label in HIDE_ICONS:
+        if frappe.db.exists("Desktop Icon", label):
+            frappe.db.set_value("Desktop Icon", label, "hidden", 1, update_modified=False)
 
     # Force desk cache refresh
     frappe.cache.delete_key("desktop_icons")
