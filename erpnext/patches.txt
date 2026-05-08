@@ -484,3 +484,4 @@ erpnext.patches.v16_0.set_not_applicable_on_german_item_tax_templates
 erpnext.patches.v16_0.set_tunisian_accounting_desktop_folder
 
 
+erpnext.patches.v16_0.hide_selected_workspace_icons_for_tunisian_accounting
