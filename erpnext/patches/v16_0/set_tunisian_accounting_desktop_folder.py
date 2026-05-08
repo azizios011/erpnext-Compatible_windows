@@ -2,7 +2,7 @@ import frappe
 
 
 FOLDER_LABEL = "Tunisian Accounting"
-CHILD_WORKSPACES = ["Tunisian Accounting Setup", "Treatments", "States"]
+CHILD_WORKSPACES = ["Config", "Treatments", "States"]
 HIDE_ICONS = [
     "Assets",
     "Buying",
@@ -60,3 +60,4 @@ def execute():
     # Force desk cache refresh
     frappe.cache.delete_key("desktop_icons")
     frappe.cache.delete_key("bootinfo")
+

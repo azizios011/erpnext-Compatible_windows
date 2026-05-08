@@ -10,10 +10,10 @@
   },
   {
     "doctype": "Desktop Icon",
-    "label": "Tunisian Accounting Setup",
+    "label": "Config",
     "icon_type": "Link",
     "link_type": "Workspace Sidebar",
-    "link_to": "Tunisian Accounting Setup",
+    "link_to": "Config",
     "parent_icon": "Tunisian Accounting",
     "hidden": 0,
     "restrict_removal": 1,
@@ -42,3 +42,4 @@
     "roles": []
   }
 ]
+
