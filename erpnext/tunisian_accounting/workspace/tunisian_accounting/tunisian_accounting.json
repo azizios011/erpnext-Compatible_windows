@@ -1,35 +1,67 @@
 {
-  "doctype": "Workspace",
-  "name": "Tunisian Accounting",
-  "title": "Tunisian Accounting",
-  "label": "Tunisian Accounting",
-  "module": "Tunisian Accounting",
-  "public": 1,
-  "is_hidden": 0,
-  "parent_page": "",
-  "icon": "balance-scale",
-  "indicator_color": "Blue",
-  "content": "[]",
-  "shortcuts": [
-    {
-      "label": "Setup",
-      "type": "Workspace",
-      "link_to": "TA Setup",
-      "color": "Blue"
-    },
-    {
-      "label": "Treatments",
-      "type": "Workspace",
-      "link_to": "TA Treatments",
-      "color": "Blue"
-    },
-    {
-      "label": "States",
-      "type": "Workspace",
-      "link_to": "TA States",
-      "color": "Blue"
-    }
-  ],
-  "links": [],
-  "roles": []
+ "doctype": "Workspace",
+ "name": "Tunisian Accounting",
+ "title": "Tunisian Accounting",
+ "label": "Tunisian Accounting",
+ "module": "Tunisian Accounting",
+ "public": 1,
+ "is_hidden": 0,
+ "parent_page": "",
+ "icon": "balance-scale",
+ "indicator_color": "Blue",
+ "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Tunisian Accounting</span>\",\"col\":12}},{\"id\":\"c1\",\"type\":\"card\",\"data\":{\"card_name\":\"Setup\",\"col\":4}},{\"id\":\"c2\",\"type\":\"card\",\"data\":{\"card_name\":\"Treatments\",\"col\":4}},{\"id\":\"c3\",\"type\":\"card\",\"data\":{\"card_name\":\"States\",\"col\":4}}]",
+ "shortcuts": [
+  {
+   "label": "Setup",
+   "type": "Workspace",
+   "link_to": "TA Setup",
+   "color": "Blue"
+  },
+  {
+   "label": "Treatments",
+   "type": "Workspace",
+   "link_to": "TA Treatments",
+   "color": "Blue"
+  },
+  {
+   "label": "States",
+   "type": "Workspace",
+   "link_to": "TA States",
+   "color": "Blue"
+  }
+ ],
+ "links": [
+  {
+   "label": "Setup",
+   "type": "Card Break"
+  },
+  {
+   "label": "TA Setup",
+   "link_to": "TA Setup",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "label": "Treatments",
+   "type": "Card Break"
+  },
+  {
+   "label": "TA Treatments",
+   "link_to": "TA Treatments",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "label": "States",
+   "type": "Card Break"
+  },
+  {
+   "label": "TA States",
+   "link_to": "TA States",
+   "link_type": "Workspace",
+   "type": "Link"
+  }
+ ],
+ "roles": [],
+ "is_standard": 1
 }
