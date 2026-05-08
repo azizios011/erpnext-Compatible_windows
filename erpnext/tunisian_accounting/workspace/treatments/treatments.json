@@ -6,7 +6,7 @@
   "module": "Tunisian Accounting",
   "public": 1,
   "is_hidden": 0,
-  "parent_page": "Tunisian Accounting",
+  "parent_page": "",
   "icon": "heart",
   "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Treatments</span>\",\"col\":12}},{\"id\":\"sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Entry of entries\",\"col\":3}}]",
   "shortcuts": [

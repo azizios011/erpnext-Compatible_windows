@@ -1,0 +1,44 @@
+[
+  {
+    "doctype": "Desktop Icon",
+    "label": "Tunisian Accounting",
+    "icon_type": "Folder",
+    "link_type": "Workspace Sidebar",
+    "hidden": 0,
+    "restrict_removal": 1,
+    "roles": []
+  },
+  {
+    "doctype": "Desktop Icon",
+    "label": "Tunisian Accounting Setup",
+    "icon_type": "Link",
+    "link_type": "Workspace Sidebar",
+    "link_to": "Tunisian Accounting Setup",
+    "parent_icon": "Tunisian Accounting",
+    "hidden": 0,
+    "restrict_removal": 1,
+    "roles": []
+  },
+  {
+    "doctype": "Desktop Icon",
+    "label": "Treatments",
+    "icon_type": "Link",
+    "link_type": "Workspace Sidebar",
+    "link_to": "Treatments",
+    "parent_icon": "Tunisian Accounting",
+    "hidden": 0,
+    "restrict_removal": 1,
+    "roles": []
+  },
+  {
+    "doctype": "Desktop Icon",
+    "label": "States",
+    "icon_type": "Link",
+    "link_type": "Workspace Sidebar",
+    "link_to": "States",
+    "parent_icon": "Tunisian Accounting",
+    "hidden": 0,
+    "restrict_removal": 1,
+    "roles": []
+  }
+]
