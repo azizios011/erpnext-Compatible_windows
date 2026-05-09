@@ -711,3 +711,6 @@ repost_allowed_doctypes = [
 	"Payment Entry",
 	"Purchase Receipt",
 ]
+
+after_migrate = ["erpnext.tunisian_accounting.after_migrate.apply_tunisian_accounting_desktop_layout"]
+
