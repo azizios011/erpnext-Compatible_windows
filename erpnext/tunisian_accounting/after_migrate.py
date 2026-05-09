@@ -46,23 +46,29 @@ def _ensure_config_workspace_shortcut_target():
     if not frappe.db.exists("Workspace", "Config"):
         return
 
-    ws = frappe.get_doc("Workspace", "Config")
-    changed = False
+    # Avoid full doc save during migration (Workspace validation may require fields like `type`).
+    # Patch shortcut rows directly in child table.
+    for row in frappe.get_all(
+        "Workspace Shortcut",
+        filters={"parent": "Config", "type": "DocType", "link_to": "Chart of Accounts"},
+        fields=["name"],
+    ):
+        frappe.db.set_value(
+            "Workspace Shortcut",
+            row.name,
+            {"label": "Account", "link_to": "Account", "doc_view": "List"},
+            update_modified=False,
+        )
 
-    for sc in ws.shortcuts or []:
-        if sc.link_to == "Chart of Accounts":
-            sc.label = "Account"
-            sc.link_to = "Account"
-            sc.type = "DocType"
-            sc.doc_view = "List"
-            changed = True
-
-    if ws.content and "Chart of Accounts" in ws.content:
-        ws.content = ws.content.replace("Chart of Accounts", "Account")
-        changed = True
-
-    if changed:
-        ws.save(ignore_permissions=True)
+    content = frappe.db.get_value("Workspace", "Config", "content")
+    if content and "Chart of Accounts" in content:
+        frappe.db.set_value(
+            "Workspace",
+            "Config",
+            "content",
+            content.replace("Chart of Accounts", "Account"),
+            update_modified=False,
+        )
 
 
 def apply_tunisian_accounting_desktop_layout():
@@ -104,3 +110,4 @@ def apply_tunisian_accounting_desktop_layout():
     frappe.clear_cache()
     frappe.cache.delete_key("desktop_icons")
     frappe.cache.delete_key("bootinfo")
+
