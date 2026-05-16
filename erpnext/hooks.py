@@ -63,7 +63,10 @@ welcome_email = "erpnext.setup.utils.welcome_email"
 setup_wizard_requires = "assets/erpnext/js/setup_wizard.js"
 setup_wizard_stages = "erpnext.setup.setup_wizard.setup_wizard.get_setup_stages"
 
-after_install = "erpnext.setup.install.after_install"
+after_install = [
+	"erpnext.setup.install.after_install",
+	"erpnext.tunisian_accounting.after_migrate.apply_tunisian_accounting_desktop_layout"
+]
 
 boot_session = "erpnext.startup.boot.boot_session"
 notification_config = "erpnext.startup.notifications.get_notification_config"
