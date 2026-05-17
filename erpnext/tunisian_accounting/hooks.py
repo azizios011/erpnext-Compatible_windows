@@ -6,3 +6,6 @@ app_version = "0.0.1"
 
 fixtures = ["Desktop Icon"]
 
+# Generates tn_plan_comptable_avec_code.json in verified/ from the data/ class files.
+# Runs once automatically when the app is installed via: bench install-app erpnext
+after_install = "erpnext.tunisian_accounting.setup.build_coa_json"
