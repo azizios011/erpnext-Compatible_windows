@@ -1,0 +1,274 @@
+{
+  "plan_comptable": {
+    "class": "5",
+    "description": "Comptes financiers (valeurs mobilières de placement, comptes bancaires, caisse, prêts et emprunts à court terme, etc.)",
+    "accounts": [
+      {
+        "code": "501000",
+        "sens": "C",
+        "libelle": "Emprunts courants liés au cycle d'exploitation",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "505000",
+        "sens": "C",
+        "libelle": "Échéances à moins d'un an sur emprunts non courants",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "506100",
+        "sens": "C",
+        "libelle": "Crédit de mobilisation de créances commerciales",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "506300",
+        "sens": "C",
+        "libelle": "Mobilisation de créances nées à l'étranger",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "507000",
+        "sens": "C",
+        "libelle": "Emprunts échus et impayés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "508000",
+        "sens": "C",
+        "libelle": "Intérêts courus (à subdiviser selon la même ventilation que le compte 50)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "511000",
+        "sens": "D",
+        "libelle": "Prêts courants liés au cycle d'exploitation",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "516000",
+        "sens": "D",
+        "libelle": "Échéances à moins d'un an sur prêts non courants",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "517000",
+        "sens": "D",
+        "libelle": "Échéances à moins d'un an sur autres créances financières",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "518000",
+        "sens": "D",
+        "libelle": "Intérêts courus",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "523100",
+        "sens": "D",
+        "libelle": "Titres cotés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "523200",
+        "sens": "D",
+        "libelle": "Titres non cotés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "524000",
+        "sens": "D",
+        "libelle": "Autres titres conférant un droit de propriété",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "525000",
+        "sens": "D",
+        "libelle": "Obligations et bons émis par la société et rachetés par elle",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "526100",
+        "sens": "D",
+        "libelle": "Titres cotés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "526500",
+        "sens": "D",
+        "libelle": "Titres non cotés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "526600",
+        "sens": "D",
+        "libelle": "Échéances à moins d'un an sur les obligations immobilisées",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "527000",
+        "sens": "D",
+        "libelle": "Bons du trésor et bons de caisse à court terme",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "528100",
+        "sens": "D",
+        "libelle": "Autres valeurs mobilières",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "528800",
+        "sens": "D",
+        "libelle": "Intérêts courus sur obligations, bons et valeurs assimilées",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "529000",
+        "sens": "C",
+        "libelle": "Versements restant à effectuer sur valeurs mobilières de placement non libérées",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "531100",
+        "sens": "D",
+        "libelle": "Coupons échus à l'encaissement",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "531200",
+        "sens": "D",
+        "libelle": "Chèques à encaisser",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "531300",
+        "sens": "D",
+        "libelle": "Effets à l'encaissement",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "531400",
+        "sens": "D",
+        "libelle": "Effets à l'escompte",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "532000",
+        "sens": "DC",
+        "libelle": "ATTIJATRI BANK",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "532100",
+        "sens": "DC",
+        "libelle": "Comptes en dinars",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "532101",
+        "sens": "DC",
+        "libelle": "BQ ATB",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "532200",
+        "sens": "DC",
+        "libelle": "ATB BANK",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "532400",
+        "sens": "DC",
+        "libelle": "Comptes en devises",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "534000",
+        "sens": "DC",
+        "libelle": "C.C.P",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "535000",
+        "sens": "DC",
+        "libelle": "Comptes au trésor",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "537000",
+        "sens": "DC",
+        "libelle": "Autres organismes financiers",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "541100",
+        "sens": "D",
+        "libelle": "Caisse en dinars",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "541400",
+        "sens": "D",
+        "libelle": "Caisse en devises",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "542000",
+        "sens": "D",
+        "libelle": "Caisses succursales",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "550000",
+        "sens": "DC",
+        "libelle": "Régies d'avances et accréditifs",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "580000",
+        "sens": "DC",
+        "libelle": "Virements internes",
+        "type": "GENERALE",
+        "affectation": ""
+      }
+    ]
+  }
+}

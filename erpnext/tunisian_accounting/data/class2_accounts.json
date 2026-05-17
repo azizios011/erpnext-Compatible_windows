@@ -1,0 +1,680 @@
+{
+  "plan_comptable": {
+    "class": "2",
+    "description": "Comptes d'immobilisations (incorporelles, corporelles, en cours, financières, amortissements, provisions pour dépréciation)",
+    "accounts": [
+      {
+        "code": "211000",
+        "sens": "D",
+        "libelle": "Investissements de recherche & de développement",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "212000",
+        "sens": "D",
+        "libelle": "Concessions de marques, brevets, licences, marques, procédés & valeurs similaires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "213000",
+        "sens": "D",
+        "libelle": "Logiciels",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "214000",
+        "sens": "D",
+        "libelle": "Fonds commercial",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "216000",
+        "sens": "D",
+        "libelle": "Droit au bail",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "218000",
+        "sens": "D",
+        "libelle": "Autres immobilisations incorporelles",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "221300",
+        "sens": "D",
+        "libelle": "Terrains nus",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "221400",
+        "sens": "D",
+        "libelle": "Terrains aménagés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "221500",
+        "sens": "D",
+        "libelle": "Terrains bâtis",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "221600",
+        "sens": "D",
+        "libelle": "Agencements & aménagements des terrains",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "222100",
+        "sens": "D",
+        "libelle": "Bâtiments",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "222500",
+        "sens": "D",
+        "libelle": "Installations générales, agencements & aménagements des constructions",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "222600",
+        "sens": "D",
+        "libelle": "Ouvrages d'infrastructure",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "222700",
+        "sens": "D",
+        "libelle": "Constructions sur sol d'autrui",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "223100",
+        "sens": "D",
+        "libelle": "Installations techniques",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "223400",
+        "sens": "D",
+        "libelle": "Matériel industriel",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "223500",
+        "sens": "D",
+        "libelle": "Outillage industriel",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "223700",
+        "sens": "D",
+        "libelle": "Agencements & aménagements du matériel & outillage industriels",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "224100",
+        "sens": "D",
+        "libelle": "Matériel de transport de biens",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "224400",
+        "sens": "D",
+        "libelle": "Matériel de transport de personnes",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "228100",
+        "sens": "D",
+        "libelle": "Installations générales, agencements et aménagements divers",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "228110",
+        "sens": "DC",
+        "libelle": "INS.GENE.AMENA",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "228200",
+        "sens": "D",
+        "libelle": "Équipement de bureau",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "228300",
+        "sens": "D",
+        "libelle": "Matériels Informatiques",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "228310",
+        "sens": "DC",
+        "libelle": "EQUI.INFOR",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "228600",
+        "sens": "D",
+        "libelle": "Emballages récupérables identifiables",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "231000",
+        "sens": "D",
+        "libelle": "Immobilisations incorporelles en cours",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "232100",
+        "sens": "D",
+        "libelle": "Travaux Génie Civil",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "232200",
+        "sens": "D",
+        "libelle": "Travaux Charpente",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "232300",
+        "sens": "D",
+        "libelle": "Travaux Voirie",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "232400",
+        "sens": "D",
+        "libelle": "Travaux Administrations et locaux",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "232500",
+        "sens": "D",
+        "libelle": "Etudes sur Immobilisations en cours",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "232600",
+        "sens": "D",
+        "libelle": "Travaux de plomberie",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "237000",
+        "sens": "D",
+        "libelle": "Avances & acomptes versés sur immobilisations incorporelles",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "238000",
+        "sens": "D",
+        "libelle": "Avances & acomptes versés sur commandes d'immobilisations corporelles",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "240000",
+        "sens": "D",
+        "libelle": "Immobilisations à statut juridique particulier",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "251100",
+        "sens": "D",
+        "libelle": "Actions",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "251800",
+        "sens": "D",
+        "libelle": "Autres titres",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "256000",
+        "sens": "D",
+        "libelle": "Autres formes de participation",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "257100",
+        "sens": "D",
+        "libelle": "Créances rattachées à des participations (groupe)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "257400",
+        "sens": "D",
+        "libelle": "Créances rattachées à des participations (hors groupe)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "257500",
+        "sens": "D",
+        "libelle": "Versements représentatifs d'apports non capitalisés (appel de fonds)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "257600",
+        "sens": "D",
+        "libelle": "Avances consolidables",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "257700",
+        "sens": "D",
+        "libelle": "Autres créances rattachées à des participations",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "258000",
+        "sens": "D",
+        "libelle": "Créances rattachées à des sociétés en participation",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "259000",
+        "sens": "C",
+        "libelle": "Versements restant à effectuer sur titres de participation non libérés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "261100",
+        "sens": "D",
+        "libelle": "Actions",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "261800",
+        "sens": "D",
+        "libelle": "Autres titres",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "262100",
+        "sens": "D",
+        "libelle": "Obligations",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "262200",
+        "sens": "D",
+        "libelle": "Bons",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "264100",
+        "sens": "D",
+        "libelle": "Prêts participatifs",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "264200",
+        "sens": "D",
+        "libelle": "Prêts aux associés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "264300",
+        "sens": "D",
+        "libelle": "Prêts au personnel",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "264500",
+        "sens": "D",
+        "libelle": "Prêts assortis de sûretés (à subdiviser)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "264800",
+        "sens": "D",
+        "libelle": "Autres prêts",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "265100",
+        "sens": "D",
+        "libelle": "Dépôts",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "265500",
+        "sens": "D",
+        "libelle": "Cautionnements",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "265600",
+        "sens": "D",
+        "libelle": "Dépôts bancaires non courants",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "265800",
+        "sens": "D",
+        "libelle": "Autres",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "266100",
+        "sens": "D",
+        "libelle": "Créances immobilisées",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "266700",
+        "sens": "D",
+        "libelle": "Créances diverses",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "266800",
+        "sens": "D",
+        "libelle": "Autres créances non courantes",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "269000",
+        "sens": "C",
+        "libelle": "Versements restant à effectuer sur titres immobilisés non libérés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "271000",
+        "sens": "D",
+        "libelle": "Frais préliminaires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "272000",
+        "sens": "D",
+        "libelle": "Charges à répartir",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "273000",
+        "sens": "D",
+        "libelle": "Frais d'émission et primes de remboursement des emprunts",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "275000",
+        "sens": "D",
+        "libelle": "Écarts de conversion",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "278000",
+        "sens": "D",
+        "libelle": "Autres",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "281100",
+        "sens": "C",
+        "libelle": "Amorts de l’investissement en recherche et developpement",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "281200",
+        "sens": "C",
+        "libelle": "Amortissement de Concessions de marques, brevets, licences, marques, procédés & valeurs similaires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "281300",
+        "sens": "C",
+        "libelle": "Amortissement Logiciels",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "281400",
+        "sens": "C",
+        "libelle": "Amortissement Fonds Commercial",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "282000",
+        "sens": "C",
+        "libelle": "Amortissements des immobilisations corporelles (même ventilation que celle du compte 22)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "282100",
+        "sens": "C",
+        "libelle": "Amortissements Terrains",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "282160",
+        "sens": "C",
+        "libelle": "Amortissements Agenc.& Aménagements Terrains",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "282200",
+        "sens": "C",
+        "libelle": "Amortissements Constructions",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "282250",
+        "sens": "C",
+        "libelle": "Amts.Install.Géné.Agenc.& Aménag.Construction",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "282280",
+        "sens": "C",
+        "libelle": "Amortissements équipements de bureau",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "282310",
+        "sens": "C",
+        "libelle": "Amortissements .Installations Techniques",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "282324",
+        "sens": "DC",
+        "libelle": "AMOR.MAT.LEAS",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "282340",
+        "sens": "C",
+        "libelle": "Amortissements Matériels Industriels",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "282350",
+        "sens": "C",
+        "libelle": "Amortissements Outillage Industriel",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "282370",
+        "sens": "C",
+        "libelle": "Amortissements Agenc.& Aménag.du Mat.Ind",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "282410",
+        "sens": "C",
+        "libelle": "Amortissements Matériel Transport de biens",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "282440",
+        "sens": "C",
+        "libelle": "Amortissements Matériel Transport de personnes",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "282810",
+        "sens": "C",
+        "libelle": "Amortissements Install.Géné.Agenc.& Aménag.Divers",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "282820",
+        "sens": "C",
+        "libelle": "Amortissements Equipements de bureau",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "282830",
+        "sens": "C",
+        "libelle": "Amortissements Matériels Informatiques",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "284000",
+        "sens": "C",
+        "libelle": "Amortissements des immobilisations à statut juridique particulier",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "291000",
+        "sens": "C",
+        "libelle": "Provisions pour dépréciation des immobilisations incorporelles (même ventilation que celle du compte 21)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "292000",
+        "sens": "C",
+        "libelle": "Provisions pour dépréciation des immobilisations corporelles (même ventilation que celle du compte 22)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "293000",
+        "sens": "C",
+        "libelle": "Provisions pour dépréciation des immobilisations en cours (même ventilation que celle du compte 23)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "294000",
+        "sens": "C",
+        "libelle": "Provisions pour dépréciation des immobilisations à statut juridique particulier",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "295000",
+        "sens": "C",
+        "libelle": "Provisions pour dépréciation des participations et des créances liées à des participations (même ventilation que celle du compte 25)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "296000",
+        "sens": "C",
+        "libelle": "Provisions pour dépréciation des autres immobilisations financières (même ventilation que celle du compte 26)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "297000",
+        "sens": "C",
+        "libelle": "Provision pour dépréciation des autres immobilisations financières",
+        "type": "GENERALE",
+        "affectation": ""
+      }
+    ]
+  }
+}

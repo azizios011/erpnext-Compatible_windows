@@ -1,0 +1,456 @@
+{
+  "plan_comptable": {
+    "class": "1",
+    "description": "Comptes de capitaux propres, provisions pour risques et charges, emprunts et dettes à long terme",
+    "accounts": [
+      {
+        "code": "101000",
+        "sens": "C",
+        "libelle": "Capital social",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "101100",
+        "sens": "C",
+        "libelle": "Capital souscrit - non appelé",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "101200",
+        "sens": "C",
+        "libelle": "Capital souscrit - appelé, non versé",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "101300",
+        "sens": "C",
+        "libelle": "Capital souscrit - appelé, versé",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "101310",
+        "sens": "C",
+        "libelle": "Capital non amorti",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "101320",
+        "sens": "C",
+        "libelle": "Capital amorti",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "111000",
+        "sens": "C",
+        "libelle": "Réserve légale",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "112000",
+        "sens": "C",
+        "libelle": "Réserves statutaires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "117100",
+        "sens": "C",
+        "libelle": "Primes d'émission",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "117200",
+        "sens": "C",
+        "libelle": "Primes de fusion",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "117300",
+        "sens": "C",
+        "libelle": "Primes d'apport",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "117400",
+        "sens": "C",
+        "libelle": "Primes de conversion d'obligation",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "118100",
+        "sens": "C",
+        "libelle": "Réserves pour fonds social",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "119000",
+        "sens": "C",
+        "libelle": "Avoirs des actionnaires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "121000",
+        "sens": "DC",
+        "libelle": "Résultats reportés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "121300",
+        "sens": "DC",
+        "libelle": "Amortissements différés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "128000",
+        "sens": "DC",
+        "libelle": "Modifications comptables affectant les résultats reportés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "131000",
+        "sens": "C",
+        "libelle": "Résultat bénéficiaire",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "135000",
+        "sens": "C",
+        "libelle": "Résultat déficitaire",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "141000",
+        "sens": "C",
+        "libelle": "Titres soumis à des réglementations particulières",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "142000",
+        "sens": "C",
+        "libelle": "Réserves réglementées & réserves soumises à un régime fiscal particulier",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "142100",
+        "sens": "C",
+        "libelle": "Réserves indisponibles",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "143000",
+        "sens": "D",
+        "libelle": "Amortissements dérogatoires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "144000",
+        "sens": "C",
+        "libelle": "Réserve spéciale de réévaluation",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "145100",
+        "sens": "C",
+        "libelle": "Subventions d'investissement",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "145800",
+        "sens": "C",
+        "libelle": "Autres subventions d'investissement",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "145900",
+        "sens": "C",
+        "libelle": "Subventions d'investissement inscrites aux comptes de résultat",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "147000",
+        "sens": "C",
+        "libelle": "Compte du concédant",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "149000",
+        "sens": "D",
+        "libelle": "Amortissement subvention d'investissement",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "151000",
+        "sens": "C",
+        "libelle": "Provisions pour risques",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "151100",
+        "sens": "C",
+        "libelle": "Provisions pour litiges",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "151200",
+        "sens": "C",
+        "libelle": "Provisions pour garanties données aux clients",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "151300",
+        "sens": "C",
+        "libelle": "Provisions pour pertes sur marchés à achèvement futur",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "151400",
+        "sens": "C",
+        "libelle": "Provisions pour amendes & pénalités",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "151500",
+        "sens": "C",
+        "libelle": "Provisions pour pertes de change",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "151800",
+        "sens": "C",
+        "libelle": "Autres provisions pour risques",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "152200",
+        "sens": "C",
+        "libelle": "Provisions pour grosses réparations",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "153000",
+        "sens": "C",
+        "libelle": "Provisions pour retraites et obligations similaires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "154000",
+        "sens": "C",
+        "libelle": "Provisions d'origine réglementaire",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "155000",
+        "sens": "C",
+        "libelle": "Provisions pour impôts",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "156000",
+        "sens": "C",
+        "libelle": "Provisions pour renouvellement des immobilisations",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "157000",
+        "sens": "C",
+        "libelle": "Provisions pour amortissement",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "158000",
+        "sens": "C",
+        "libelle": "Autres provisions pour charges",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "161100",
+        "sens": "C",
+        "libelle": "Emprunts obligataires convertibles en actions",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "161800",
+        "sens": "C",
+        "libelle": "Autres emprunts obligataires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "162100",
+        "sens": "C",
+        "libelle": "Emprunts bancaires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "162600",
+        "sens": "C",
+        "libelle": "Refinancements acquis",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "163000",
+        "sens": "C",
+        "libelle": "Emprunts auprès d'autres établissements financiers (assorties de sûretés)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "163001",
+        "sens": "DC",
+        "libelle": "CONT LEASING 00460500",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "164100",
+        "sens": "C",
+        "libelle": "Avances bloquées pour augmentation du capital",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "164200",
+        "sens": "C",
+        "libelle": "Avances reçues et comptes courants des associés bloqués",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "164400",
+        "sens": "C",
+        "libelle": "Avances conditionnées de l'Etat & organismes internationaux",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "165000",
+        "sens": "C",
+        "libelle": "Emprunts non assorties de sûretés (à subdiviser selon l'ordre des comptes des emprunts)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "166100",
+        "sens": "C",
+        "libelle": "Dettes rattachées à des participations (groupe)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "166200",
+        "sens": "C",
+        "libelle": "Dettes rattachées à des participations (hors groupe)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "166300",
+        "sens": "C",
+        "libelle": "Dettes rattachées à des sociétés en participation",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "167000",
+        "sens": "C",
+        "libelle": "Dépôts & cautionnements reçus",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "168100",
+        "sens": "C",
+        "libelle": "Autres emprunts",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "168500",
+        "sens": "C",
+        "libelle": "Crédit fournisseurs d'immobilisations",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "171000",
+        "sens": "DC",
+        "libelle": "Comptes des liaison des établissements",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "176000",
+        "sens": "DC",
+        "libelle": "Biens & prestations de services échangés entre établissements (charges)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "177000",
+        "sens": "DC",
+        "libelle": "Biens & prestations de services échangés entre établissements (produits)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "185000",
+        "sens": "C",
+        "libelle": "Écarts de conversion",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "188000",
+        "sens": "C",
+        "libelle": "Autres",
+        "type": "GENERALE",
+        "affectation": ""
+      }
+    ]
+  }
+}

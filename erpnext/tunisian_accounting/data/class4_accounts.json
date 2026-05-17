@@ -1,0 +1,568 @@
+{
+  "plan_comptable": {
+    "class": "4",
+    "description": "Comptes de tiers (fournisseurs, clients, personnel, Etat, organismes sociaux, etc.)",
+    "accounts": [
+      {
+        "code": "401000",
+        "sens": "DC",
+        "libelle": "FRS DIVERES",
+        "type": "AUXILIAIRE",
+        "affectation": "401100"
+      },
+      {
+        "code": "401100",
+        "sens": "C",
+        "libelle": "Fournisseurs - achats de biens ou de prestations de services",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "401700",
+        "sens": "C",
+        "libelle": "Fournisseurs - retenues de garantie",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "403000",
+        "sens": "C",
+        "libelle": "Fournisseurs d'exploitation - effets à payer",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "404100",
+        "sens": "C",
+        "libelle": "Fournisseurs - achats d'immobilisations",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "404700",
+        "sens": "C",
+        "libelle": "Fournisseurs d'immobilisations - retenues de garantie",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "405000",
+        "sens": "C",
+        "libelle": "Fournisseurs d'immobilisations - effets à payer",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "408100",
+        "sens": "C",
+        "libelle": "Fournisseurs d'exploitation",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "408400",
+        "sens": "C",
+        "libelle": "Fournisseurs d'immobilisations",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "408800",
+        "sens": "C",
+        "libelle": "Fournisseurs - intérêts courus",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "409100",
+        "sens": "D",
+        "libelle": "Fournisseurs - avances et acomptes versés sur commandes",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "409600",
+        "sens": "D",
+        "libelle": "Fournisseurs - créances pour emballages et matériel à rendre",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "409710",
+        "sens": "D",
+        "libelle": "Fournisseurs d'exploitation",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "409740",
+        "sens": "D",
+        "libelle": "Fournisseurs d'immobilisations",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "409800",
+        "sens": "D",
+        "libelle": "Rabais, remises, ristournes à obtenir et autres avoirs non encore reçus",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "411000",
+        "sens": "DC",
+        "libelle": "CLT DIVERES",
+        "type": "AUXILIAIRE",
+        "affectation": "411100"
+      },
+      {
+        "code": "411100",
+        "sens": "D",
+        "libelle": "Clients - ventes de biens ou de prestations de services",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "411700",
+        "sens": "D",
+        "libelle": "Clients - retenues de garantie",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "413000",
+        "sens": "D",
+        "libelle": "Clients - effets à recevoir",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "414000",
+        "sens": "DC",
+        "libelle": "CHEQUE IMPAYEE",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "416000",
+        "sens": "D",
+        "libelle": "Clients douteux ou litigieux",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "417000",
+        "sens": "D",
+        "libelle": "Créances sur travaux non encore facturables",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "418100",
+        "sens": "D",
+        "libelle": "Factures à établir",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "418800",
+        "sens": "D",
+        "libelle": "Intérêts courus",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "419100",
+        "sens": "C",
+        "libelle": "Clients - avances et acomptes reçus sur commandes",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "419600",
+        "sens": "C",
+        "libelle": "Clients - dettes pour emballages et matériel consignés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "419800",
+        "sens": "C",
+        "libelle": "Rabais, remises, ristournes à accorder et autres avoirs à établir",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "421000",
+        "sens": "D",
+        "libelle": "Personnel - avances et acomptes",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "422000",
+        "sens": "C",
+        "libelle": "Comités d'entreprises et autres organes représentatifs du personnel",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "423000",
+        "sens": "C",
+        "libelle": "Personnel, œuvres sociales",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "425000",
+        "sens": "C",
+        "libelle": "Personnel - rémunérations dues",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "425100",
+        "sens": "DC",
+        "libelle": "SALAIRE GERANT",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "426000",
+        "sens": "C",
+        "libelle": "Personnel - dépôts",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "427000",
+        "sens": "C",
+        "libelle": "Personnel - oppositions",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "428200",
+        "sens": "C",
+        "libelle": "Dettes provisionnées pour congés à payer",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "428600",
+        "sens": "C",
+        "libelle": "Autres charges à payer",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "428700",
+        "sens": "D",
+        "libelle": "Produits à recevoir",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "431000",
+        "sens": "D",
+        "libelle": "Etat - subventions à recevoir",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "432000",
+        "sens": "DC",
+        "libelle": "RETENUE A LA SOURCE",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "432100",
+        "sens": "C",
+        "libelle": "Retenue à la source sur salaires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "432200",
+        "sens": "C",
+        "libelle": "Retenue à la source sur honoraires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "432300",
+        "sens": "DC",
+        "libelle": "Retenue sur loyer",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "432400",
+        "sens": "C",
+        "libelle": "Retenue à la source sur marchés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "432500",
+        "sens": "C",
+        "libelle": "Retenue à la source sur intérêts",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "432600",
+        "sens": "C",
+        "libelle": "Retenue à la source sur commissions",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "433000",
+        "sens": "DC",
+        "libelle": "Opérations particulières avec l'Etat, les collectivités publiques, les organismes internationaux",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "434100",
+        "sens": "D",
+        "libelle": "Etat, Retenue à la source",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "434200",
+        "sens": "D",
+        "libelle": "Etat, Acomptes provisionnels",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "434300",
+        "sens": "C",
+        "libelle": "Impôt à liquider",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "434310",
+        "sens": "D",
+        "libelle": "Etat, report d'impôt",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "434900",
+        "sens": "DC",
+        "libelle": "Impôts différés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "435000",
+        "sens": "C",
+        "libelle": "Obligations cautionnées",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "436510",
+        "sens": "C",
+        "libelle": "TVA à payer",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "436710",
+        "sens": "C",
+        "libelle": "TVA collectée",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "437000",
+        "sens": "DC",
+        "libelle": "Autres impôts, taxes et versements assimilés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "438200",
+        "sens": "C",
+        "libelle": "Charges fiscales sur congés à payer",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "438600",
+        "sens": "C",
+        "libelle": "Autres charges à payer",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "438700",
+        "sens": "D",
+        "libelle": "Produits à recevoir",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "441100",
+        "sens": "D",
+        "libelle": "Créances et intérêts courus",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "441200",
+        "sens": "C",
+        "libelle": "Dettes et intérêts à payer",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "442100",
+        "sens": "C",
+        "libelle": "Principal",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "442800",
+        "sens": "C",
+        "libelle": "Intérêts courus",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "446000",
+        "sens": "C",
+        "libelle": "Associés - opérations sur le capital",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "447000",
+        "sens": "C",
+        "libelle": "Associés - dividendes à payer",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "448100",
+        "sens": "DC",
+        "libelle": "Opérations courantes",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "448800",
+        "sens": "DC",
+        "libelle": "Intérêts courus",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "452000",
+        "sens": "D",
+        "libelle": "Créances sur cessions d'immobilisations",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "453110",
+        "sens": "C",
+        "libelle": "CNSS",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "457000",
+        "sens": "DC",
+        "libelle": "Autres comptes débiteurs ou créditeurs",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "458600",
+        "sens": "C",
+        "libelle": "Charges à payer",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "458700",
+        "sens": "D",
+        "libelle": "Produits à recevoir",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "461000",
+        "sens": "DC",
+        "libelle": "Compte d'attente",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "465100",
+        "sens": "D",
+        "libelle": "Différences de conversion actif",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "465200",
+        "sens": "C",
+        "libelle": "Différences de conversion passif",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "468000",
+        "sens": "DC",
+        "libelle": "Autres comptes transitoires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "471000",
+        "sens": "D",
+        "libelle": "Charges constatées d'avance",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "472000",
+        "sens": "C",
+        "libelle": "Produits constatés d'avance",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "478600",
+        "sens": "D",
+        "libelle": "Charges",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "478700",
+        "sens": "C",
+        "libelle": "Produits",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "491000",
+        "sens": "C",
+        "libelle": "Provisions pour dépréciation des comptes clients",
+        "type": "GENERALE",
+        "affectation": ""
+      }
+    ]
+  }
+}

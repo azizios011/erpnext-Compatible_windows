@@ -1,0 +1,393 @@
+{
+  "plan_comptable": {
+    "class": "7",
+    "description": "Comptes de produits (ventes, production, subventions, produits financiers, etc.)",
+    "accounts": [
+      {
+        "code": "701100",
+        "sens": "C",
+        "libelle": "Produits finis achevés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "701200",
+        "sens": "C",
+        "libelle": "Produits finis non achevés (contrat de longue durée)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "702000",
+        "sens": "C",
+        "libelle": "Ventes de produits intermédiaires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "703000",
+        "sens": "C",
+        "libelle": "Ventes de produits résiduels",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "704000",
+        "sens": "C",
+        "libelle": "Travaux",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "705000",
+        "sens": "C",
+        "libelle": "Études et prestations de services",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "706000",
+        "sens": "C",
+        "libelle": "Produits des activités annexes",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "707000",
+        "sens": "C",
+        "libelle": "Ventes de marchandises",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "707007",
+        "sens": "DC",
+        "libelle": "HTVA 7%",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "707019",
+        "sens": "DC",
+        "libelle": "VT DE MARCHANDISE",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "708000",
+        "sens": "C",
+        "libelle": "Ventes liées à une modification comptable à imputer au résultat de l'exercice ou à une activité abandonnée",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "709100",
+        "sens": "D",
+        "libelle": "Sur ventes de produits finis",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "709200",
+        "sens": "D",
+        "libelle": "Sur ventes de produits intermédiaires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "709400",
+        "sens": "D",
+        "libelle": "Sur travaux",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "709500",
+        "sens": "D",
+        "libelle": "Sur études et prestations de services",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "709600",
+        "sens": "D",
+        "libelle": "Sur activités annexes",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "709700",
+        "sens": "D",
+        "libelle": "Sur ventes de marchandises",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "709800",
+        "sens": "D",
+        "libelle": "Sur ventes liées à une modification comptable à imputer au résultat de l'exercice ou à une activité abandonnée",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "713300",
+        "sens": "C",
+        "libelle": "Variations des en-cours de production de biens",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "713400",
+        "sens": "C",
+        "libelle": "Variation des en-cours de production de services",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "713500",
+        "sens": "C",
+        "libelle": "Variation des stocks de produits",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "721000",
+        "sens": "C",
+        "libelle": "Immobilisations incorporelles",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "722000",
+        "sens": "C",
+        "libelle": "Immobilisations corporelles",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "728000",
+        "sens": "C",
+        "libelle": "Production immobilisée liée à une modification comptable à imputer au résultat de l'exercice ou à une activité abandonnée",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "731000",
+        "sens": "C",
+        "libelle": "Redevances pour concessions, brevets, licences, marques, procédés, droits et valeurs similaires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "732000",
+        "sens": "C",
+        "libelle": "Revenus des immeubles non affectés aux activités professionnelles",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "733000",
+        "sens": "C",
+        "libelle": "Jetons de présence et rémunérations d'administrateurs, gérants",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "734000",
+        "sens": "C",
+        "libelle": "Ristournes perçues des coopératives (provenant des excédents)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "735000",
+        "sens": "C",
+        "libelle": "Quotes-parts de résultat sur opérations faites en commun",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "736000",
+        "sens": "C",
+        "libelle": "Produits nets sur cessions d'immobilisations et autres gains sur éléments non récurrents ou exceptionnels",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "738000",
+        "sens": "C",
+        "libelle": "Produits divers ordinaires liés à une modification comptable à imputer au résultat de l'exercice ou à une activité abandonnée",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "739000",
+        "sens": "C",
+        "libelle": "Quotes-parts des subventions d'investissement inscrites au résultat de l'exercice",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "741000",
+        "sens": "C",
+        "libelle": "Subventions d'exploitation",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "745000",
+        "sens": "C",
+        "libelle": "Subventions d'équilibre",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "748000",
+        "sens": "C",
+        "libelle": "Subventions liées à une modification comptable à imputer au résultat de l'exercice ou à une activité abandonnée",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "751000",
+        "sens": "C",
+        "libelle": "Produits des participations",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "752000",
+        "sens": "C",
+        "libelle": "Produits des autres immobilisations financières",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "753000",
+        "sens": "C",
+        "libelle": "Revenus des autres créances",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "754000",
+        "sens": "C",
+        "libelle": "Revenus des valeurs mobilières de placement",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "755000",
+        "sens": "C",
+        "libelle": "Escomptes obtenus",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "756000",
+        "sens": "C",
+        "libelle": "Gains de change",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "757000",
+        "sens": "C",
+        "libelle": "Produits nets sur cessions de valeurs mobilières",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "758000",
+        "sens": "C",
+        "libelle": "Produits financiers liés à une modification comptable à imputer au résultat de l'exercice ou à une activité abandonnée",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "770000",
+        "sens": "C",
+        "libelle": "Gains extraordinaires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "781110",
+        "sens": "C",
+        "libelle": "Immobilisations incorporelles",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "781120",
+        "sens": "C",
+        "libelle": "Immobilisations corporelles",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "781500",
+        "sens": "C",
+        "libelle": "Reprises sur provisions pour risques et charges d'exploitation",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "781610",
+        "sens": "C",
+        "libelle": "Immobilisations incorporelles",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "781620",
+        "sens": "C",
+        "libelle": "Immobilisations corporelles",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "781730",
+        "sens": "C",
+        "libelle": "Stocks et en-cours",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "781740",
+        "sens": "C",
+        "libelle": "Créances",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "781800",
+        "sens": "C",
+        "libelle": "Reprises sur provisions liées à une modification comptable inscrite aux résultats ou à une activité abandonnée",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "786500",
+        "sens": "C",
+        "libelle": "Reprises sur provisions pour risque et charges financières",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "786600",
+        "sens": "C",
+        "libelle": "Reprises sur provisions pour dépréciation des éléments financiers",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "786800",
+        "sens": "C",
+        "libelle": "Reprises sur provisions (à inscrire dans les produits financiers) liées à une modification comptable inscrite aux résultats de ou à une activité abandonnée",
+        "type": "GENERALE",
+        "affectation": ""
+      }
+    ]
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "plan_comptable": {
+    "class": "3",
+    "description": "Comptes de stocks et en-cours (matières premières, marchandises, produits finis, provisions pour dépréciation des stocks)",
+    "accounts": [
+      {
+        "code": "311000",
+        "sens": "D",
+        "libelle": "Matières premières",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "313000",
+        "sens": "D",
+        "libelle": "Fournitures",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "317000",
+        "sens": "D",
+        "libelle": "Autres",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "321000",
+        "sens": "D",
+        "libelle": "Matières consommables",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "322000",
+        "sens": "D",
+        "libelle": "Fournitures consommables",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "326000",
+        "sens": "D",
+        "libelle": "Emballages",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "327000",
+        "sens": "D",
+        "libelle": "Autres",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "331000",
+        "sens": "D",
+        "libelle": "Produits en cours",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "335000",
+        "sens": "D",
+        "libelle": "Travaux en cours",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "341000",
+        "sens": "D",
+        "libelle": "Études en cours",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "345000",
+        "sens": "D",
+        "libelle": "Prestations de services en cours",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "351000",
+        "sens": "D",
+        "libelle": "Produits intermédiaires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "355000",
+        "sens": "D",
+        "libelle": "Produits finis",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "357000",
+        "sens": "D",
+        "libelle": "Produits résiduels",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "370000",
+        "sens": "DC",
+        "libelle": "STOCKS MSES",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "391100",
+        "sens": "C",
+        "libelle": "Provisions pour Dépréciation stocks MP",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "391300",
+        "sens": "C",
+        "libelle": "Provisions pour Dépréciation Fournitures",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "393100",
+        "sens": "C",
+        "libelle": "Provisions pour Dépréciation des Produit en cours",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "395500",
+        "sens": "C",
+        "libelle": "Provisions pour Dépréciation PF",
+        "type": "GENERALE",
+        "affectation": ""
+      }
+    ]
+  }
+}

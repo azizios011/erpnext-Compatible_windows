@@ -1,0 +1,365 @@
+{
+  "plan_comptable": {
+    "class": "6",
+    "description": "Comptes de charges (achats, services extérieurs, impôts, charges de personnel, charges financières, dotations, etc.)",
+    "accounts": [
+      {
+        "code": "601000",
+        "sens": "D",
+        "libelle": "Achats stockés - Matières premières et fournitures liées",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "602100",
+        "sens": "D",
+        "libelle": "Matières consommables",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "602200",
+        "sens": "D",
+        "libelle": "Fournitures consommables",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "602600",
+        "sens": "D",
+        "libelle": "Emballages",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "603100",
+        "sens": "D",
+        "libelle": "Variation des stocks de matière première et fournitures",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "603200",
+        "sens": "D",
+        "libelle": "Variation des stocks des autres approvisionnements",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "603300",
+        "sens": "D",
+        "libelle": "Variation des stocks de marchandises",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "603700",
+        "sens": "DC",
+        "libelle": "VARIA.STOCKS",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "604000",
+        "sens": "D",
+        "libelle": "Achats d’études et de prestations de services (y compris achat de sous-traitance de production)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "605000",
+        "sens": "D",
+        "libelle": "Achats de matériel, équipements et travaux",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "606000",
+        "sens": "D",
+        "libelle": "Achats non stockés de matières et fournitures",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "606100",
+        "sens": "DC",
+        "libelle": "Electricité",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "606200",
+        "sens": "DC",
+        "libelle": "FOURNITURE BUREAUTIQUE",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "606600",
+        "sens": "DC",
+        "libelle": "CARBURANT",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "607000",
+        "sens": "D",
+        "libelle": "Achats de marchandises",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "607001",
+        "sens": "DC",
+        "libelle": "CHARGE A RIENTEGRE",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "611000",
+        "sens": "D",
+        "libelle": "Sous-traitance générale",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "613000",
+        "sens": "D",
+        "libelle": "Locations (y compris malis sur emballages)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "614000",
+        "sens": "D",
+        "libelle": "Charges locatives et de copropriété",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "615000",
+        "sens": "D",
+        "libelle": "Entretien et réparations",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "616000",
+        "sens": "D",
+        "libelle": "Primes d'assurances",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "617000",
+        "sens": "D",
+        "libelle": "Études, recherches et divers services extérieurs",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "617400",
+        "sens": "DC",
+        "libelle": "Frais photocopies",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "621000",
+        "sens": "D",
+        "libelle": "Personnel extérieur à l'entreprise",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "622000",
+        "sens": "D",
+        "libelle": "Rémunération d'intermédiaires et honoraires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "623000",
+        "sens": "D",
+        "libelle": "Publicité, publications, relations publiques",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "624000",
+        "sens": "DC",
+        "libelle": "Frais de Transports",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "625100",
+        "sens": "D",
+        "libelle": "Voyages et déplacements",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "626100",
+        "sens": "DC",
+        "libelle": "Frais de télécommunications",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "627000",
+        "sens": "DC",
+        "libelle": "Services bancaires et assimilés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "640000",
+        "sens": "D",
+        "libelle": "Salaires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "641000",
+        "sens": "DC",
+        "libelle": "SALAIRE GERANT",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "641010",
+        "sens": "DC",
+        "libelle": "SALAIRE PERSONNEL",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "642000",
+        "sens": "D",
+        "libelle": "Appointements",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "646000",
+        "sens": "D",
+        "libelle": "Congés payés",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "647000",
+        "sens": "D",
+        "libelle": "Cotisations de sécurité sociale sur salaires",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "647100",
+        "sens": "DC",
+        "libelle": "CNSS IND",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "651000",
+        "sens": "DC",
+        "libelle": "Redevances / concessions, brevets..",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "651160",
+        "sens": "D",
+        "libelle": "Des emprunts et dettes assimilées",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "651600",
+        "sens": "D",
+        "libelle": "Intérêts bancaires et sur opérations de financement",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "661100",
+        "sens": "D",
+        "libelle": "TFP",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "661200",
+        "sens": "D",
+        "libelle": "FOPROLOS",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "665100",
+        "sens": "D",
+        "libelle": "Impôts et taxes divers (sauf impôts sur les bénéfices)",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "665210",
+        "sens": "DC",
+        "libelle": "TAXE COLLECTE LOCAL TCL",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "681110",
+        "sens": "D",
+        "libelle": "Immobilisations incorporelles",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "681120",
+        "sens": "D",
+        "libelle": "Immobilisations corporelles",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "681500",
+        "sens": "D",
+        "libelle": "Dotations aux provisions pour risques et charges d'exploitation",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "681730",
+        "sens": "D",
+        "libelle": "Stocks et en-cours",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "681740",
+        "sens": "D",
+        "libelle": "Créances",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "686500",
+        "sens": "D",
+        "libelle": "Dotations aux provisions pour risques et charges financières",
+        "type": "GENERALE",
+        "affectation": ""
+      },
+      {
+        "code": "691000",
+        "sens": "D",
+        "libelle": "Impôts sur les bénéfices calculés sur le résultat des activités ordinaires",
+        "type": "GENERALE",
+        "affectation": ""
+      }
+    ]
+  }
+}
