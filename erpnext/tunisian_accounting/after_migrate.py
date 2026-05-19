@@ -42,33 +42,7 @@ def _upsert_desktop_icon(label: str, values: dict):
         doc.insert(ignore_permissions=True)
 
 
-def _ensure_config_workspace_shortcut_target():
-    if not frappe.db.exists("Workspace", "Config"):
-        return
 
-    # Avoid full doc save during migration (Workspace validation may require fields like `type`).
-    # Patch shortcut rows directly in child table.
-    for row in frappe.get_all(
-        "Workspace Shortcut",
-        filters={"parent": "Config", "type": "DocType", "link_to": "Chart of Accounts"},
-        fields=["name"],
-    ):
-        frappe.db.set_value(
-            "Workspace Shortcut",
-            row.name,
-            {"label": "Account", "link_to": "Account", "doc_view": "List"},
-            update_modified=False,
-        )
-
-    content = frappe.db.get_value("Workspace", "Config", "content")
-    if content and "Chart of Accounts" in content:
-        frappe.db.set_value(
-            "Workspace",
-            "Config",
-            "content",
-            content.replace("Chart of Accounts", "Account"),
-            update_modified=False,
-        )
 
 
 def apply_tunisian_accounting_desktop_layout():
@@ -105,7 +79,6 @@ def apply_tunisian_accounting_desktop_layout():
         for icon_name in frappe.get_all("Desktop Icon", filters={"label": label}, pluck="name"):
             frappe.db.set_value("Desktop Icon", icon_name, "hidden", 1, update_modified=False)
 
-    _ensure_config_workspace_shortcut_target()
 
     frappe.clear_cache()
     frappe.cache.delete_key("desktop_icons")

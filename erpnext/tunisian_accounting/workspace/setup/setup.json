@@ -8,8 +8,16 @@
   "is_hidden": 0,
   "parent_page": "",
   "icon": "setting-gear",
-  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Config</span>\",\"col\":12}}]",
-  "shortcuts": [],
+  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Config</span>\",\"col\":12}},{\"id\":\"sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Plan Comptable\",\"col\":3}}]",
+  "shortcuts": [
+    {
+      "label": "Plan Comptable",
+      "type": "DocType",
+      "link_to": "Chart of Accounts",
+      "doc_view": "Tree",
+      "color": "Blue"
+    }
+  ],
   "links": [],
   "roles": []
 }
