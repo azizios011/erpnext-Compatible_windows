@@ -24,6 +24,7 @@ import frappe
 _HERE = os.path.dirname(os.path.abspath(__file__))
 
 DATA_DIR = os.path.join(_HERE, "data")
+MAX_ACCOUNT_NAME = 120
 
 OUTPUT_FILE = os.path.normpath(
     os.path.join(
@@ -150,6 +151,20 @@ POSTE_LABELS = {
 }
 
 
+def _truncate_account_name(value, max_length=MAX_ACCOUNT_NAME):
+    return (value or "")[:max_length]
+
+
+def _make_unique_account_key(libelle, code, used_keys):
+    base = _truncate_account_name(libelle)
+    key = base
+    if key in used_keys:
+        suffix = f" ({code})"
+        key = f"{base[: MAX_ACCOUNT_NAME - len(suffix)]}{suffix}"
+    used_keys.add(key)
+    return key
+
+
 def _get_account_type(code):
     p3 = code[:3]
     p2 = code[:2]
@@ -207,9 +222,8 @@ def _build_tree(all_accounts):
             used_keys   = set()
             for acc in accs:
                 code    = acc["code"]
-                libelle = acc["libelle"]
-                key     = libelle if libelle not in used_keys else f"{libelle} ({code})"
-                used_keys.add(key)
+                libelle = _truncate_account_name(acc["libelle"])
+                key     = _make_unique_account_key(libelle, code, used_keys)
                 leaf    = {"account_number": code}
                 atype   = _get_account_type(code)
                 if atype:
@@ -327,7 +341,7 @@ def populate_plan_comptable():
             used_codes = set()
             for acc in sorted(accs, key=lambda x: x["code"]):
                 code    = acc["code"]
-                libelle = acc["libelle"]
+                libelle = _truncate_account_name(acc["libelle"])
                 sens    = acc.get("sens", "")
                 atype   = _get_account_type(code)
 
@@ -356,3 +370,4 @@ def build_and_populate():
     """Run both steps: generate COA JSON template, then populate the DocType."""
     build_coa_json()
     populate_plan_comptable()
+

@@ -50,6 +50,12 @@ def _remove_stale_plan_comptable_workspace():
     _delete_doc_if_exists("Desktop Icon", PLAN_COMPTABLE_LABEL)
     _delete_doc_if_exists("Workspace", PLAN_COMPTABLE_LABEL)
 
+    sidebar_prefixes = [PLAN_COMPTABLE_LABEL, FOLDER_LABEL, *CHILD_WORKSPACES]
+    for sidebar in frappe.get_all("Workspace Sidebar", fields=["name", "title", "for_user"]):
+        title = sidebar.title or sidebar.name
+        if sidebar.for_user and any(title == prefix or title.startswith(f"{prefix}-") for prefix in sidebar_prefixes):
+            frappe.delete_doc("Workspace Sidebar", sidebar.name, ignore_permissions=True, force=True)
+
 
 def _ensure_config_workspace_shortcuts():
     if not frappe.db.exists("Workspace", "Config"):
@@ -192,3 +198,4 @@ def apply_tunisian_accounting_desktop_layout():
     frappe.clear_cache()
     frappe.cache.delete_key("desktop_icons")
     frappe.cache.delete_key("bootinfo")
+
