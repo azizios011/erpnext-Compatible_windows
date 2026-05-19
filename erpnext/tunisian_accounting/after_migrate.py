@@ -142,7 +142,10 @@ def _ensure_workspace_sidebar(workspace_name: str):
         return
 
     if workspace_name == "Config":
-        items = [_new_sidebar_item(PLAN_COMPTABLE_LABEL, "DocType", "Chart of Accounts")]
+        items = [
+            _new_sidebar_item(shortcut["label"], shortcut["type"], shortcut["link_to"])
+            for shortcut in CONFIG_SHORTCUTS
+        ]
     else:
         items = [_new_sidebar_item(workspace_name, "Workspace", workspace_name)]
 
@@ -198,4 +201,5 @@ def apply_tunisian_accounting_desktop_layout():
     frappe.clear_cache()
     frappe.cache.delete_key("desktop_icons")
     frappe.cache.delete_key("bootinfo")
+
 
