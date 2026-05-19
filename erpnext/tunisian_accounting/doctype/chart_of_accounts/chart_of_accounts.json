@@ -31,7 +31,8 @@
    "label": "Account Name",
    "reqd": 1,
    "search_index": 1,
-   "translatable": 0
+   "translatable": 0,
+   "length": 500
   },
   {
    "fieldname": "account_number",
