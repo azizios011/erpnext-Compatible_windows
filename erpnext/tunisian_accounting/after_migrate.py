@@ -19,18 +19,30 @@ def _ensure_workspace_sidebar(workspace_name: str):
         return
 
     if frappe.db.exists("Workspace Sidebar", workspace_name):
-        return
+        if workspace_name == "Config":
+            frappe.delete_doc("Workspace Sidebar", workspace_name, ignore_permissions=True, force=True)
+        else:
+            return
 
     sidebar = frappe.new_doc("Workspace Sidebar")
     sidebar.title = workspace_name
 
-    item = frappe.new_doc("Workspace Sidebar Item")
-    item.label = workspace_name
-    item.type = "Link"
-    item.link_type = "Workspace"
-    item.link_to = workspace_name
+    if workspace_name == "Config":
+        # Do not add "Config" to its own sidebar
+        item = frappe.new_doc("Workspace Sidebar Item")
+        item.label = "Plan Comptable"
+        item.type = "Link"
+        item.link_type = "DocType"
+        item.link_to = "Chart of Accounts"
+        sidebar.append("items", item)
+    else:
+        item = frappe.new_doc("Workspace Sidebar Item")
+        item.label = workspace_name
+        item.type = "Link"
+        item.link_type = "Workspace"
+        item.link_to = workspace_name
+        sidebar.append("items", item)
 
-    sidebar.append("items", item)
     sidebar.insert(ignore_permissions=True)
 
 
