@@ -1,5 +1,13 @@
 // erpnext/tunisian_accounting/doctype/chart_of_accounts/chart_of_accounts.js
 
+// Auto-redirect list view → tree view
+frappe.listview_settings["Chart of Accounts"] = {
+	onload: function (listview) {
+		frappe.set_route("app", "chart-of-accounts", "view", "tree");
+	},
+};
+
+
 frappe.treeview_settings["Chart of Accounts"] = {
 	breadcrumb: "Config",
 	title: __("Plan Comptable - Tunisie"),

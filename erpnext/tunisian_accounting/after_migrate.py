@@ -41,7 +41,6 @@ def _ensure_workspace_sidebar(workspace_name: str):
         item2.type = "Link"
         item2.link_type = "DocType"
         item2.link_to = "Chart of Accounts"
-        item2.route_options = '{"view": "Tree"}'
         sidebar.append("items", item2)
     else:
         item = frappe.new_doc("Workspace Sidebar Item")
