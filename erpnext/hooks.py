@@ -65,7 +65,7 @@ setup_wizard_stages = "erpnext.setup.setup_wizard.setup_wizard.get_setup_stages"
 
 after_install = [
 	"erpnext.setup.install.after_install",
-	"erpnext.tunisian_accounting.setup.build_coa_json",
+	"erpnext.tunisian_accounting.setup.build_and_populate",
 	"erpnext.tunisian_accounting.after_migrate.apply_tunisian_accounting_desktop_layout"
 ]
 

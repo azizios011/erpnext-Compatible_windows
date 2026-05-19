@@ -6,3 +6,5 @@ app_version = "0.0.1"
 
 fixtures = ["Desktop Icon"]
 
+# after_install is defined in the main erpnext/hooks.py — not here.
+# This file is kept for module-level metadata only.
