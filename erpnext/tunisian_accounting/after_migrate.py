@@ -1,8 +1,33 @@
+import json
+
 import frappe
 
 FOLDER_LABEL = "Tunisian Accounting"
 PLAN_COMPTABLE_LABEL = "Plan Comptable"
 CHILD_WORKSPACES = ["Config", "States", "Treatments"]
+CONFIG_SHORTCUTS = [
+    {
+        "label": PLAN_COMPTABLE_LABEL,
+        "type": "DocType",
+        "link_to": "Chart of Accounts",
+        "doc_view": "Tree",
+        "color": "Blue",
+    },
+    {
+        "label": "Fiscal Year",
+        "type": "DocType",
+        "link_to": "Fiscal Year",
+        "doc_view": "List",
+        "color": "Green",
+    },
+    {
+        "label": "Chart of Accounts Importer",
+        "type": "DocType",
+        "link_to": "Chart of Accounts Importer",
+        "doc_view": "List",
+        "color": "Orange",
+    },
+]
 HIDE_ICONS = [
     "Assets",
     "Buying",
@@ -24,6 +49,56 @@ def _remove_stale_plan_comptable_workspace():
     _delete_doc_if_exists("Workspace Sidebar", PLAN_COMPTABLE_LABEL)
     _delete_doc_if_exists("Desktop Icon", PLAN_COMPTABLE_LABEL)
     _delete_doc_if_exists("Workspace", PLAN_COMPTABLE_LABEL)
+
+
+def _ensure_config_workspace_shortcuts():
+    if not frappe.db.exists("Workspace", "Config"):
+        return
+
+    shortcut_labels = [shortcut["label"] for shortcut in CONFIG_SHORTCUTS]
+    for shortcut_name in frappe.get_all(
+        "Workspace Shortcut",
+        filters={"parent": "Config", "label": ["in", shortcut_labels]},
+        pluck="name",
+    ):
+        frappe.delete_doc("Workspace Shortcut", shortcut_name, ignore_permissions=True, force=True)
+
+    for idx, shortcut in enumerate(CONFIG_SHORTCUTS, start=1):
+        shortcut_doc = frappe.get_doc(
+            {
+                "doctype": "Workspace Shortcut",
+                "parent": "Config",
+                "parenttype": "Workspace",
+                "parentfield": "shortcuts",
+                "idx": idx,
+                **shortcut,
+            }
+        )
+        shortcut_doc.insert(ignore_permissions=True)
+
+    content = [
+        {
+            "id": "hdr",
+            "type": "header",
+            "data": {"text": '<span class="h4">Config</span>', "col": 12},
+        }
+    ]
+    for idx, shortcut in enumerate(CONFIG_SHORTCUTS, start=1):
+        content.append(
+            {
+                "id": f"sc{idx}",
+                "type": "shortcut",
+                "data": {"shortcut_name": shortcut["label"], "col": 3},
+            }
+        )
+
+    frappe.db.set_value(
+        "Workspace",
+        "Config",
+        "content",
+        json.dumps(content, separators=(",", ":")),
+        update_modified=False,
+    )
 
 
 def _ensure_workspace_sidebar(workspace_name: str):
@@ -62,6 +137,7 @@ def _upsert_desktop_icon(label: str, values: dict):
 
 def apply_tunisian_accounting_desktop_layout():
     _remove_stale_plan_comptable_workspace()
+    _ensure_config_workspace_shortcuts()
 
     for ws_name in CHILD_WORKSPACES:
         _ensure_workspace_sidebar(ws_name)
