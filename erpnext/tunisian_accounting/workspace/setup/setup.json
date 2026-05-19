@@ -8,28 +8,35 @@
   "is_hidden": 0,
   "parent_page": "",
   "icon": "setting-gear",
-  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Config</span>\",\"col\":12}},{\"id\":\"sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Plan Comptable\",\"col\":3}},{\"id\":\"sc2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Fiscal Year\",\"col\":3}},{\"id\":\"sc3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Chart of Accounts Importer\",\"col\":3}}]",
+  "content": "[{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Config</span>\",\"col\":12},\"id\":\"hdr\"},{\"type\":\"shortcut\",\"data\":{\"col\":3,\"shortcut_name\":\"Plan Comptable\"},\"id\":\"sc1\"},{\"type\":\"shortcut\",\"data\":{\"col\":3,\"shortcut_name\":\"Fiscal Year\"},\"id\":\"sc2\"},{\"type\":\"shortcut\",\"data\":{\"col\":3,\"shortcut_name\":\"Chart of Accounts Importer\"},\"id\":\"sc3\"},{\"type\":\"shortcut\",\"data\":{\"col\":3,\"shortcut_name\":\"New Journal Entry Template\"},\"id\":\"sc4\"}]",
   "shortcuts": [
     {
-      "label": "Plan Comptable",
-      "type": "DocType",
-      "link_to": "Chart of Accounts",
       "doc_view": "Tree",
-      "color": "Blue"
+      "link_to": "Chart of Accounts",
+      "type": "DocType",
+      "color": "Blue",
+      "label": "Plan Comptable"
     },
     {
-      "label": "Fiscal Year",
-      "type": "DocType",
+      "doc_view": "List",
       "link_to": "Fiscal Year",
-      "doc_view": "List",
-      "color": "Green"
+      "type": "DocType",
+      "color": "Green",
+      "label": "Fiscal Year"
     },
     {
-      "label": "Chart of Accounts Importer",
-      "type": "DocType",
-      "link_to": "Chart of Accounts Importer",
       "doc_view": "List",
-      "color": "Orange"
+      "link_to": "Chart of Accounts Importer",
+      "type": "DocType",
+      "color": "Orange",
+      "label": "Chart of Accounts Importer"
+    },
+    {
+      "doc_view": "New",
+      "link_to": "Journal Entry Template",
+      "type": "DocType",
+      "color": "Yellow",
+      "label": "New Journal Entry Template"
     }
   ],
   "links": [],

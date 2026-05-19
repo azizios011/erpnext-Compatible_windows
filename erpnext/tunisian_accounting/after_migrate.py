@@ -27,6 +27,13 @@ CONFIG_SHORTCUTS = [
         "doc_view": "List",
         "color": "Orange",
     },
+    {
+        "label": "New Journal Entry Template",
+        "type": "DocType",
+        "link_to": "Journal Entry Template",
+        "doc_view": "New",
+        "color": "Yellow",
+    },
 ]
 HIDE_ICONS = [
     "Assets",
@@ -107,12 +114,15 @@ def _ensure_config_workspace_shortcuts():
     )
 
 
-def _new_sidebar_item(label: str, link_type: str, link_to: str):
+def _new_sidebar_item(label: str, link_type: str, link_to: str = "", url: str = ""):
     item = frappe.new_doc("Workspace Sidebar Item")
     item.label = label
     item.type = "Link"
     item.link_type = link_type
     item.link_to = link_to
+    if url:
+        item.url = url
+        item.open_in_new_tab = 0
     return item
 
 
@@ -142,10 +152,18 @@ def _ensure_workspace_sidebar(workspace_name: str):
         return
 
     if workspace_name == "Config":
-        items = [
-            _new_sidebar_item(shortcut["label"], shortcut["type"], shortcut["link_to"])
-            for shortcut in CONFIG_SHORTCUTS
-        ]
+        items = []
+        for shortcut in CONFIG_SHORTCUTS:
+            if shortcut.get("doc_view") == "New":
+                items.append(
+                    _new_sidebar_item(
+                        shortcut["label"],
+                        "URL",
+                        url="/desk/journal-entry-template/new-journal-entry-template",
+                    )
+                )
+            else:
+                items.append(_new_sidebar_item(shortcut["label"], shortcut["type"], shortcut["link_to"]))
     else:
         items = [_new_sidebar_item(workspace_name, "Workspace", workspace_name)]
 
@@ -201,5 +219,8 @@ def apply_tunisian_accounting_desktop_layout():
     frappe.clear_cache()
     frappe.cache.delete_key("desktop_icons")
     frappe.cache.delete_key("bootinfo")
+
+
+
 
 
