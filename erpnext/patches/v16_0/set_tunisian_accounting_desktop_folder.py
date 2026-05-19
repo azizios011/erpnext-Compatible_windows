@@ -2,6 +2,7 @@ import frappe
 
 
 FOLDER_LABEL = "Tunisian Accounting"
+PLAN_COMPTABLE_LABEL = "Plan Comptable"
 CHILD_WORKSPACES = ["Config", "Treatments", "States"]
 HIDE_ICONS = [
     "Assets",
@@ -23,7 +24,20 @@ def _upsert_icon(label: str, values: dict):
         doc.insert(ignore_permissions=True)
 
 
+def _delete_doc_if_exists(doctype: str, name: str):
+    if frappe.db.exists(doctype, name):
+        frappe.delete_doc(doctype, name, ignore_permissions=True, force=True)
+
+
+def _remove_stale_plan_comptable_workspace():
+    _delete_doc_if_exists("Workspace Sidebar", PLAN_COMPTABLE_LABEL)
+    _delete_doc_if_exists("Desktop Icon", PLAN_COMPTABLE_LABEL)
+    _delete_doc_if_exists("Workspace", PLAN_COMPTABLE_LABEL)
+
+
 def execute():
+    _remove_stale_plan_comptable_workspace()
+
     # Convert or create top-level icon as a folder
     _upsert_icon(
         FOLDER_LABEL,
@@ -60,4 +74,3 @@ def execute():
     # Force desk cache refresh
     frappe.cache.delete_key("desktop_icons")
     frappe.cache.delete_key("bootinfo")
-

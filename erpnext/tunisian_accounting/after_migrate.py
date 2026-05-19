@@ -1,6 +1,7 @@
 import frappe
 
 FOLDER_LABEL = "Tunisian Accounting"
+PLAN_COMPTABLE_LABEL = "Plan Comptable"
 CHILD_WORKSPACES = ["Config", "States", "Treatments"]
 HIDE_ICONS = [
     "Assets",
@@ -14,35 +15,40 @@ HIDE_ICONS = [
 ]
 
 
+def _delete_doc_if_exists(doctype: str, name: str):
+    if frappe.db.exists(doctype, name):
+        frappe.delete_doc(doctype, name, ignore_permissions=True, force=True)
+
+
+def _remove_stale_plan_comptable_workspace():
+    _delete_doc_if_exists("Workspace Sidebar", PLAN_COMPTABLE_LABEL)
+    _delete_doc_if_exists("Desktop Icon", PLAN_COMPTABLE_LABEL)
+    _delete_doc_if_exists("Workspace", PLAN_COMPTABLE_LABEL)
+
+
 def _ensure_workspace_sidebar(workspace_name: str):
     if not frappe.db.exists("Workspace", workspace_name):
         return
 
     if frappe.db.exists("Workspace Sidebar", workspace_name):
-        if workspace_name == "Config":
-            frappe.delete_doc("Workspace Sidebar", workspace_name, ignore_permissions=True, force=True)
-        else:
-            return
+        frappe.delete_doc("Workspace Sidebar", workspace_name, ignore_permissions=True, force=True)
 
     sidebar = frappe.new_doc("Workspace Sidebar")
     sidebar.title = workspace_name
 
+    item = frappe.new_doc("Workspace Sidebar Item")
     if workspace_name == "Config":
-        # Do not add "Config" to its own sidebar
-        item = frappe.new_doc("Workspace Sidebar Item")
-        item.label = "Plan Comptable"
+        item.label = PLAN_COMPTABLE_LABEL
         item.type = "Link"
         item.link_type = "DocType"
         item.link_to = "Chart of Accounts"
-        sidebar.append("items", item)
     else:
-        item = frappe.new_doc("Workspace Sidebar Item")
         item.label = workspace_name
         item.type = "Link"
         item.link_type = "Workspace"
         item.link_to = workspace_name
-        sidebar.append("items", item)
 
+    sidebar.append("items", item)
     sidebar.insert(ignore_permissions=True)
 
 
@@ -54,10 +60,9 @@ def _upsert_desktop_icon(label: str, values: dict):
         doc.insert(ignore_permissions=True)
 
 
-
-
-
 def apply_tunisian_accounting_desktop_layout():
+    _remove_stale_plan_comptable_workspace()
+
     for ws_name in CHILD_WORKSPACES:
         _ensure_workspace_sidebar(ws_name)
 
@@ -91,8 +96,6 @@ def apply_tunisian_accounting_desktop_layout():
         for icon_name in frappe.get_all("Desktop Icon", filters={"label": label}, pluck="name"):
             frappe.db.set_value("Desktop Icon", icon_name, "hidden", 1, update_modified=False)
 
-
     frappe.clear_cache()
     frappe.cache.delete_key("desktop_icons")
     frappe.cache.delete_key("bootinfo")
-
