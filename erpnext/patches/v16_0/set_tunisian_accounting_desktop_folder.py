@@ -35,8 +35,39 @@ def _remove_stale_plan_comptable_workspace():
     _delete_doc_if_exists("Workspace", PLAN_COMPTABLE_LABEL)
 
 
+def _new_sidebar_item(label: str, link_type: str, link_to: str):
+    item = frappe.new_doc("Workspace Sidebar Item")
+    item.label = label
+    item.type = "Link"
+    item.link_type = link_type
+    item.link_to = link_to
+    return item
+
+
+def _replace_workspace_sidebar(title: str, items: list):
+    if frappe.db.exists("Workspace Sidebar", title):
+        frappe.delete_doc("Workspace Sidebar", title, ignore_permissions=True, force=True)
+
+    sidebar = frappe.new_doc("Workspace Sidebar")
+    sidebar.title = title
+    for item in items:
+        sidebar.append("items", item)
+    sidebar.insert(ignore_permissions=True)
+
+
+def _ensure_folder_sidebar():
+    items = []
+    for workspace_name in CHILD_WORKSPACES:
+        if frappe.db.exists("Workspace", workspace_name):
+            items.append(_new_sidebar_item(workspace_name, "Workspace", workspace_name))
+
+    if items:
+        _replace_workspace_sidebar(FOLDER_LABEL, items)
+
+
 def execute():
     _remove_stale_plan_comptable_workspace()
+    _ensure_folder_sidebar()
 
     # Convert or create top-level icon as a folder
     _upsert_icon(

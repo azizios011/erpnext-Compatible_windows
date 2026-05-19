@@ -101,30 +101,46 @@ def _ensure_config_workspace_shortcuts():
     )
 
 
+def _new_sidebar_item(label: str, link_type: str, link_to: str):
+    item = frappe.new_doc("Workspace Sidebar Item")
+    item.label = label
+    item.type = "Link"
+    item.link_type = link_type
+    item.link_to = link_to
+    return item
+
+
+def _replace_workspace_sidebar(title: str, items: list):
+    if frappe.db.exists("Workspace Sidebar", title):
+        frappe.delete_doc("Workspace Sidebar", title, ignore_permissions=True, force=True)
+
+    sidebar = frappe.new_doc("Workspace Sidebar")
+    sidebar.title = title
+    for item in items:
+        sidebar.append("items", item)
+    sidebar.insert(ignore_permissions=True)
+
+
+def _ensure_folder_sidebar():
+    items = []
+    for workspace_name in CHILD_WORKSPACES:
+        if frappe.db.exists("Workspace", workspace_name):
+            items.append(_new_sidebar_item(workspace_name, "Workspace", workspace_name))
+
+    if items:
+        _replace_workspace_sidebar(FOLDER_LABEL, items)
+
+
 def _ensure_workspace_sidebar(workspace_name: str):
     if not frappe.db.exists("Workspace", workspace_name):
         return
 
-    if frappe.db.exists("Workspace Sidebar", workspace_name):
-        frappe.delete_doc("Workspace Sidebar", workspace_name, ignore_permissions=True, force=True)
-
-    sidebar = frappe.new_doc("Workspace Sidebar")
-    sidebar.title = workspace_name
-
-    item = frappe.new_doc("Workspace Sidebar Item")
     if workspace_name == "Config":
-        item.label = PLAN_COMPTABLE_LABEL
-        item.type = "Link"
-        item.link_type = "DocType"
-        item.link_to = "Chart of Accounts"
+        items = [_new_sidebar_item(PLAN_COMPTABLE_LABEL, "DocType", "Chart of Accounts")]
     else:
-        item.label = workspace_name
-        item.type = "Link"
-        item.link_type = "Workspace"
-        item.link_to = workspace_name
+        items = [_new_sidebar_item(workspace_name, "Workspace", workspace_name)]
 
-    sidebar.append("items", item)
-    sidebar.insert(ignore_permissions=True)
+    _replace_workspace_sidebar(workspace_name, items)
 
 
 def _upsert_desktop_icon(label: str, values: dict):
@@ -138,6 +154,7 @@ def _upsert_desktop_icon(label: str, values: dict):
 def apply_tunisian_accounting_desktop_layout():
     _remove_stale_plan_comptable_workspace()
     _ensure_config_workspace_shortcuts()
+    _ensure_folder_sidebar()
 
     for ws_name in CHILD_WORKSPACES:
         _ensure_workspace_sidebar(ws_name)
