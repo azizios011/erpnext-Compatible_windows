@@ -1,0 +1,23 @@
+{
+  "doctype": "Workspace",
+  "name": "Plan Comptable",
+  "title": "Plan Comptable",
+  "label": "Plan Comptable",
+  "module": "Tunisian Accounting",
+  "public": 1,
+  "is_hidden": 0,
+  "parent_page": "Config",
+  "icon": "accounting",
+  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Plan Comptable</span>\",\"col\":12}},{\"id\":\"sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Plan Comptable\",\"col\":3}}]",
+  "shortcuts": [
+    {
+      "label": "Plan Comptable",
+      "type": "DocType",
+      "link_to": "Chart of Accounts",
+      "doc_view": "Tree",
+      "color": "Blue"
+    }
+  ],
+  "links": [],
+  "roles": []
+}
