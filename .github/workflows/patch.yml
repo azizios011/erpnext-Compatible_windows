@@ -1,17 +1,14 @@
+# DISABLED: Workflow disabled in fork to prevent CI runs on upstream PRs
 name: Patch
 
 on:
   pull_request:
-    paths-ignore:
-      - '**.js'
-      - '**.css'
-      - '**.md'
-      - '**.html'
-      - '**.csv'
-      - 'crowdin.yml'
-      - '.coderabbit.yml'
-      - '.mergify.yml'
+    types: [closed]
   workflow_dispatch:
+    inputs:
+      disabled:
+        type: boolean
+        default: true
 
 permissions:
   contents: read

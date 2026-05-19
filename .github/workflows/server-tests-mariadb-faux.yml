@@ -1,18 +1,16 @@
+# DISABLED: Workflow disabled in fork to prevent CI runs on upstream PRs
 # Tests are skipped for these files but github doesn't allow "passing" hence this is required.
 
 name: Skipped Tests
 
 on:
   pull_request:
-    paths:
-      - "**.js"
-      - "**.css"
-      - "**.svg"
-      - "**.md"
-      - "**.html"
-      - 'crowdin.yml'
-      - '.coderabbit.yml'
-      - '.mergify.yml'
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      disabled:
+        type: boolean
+        default: true
 
 permissions:
   contents: read

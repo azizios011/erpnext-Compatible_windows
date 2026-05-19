@@ -1,3 +1,4 @@
+# DISABLED: Workflow disabled in fork to prevent CI runs on upstream PRs
 # This action:
 #
 # 1. Generates release notes using github API.
@@ -11,12 +12,11 @@ name: 'Release Notes'
 on:
   workflow_dispatch:
     inputs:
-      tag_name:
-        description: 'Tag of release like v13.0.0'
-        required: true
-        type: string
+      disabled:
+        type: boolean
+        default: true
   release:
-    types: [released]
+    types: []
 
 permissions:
   contents: read

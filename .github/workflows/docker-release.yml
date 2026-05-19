@@ -1,7 +1,8 @@
+# DISABLED: Workflow disabled in fork to prevent CI runs on upstream PRs
 name: Trigger Docker build on release
 on:
   release:
-    types: [released]
+    types: []
 
 permissions:
   contents: read

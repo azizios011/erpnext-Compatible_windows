@@ -1,15 +1,14 @@
+# DISABLED: Workflow disabled in fork to prevent CI runs on upstream PRs
 name: Server (Postgres)
 
 on:
   pull_request:
-    paths-ignore:
-      - '**.js'
-      - '**.md'
-      - '**.html'
-      - 'crowdin.yml'
-      - '.coderabbit.yml'
-      - '.mergify.yml'
-    types: [opened, labelled, synchronize, reopened]
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      disabled:
+        type: boolean
+        default: true
 
 concurrency:
   group: server-postgres-develop-${{ github.event_name }}-${{ github.event.number || github.event_name == 'workflow_dispatch' && github.run_id || '' }}

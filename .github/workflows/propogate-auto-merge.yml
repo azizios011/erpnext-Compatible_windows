@@ -1,8 +1,14 @@
+# DISABLED: Workflow disabled in fork to prevent CI runs on upstream PRs
 name: Propagate auto-merge label to backports
 
 on:
   pull_request:
-    types: [opened]
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      disabled:
+        type: boolean
+        default: true
 
 jobs:
   propagate-label:

@@ -1,9 +1,13 @@
+# DISABLED: Workflow disabled in fork to prevent CI runs on upstream PRs
 name: Backport
 on:
   pull_request_target:
-    types:
-      - closed
-      - labeled
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      disabled:
+        type: boolean
+        default: true
 
 permissions:
   contents: read

@@ -1,7 +1,14 @@
+# DISABLED: Workflow disabled in fork to prevent CI runs on upstream PRs
 name: Linters
 
 on:
-  pull_request: { }
+  pull_request:
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      disabled:
+        type: boolean
+        default: true
 
 permissions:
   contents: read

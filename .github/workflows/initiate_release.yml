@@ -1,3 +1,4 @@
+# DISABLED: Workflow disabled in fork to prevent CI runs on upstream PRs
 # This workflow is agnostic to branches. Only maintain on develop branch.
 # To add/remove versions just modify the matrix.
 
@@ -7,10 +8,11 @@ permissions:
   contents: read
 
 on:
-  schedule:
-    # 9:30 UTC => 3 PM IST Tuesday
-    - cron: "30 9 * * 2"
   workflow_dispatch:
+    inputs:
+      disabled:
+        type: boolean
+        default: true
 
 jobs:
   stable-release:

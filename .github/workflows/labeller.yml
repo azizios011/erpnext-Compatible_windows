@@ -1,7 +1,13 @@
+# DISABLED: Workflow disabled in fork to prevent CI runs on upstream PRs
 name: "Pull Request Labeler"
 on:
   pull_request_target:
-    types: [opened, reopened]
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      disabled:
+        type: boolean
+        default: true
 
 permissions:
   issues: write

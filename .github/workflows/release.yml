@@ -1,8 +1,9 @@
+# DISABLED: Workflow disabled in fork to prevent CI runs on upstream PRs
 name: Generate Semantic Release
 on:
   push:
     branches:
-      - version-13
+      - __disabled__
 
 permissions:
   contents: read

@@ -1,12 +1,14 @@
+# DISABLED: Workflow disabled in fork to prevent CI runs on upstream PRs
 # This workflow is agnostic to branches. Only maintain on develop branch.
 # To add/remove branches just modify the matrix.
 
 name: Regenerate POT file (translatable strings)
 on:
-  schedule:
-    # 9:30 UTC => 3 PM IST Sunday
-    - cron: "30 9 * * 0"
   workflow_dispatch:
+    inputs:
+      disabled:
+        type: boolean
+        default: true
 
 jobs:
   regenerate-pot-file:
