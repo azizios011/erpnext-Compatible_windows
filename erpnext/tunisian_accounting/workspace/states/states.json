@@ -8,12 +8,24 @@
   "is_hidden": 0,
   "parent_page": "",
   "icon": "flag",
-  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">States</span>\",\"col\":12}},{\"id\":\"nav1\",\"type\":\"card\",\"data\":{\"card_name\":\"Ledger\",\"col\":12}}]",
+  "content": "[{\"id\":\"ledger_card\",\"type\":\"card\",\"data\":{\"card_name\":\"Ledger\",\"col\":12}}]",
   "links": [
     {
       "label": "Ledger",
-      "link_type": "Workspace",
-      "link_to": "Ledger",
+      "link_type": "DocType",
+      "link_to": "General Ledger",
+      "onboard": 1
+    },
+    {
+      "label": "Ledger",
+      "link_type": "DocType",
+      "link_to": "Customer Ledger",
+      "onboard": 1
+    },
+    {
+      "label": "Ledger",
+      "link_type": "DocType",
+      "link_to": "Supplier Ledger",
       "onboard": 1
     }
   ],
