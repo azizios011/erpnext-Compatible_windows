@@ -1,4 +1,5 @@
 import json
+import os
 
 import frappe
 
@@ -147,8 +148,28 @@ def _ensure_folder_sidebar():
         _replace_workspace_sidebar(FOLDER_LABEL, items)
 
 
+def _ensure_workspace_exists(workspace_name: str):
+    if frappe.db.exists("Workspace", workspace_name):
+        return True
+
+    # Try to load from JSON fixture if it doesn't exist in DB
+    folder_name = workspace_name.lower().replace(" ", "_")
+    file_path = frappe.get_app_path(
+        "erpnext", "tunisian_accounting", "workspace", folder_name, f"{folder_name}.json"
+    )
+
+    if os.path.exists(file_path):
+        with open(file_path, "r") as f:
+            doc_dict = json.load(f)
+            doc_dict["doctype"] = "Workspace"
+            doc = frappe.get_doc(doc_dict)
+            doc.insert(ignore_permissions=True)
+            return True
+    return False
+
+
 def _ensure_workspace_sidebar(workspace_name: str):
-    if not frappe.db.exists("Workspace", workspace_name):
+    if not _ensure_workspace_exists(workspace_name):
         return
 
     if workspace_name == "Config":
@@ -184,6 +205,10 @@ def _upsert_desktop_icon(label: str, values: dict):
 
 def apply_tunisian_accounting_desktop_layout():
     _remove_stale_plan_comptable_workspace()
+
+    for ws_name in CHILD_WORKSPACES:
+        _ensure_workspace_exists(ws_name)
+
     _ensure_config_workspace_shortcuts()
     _ensure_folder_sidebar()
 
