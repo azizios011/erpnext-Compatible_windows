@@ -166,7 +166,7 @@ def _ensure_workspace_sidebar(workspace_name: str):
                 items.append(_new_sidebar_item(shortcut["label"], shortcut["type"], shortcut["link_to"]))
     elif workspace_name == "Treatments":
         items = [
-            _new_sidebar_item("Entry of entries", "DocType", "Entry of entries")
+            _new_sidebar_item("Entry of Entries", "DocType", "Entry of Entries")
         ]
     else:
         items = [_new_sidebar_item(workspace_name, "Workspace", workspace_name)]

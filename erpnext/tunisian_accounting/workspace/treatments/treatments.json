@@ -8,12 +8,12 @@
   "is_hidden": 0,
   "parent_page": "",
   "icon": "heart",
-  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Treatments</span>\",\"col\":12}},{\"id\":\"sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Entry of entries\",\"col\":3}}]",
+  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Treatments</span>\",\"col\":12}},{\"id\":\"sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Entry of Entries\",\"col\":3}}]",
   "shortcuts": [
     {
-      "label": "Entry of entries",
+      "label": "Entry of Entries",
       "type": "DocType",
-      "link_to": "Entry of entries",
+      "link_to": "Entry of Entries",
       "doc_view": "List",
       "color": "Blue"
     }
