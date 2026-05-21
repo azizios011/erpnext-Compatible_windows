@@ -20,7 +20,7 @@
       "label": "Grand Livre",
       "link_type": "Report",
       "link_to": "General Ledger",
-      "is_query_report": 1,
+      "is_query_report": true,
       "onboard": 1
     },
     {
@@ -28,7 +28,7 @@
       "label": "Livre Client",
       "link_type": "Report",
       "link_to": "Customer Ledger",
-      "is_query_report": 1,
+      "is_query_report": true,
       "onboard": 1
     },
     {
@@ -36,7 +36,7 @@
       "label": "Livre Fournisseur",
       "link_type": "Report",
       "link_to": "Supplier Ledger",
-      "is_query_report": 1,
+      "is_query_report": true,
       "onboard": 1
     }
   ],
