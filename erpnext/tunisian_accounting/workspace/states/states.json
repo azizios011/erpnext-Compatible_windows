@@ -12,7 +12,7 @@
   "links": [
     {
       "label": "Ledger",
-      "type": "Workspace",
+      "link_type": "Workspace",
       "link_to": "Ledger",
       "onboard": 1
     }

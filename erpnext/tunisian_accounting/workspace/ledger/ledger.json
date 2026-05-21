@@ -12,19 +12,19 @@
   "links": [
     {
       "label": "General Ledger",
-      "type": "DocType",
+      "link_type": "DocType",
       "link_to": "General Ledger",
       "onboard": 1
     },
     {
       "label": "Customer Ledger",
-      "type": "DocType",
+      "link_type": "DocType",
       "link_to": "Customer Ledger",
       "onboard": 1
     },
     {
       "label": "Supplier Ledger",
-      "type": "DocType",
+      "link_type": "DocType",
       "link_to": "Supplier Ledger",
       "onboard": 1
     }
