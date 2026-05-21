@@ -8,14 +8,16 @@
  "engine": "InnoDB",
  "field_order": [
   "company",
-  "naming_series",
   "entry_type",
+  "column_break_1",
+  "naming_series",
   "posting_date",
   "multi_currency",
   "section_accounting_entries",
   "accounting_entries",
   "section_totals",
   "total_debit",
+  "column_break_2",
   "total_credit",
   "section_reference",
   "reference_number",
@@ -44,6 +46,10 @@
    "options": "Journal Entry\nBank Entry\nCash Entry\nCredit Card Entry\nDebit Note\nCredit Note\nContra Entry\nExcise Entry\nWrite Off Entry\nOpening Entry\nDepreciation\nExchange Rate Revaluation\nDeferred Revenue\nDeferred Expense",
    "reqd": 1,
    "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "posting_date",
@@ -80,6 +86,10 @@
    "label": "Total Debit",
    "read_only": 1,
    "options": "company:company:default_currency"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "total_credit",
