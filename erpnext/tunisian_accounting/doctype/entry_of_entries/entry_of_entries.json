@@ -8,7 +8,7 @@
  "engine": "InnoDB",
  "field_order": [
   "company",
-  "entry_type",
+  "abbr",
   "column_break_1",
   "naming_series",
   "posting_date",
@@ -40,10 +40,9 @@
    "reqd": 1
   },
   {
-   "fieldname": "entry_type",
-   "fieldtype": "Select",
-   "label": "Entry Type",
-   "options": "Journal Entry\nBank Entry\nCash Entry\nCredit Card Entry\nDebit Note\nCredit Note\nContra Entry\nExcise Entry\nWrite Off Entry\nOpening Entry\nDepreciation\nExchange Rate Revaluation\nDeferred Revenue\nDeferred Expense",
+   "fieldname": "abbr",
+   "fieldtype": "Data",
+   "label": "Abbr",
    "reqd": 1,
    "in_list_view": 1
   },
