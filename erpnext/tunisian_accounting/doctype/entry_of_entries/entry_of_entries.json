@@ -39,13 +39,14 @@
    "options": "ACC-JV-.YYYY.-",
    "reqd": 1
   },
-  {
-   "fieldname": "abbr",
-   "fieldtype": "Data",
-   "label": "Abbr",
-   "reqd": 1,
-   "in_list_view": 1
-  },
+   {
+    "fieldname": "abbr",
+    "fieldtype": "Link",
+    "label": "Abbr",
+    "options": "Journals Creations",
+    "reqd": 1,
+    "in_list_view": 1
+   },
   {
    "fieldname": "column_break_1",
    "fieldtype": "Column Break"
