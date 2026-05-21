@@ -8,16 +8,15 @@
   "is_hidden": 0,
   "parent_page": "",
   "icon": "flag",
-  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">States</span>\",\"col\":12}},{\"id\":\"sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"General Ledger\",\"col\":3}}]",
-  "shortcuts": [
+  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">States</span>\",\"col\":12}},{\"id\":\"nav1\",\"type\":\"card\",\"data\":{\"card_name\":\"Ledger\",\"col\":12}}]",
+  "links": [
     {
-      "label": "General Ledger",
-      "type": "DocType",
-      "link_to": "General Ledger",
-      "doc_view": "List",
-      "color": "Blue"
+      "label": "Ledger",
+      "type": "Workspace",
+      "link_to": "Ledger",
+      "onboard": 1
     }
   ],
-  "links": [],
+  "shortcuts": [],
   "roles": []
 }

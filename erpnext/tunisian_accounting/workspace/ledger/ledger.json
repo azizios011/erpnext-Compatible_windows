@@ -1,0 +1,34 @@
+{
+  "doctype": "Workspace",
+  "name": "Ledger",
+  "title": "Ledger",
+  "label": "Ledger",
+  "module": "Tunisian Accounting",
+  "public": 1,
+  "is_hidden": 0,
+  "parent_page": "States",
+  "icon": "file",
+  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Ledger</span>\",\"col\":12}},{\"id\":\"gl\",\"type\":\"link\",\"data\":{\"label\":\"General Ledger\",\"link_type\":\"Report\",\"link_to\":\"General Ledger\",\"col\":4}},{\"id\":\"cl\",\"type\":\"link\",\"data\":{\"label\":\"Customer Ledger\",\"link_type\":\"Report\",\"link_to\":\"Customer Ledger\",\"col\":4}},{\"id\":\"sl\",\"type\":\"link\",\"data\":{\"label\":\"Supplier Ledger\",\"link_type\":\"Report\",\"link_to\":\"Supplier Ledger\",\"col\":4}}]",
+  "links": [
+    {
+      "label": "General Ledger",
+      "type": "Report",
+      "link_to": "General Ledger",
+      "onboard": 1
+    },
+    {
+      "label": "Customer Ledger",
+      "type": "Report",
+      "link_to": "Customer Ledger",
+      "onboard": 1
+    },
+    {
+      "label": "Supplier Ledger",
+      "type": "Report",
+      "link_to": "Supplier Ledger",
+      "onboard": 1
+    }
+  ],
+  "shortcuts": [],
+  "roles": []
+}
