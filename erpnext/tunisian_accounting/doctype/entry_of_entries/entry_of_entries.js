@@ -1,13 +1,8 @@
 frappe.ui.form.on('Entry of Entries', {
+    setup(frm) {
+        frm.set_query('abbr', 'accounting_entries', () => ({}));
+    },
     refresh(frm) {
-        frm.set_query('abbr', 'accounting_entries', function () {
-            return {
-                filters: {
-                    disabled: 0
-                }
-            };
-        });
-
         calculate_totals(frm);
     }
 });
