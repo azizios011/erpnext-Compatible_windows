@@ -7,7 +7,7 @@ from frappe import _
 from frappe.model.document import Document
 
 
-class JournalsCreations(Document):
+class JournalEntryTemplate(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 

@@ -28,9 +28,9 @@ CONFIG_SHORTCUTS = [
         "color": "Orange",
     },
     {
-        "label": "Journals Creations",
+        "label": "New Journal Entry Template",
         "type": "DocType",
-        "link_to": "Journals Creations",
+        "link_to": "Journal Entry Template",
         "doc_view": "New",
         "color": "Yellow",
     },
@@ -159,7 +159,7 @@ def _ensure_workspace_sidebar(workspace_name: str):
                     _new_sidebar_item(
                         shortcut["label"],
                         "URL",
-                        url="/desk/journals-creations/new-journals-creations",
+                        url="/desk/journal-entry-template/new-journal-entry-template",
                     )
                 )
             else:
