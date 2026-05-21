@@ -8,7 +8,7 @@
   "is_hidden": 0,
   "parent_page": "",
   "icon": "flag",
-  "content": "[{\"id\":\"ledger_card\",\"type\":\"card\",\"data\":{\"card_name\":\"Ledger\",\"col\":12}}]",
+  "content": "[{\"id\":\"ledger_section\",\"type\":\"card\",\"data\":{\"card_name\":\"Ledger\",\"col\":12}}]",
   "links": [
     {
       "label": "Ledger",
