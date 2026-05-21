@@ -1,14 +1,15 @@
 {
   "doctype": "Workspace",
   "name": "States",
-  "title": "States",
+  "title": "États",
   "label": "States",
   "module": "Tunisian Accounting",
   "public": 1,
   "is_hidden": 0,
   "parent_page": "",
   "icon": "flag",
-  "content": "[{\"id\":\"ledger_card\",\"type\":\"card\",\"data\":{\"card_name\":\"Registres\",\"col\":12}}]",
+  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">États</span>\",\"col\":12}},{\"id\":\"card1\",\"type\":\"card\",\"data\":{\"card_name\":\"Registres\",\"col\":12}}]",
+  "shortcuts": [],
   "links": [
     {
       "type": "Card Break",
@@ -17,28 +18,24 @@
     {
       "type": "Link",
       "label": "Grand Livre",
-      "link_type": "Report",
+      "link_type": "DocType",
       "link_to": "General Ledger",
-      "is_query_report": 1,
       "onboard": 1
     },
     {
       "type": "Link",
       "label": "Livre Client",
-      "link_type": "Report",
+      "link_type": "DocType",
       "link_to": "Customer Ledger",
-      "is_query_report": 1,
       "onboard": 1
     },
     {
       "type": "Link",
       "label": "Livre Fournisseur",
-      "link_type": "Report",
+      "link_type": "DocType",
       "link_to": "Supplier Ledger",
-      "is_query_report": 1,
       "onboard": 1
     }
   ],
-  "shortcuts": [],
   "roles": []
 }
