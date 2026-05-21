@@ -133,6 +133,8 @@ def _replace_workspace_sidebar(title: str, items: list):
 
     sidebar = frappe.new_doc("Workspace Sidebar")
     sidebar.title = title
+    sidebar.standard = 1
+    sidebar.app = "erpnext"
     for item in items:
         sidebar.append("items", item)
     sidebar.insert(ignore_permissions=True)
@@ -214,6 +216,8 @@ def apply_tunisian_accounting_desktop_layout():
 
     for ws_name in CHILD_WORKSPACES:
         _ensure_workspace_sidebar(ws_name)
+
+    frappe.clear_cache()
 
     _upsert_desktop_icon(
         FOLDER_LABEL,

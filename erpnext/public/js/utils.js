@@ -170,7 +170,7 @@ $.extend(erpnext, {
 	},
 });
 
-// Monkey-patch frappe.ui.Sidebar.setup to prevent TypeError: Cannot read properties of undefined (reading 'toLowerCase')
+// Monkey-patch frappe.ui.Sidebar.setup and prepare to prevent TypeError crashes
 $(document).on("app_ready", () => {
 	if (frappe.ui.Sidebar) {
 		const original_setup = frappe.ui.Sidebar.prototype.setup;
@@ -179,6 +179,21 @@ $(document).on("app_ready", () => {
 				workspace_title = this.sidebar_title || "";
 			}
 			original_setup.call(this, workspace_title);
+		};
+
+		const original_prepare = frappe.ui.Sidebar.prototype.prepare;
+		frappe.ui.Sidebar.prototype.prepare = function () {
+			try {
+				if (this.workspace_title && (!frappe.boot.workspace_sidebar_item || !frappe.boot.workspace_sidebar_item[this.workspace_title])) {
+					if (!frappe.boot.workspace_sidebar_item) {
+						frappe.boot.workspace_sidebar_item = {};
+					}
+					frappe.boot.workspace_sidebar_item[this.workspace_title] = { items: [] };
+				}
+				original_prepare.call(this);
+			} catch (e) {
+				console.error("Error in Sidebar.prepare monkey-patch:", e);
+			}
 		};
 	}
 });
