@@ -18,22 +18,25 @@
     {
       "type": "Link",
       "label": "Grand Livre",
-      "link_type": "DocType",
+      "link_type": "Report",
       "link_to": "General Ledger",
+      "is_query_report": 1,
       "onboard": 1
     },
     {
       "type": "Link",
       "label": "Livre Client",
-      "link_type": "DocType",
+      "link_type": "Report",
       "link_to": "Customer Ledger",
+      "is_query_report": 1,
       "onboard": 1
     },
     {
       "type": "Link",
       "label": "Livre Fournisseur",
-      "link_type": "DocType",
+      "link_type": "Report",
       "link_to": "Supplier Ledger",
+      "is_query_report": 1,
       "onboard": 1
     }
   ],
