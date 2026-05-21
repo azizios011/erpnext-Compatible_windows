@@ -8,24 +8,34 @@
   "is_hidden": 0,
   "parent_page": "",
   "icon": "flag",
-  "content": "[{\"id\":\"ledger_section\",\"type\":\"card\",\"data\":{\"card_name\":\"Ledger\",\"col\":12}}]",
+  "content": "[{\"id\":\"ledger_card\",\"type\":\"card\",\"data\":{\"card_name\":\"Registres\",\"col\":12}}]",
   "links": [
     {
-      "label": "Ledger",
-      "link_type": "DocType",
+      "type": "Card Break",
+      "label": "Registres"
+    },
+    {
+      "type": "Link",
+      "label": "Grand Livre",
+      "link_type": "Report",
       "link_to": "General Ledger",
+      "is_query_report": 1,
       "onboard": 1
     },
     {
-      "label": "Ledger",
-      "link_type": "DocType",
+      "type": "Link",
+      "label": "Livre Client",
+      "link_type": "Report",
       "link_to": "Customer Ledger",
+      "is_query_report": 1,
       "onboard": 1
     },
     {
-      "label": "Ledger",
-      "link_type": "DocType",
+      "type": "Link",
+      "label": "Livre Fournisseur",
+      "link_type": "Report",
       "link_to": "Supplier Ledger",
+      "is_query_report": 1,
       "onboard": 1
     }
   ],
