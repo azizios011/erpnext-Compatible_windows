@@ -165,7 +165,7 @@ def _ensure_workspace_exists(workspace_name: str):
             doc_dict = json.load(f)
             doc_dict["doctype"] = "Workspace"
             doc = frappe.get_doc(doc_dict)
-            doc.insert(ignore_permissions=True)
+            doc.insert(ignore_permissions=True, ignore_links=True)
             return True
     return False
 
