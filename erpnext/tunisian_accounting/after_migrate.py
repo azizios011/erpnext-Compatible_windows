@@ -137,7 +137,7 @@ def _replace_workspace_sidebar(title: str, items: list):
     sidebar.app = "erpnext"
     for item in items:
         sidebar.append("items", item)
-    sidebar.insert(ignore_permissions=True)
+    sidebar.insert(ignore_permissions=True, ignore_links=True)
 
 
 def _ensure_folder_sidebar():
