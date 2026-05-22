@@ -193,9 +193,9 @@ def _ensure_workspace_sidebar(workspace_name: str):
         ]
     elif workspace_name == "States":
         items = [
-            _new_sidebar_item("Grand Livre", "Report", "General Ledger"),
-            _new_sidebar_item("Livre Client", "Report", "Customer Ledger"),
-            _new_sidebar_item("Livre Fournisseur", "Report", "Supplier Ledger"),
+            _new_sidebar_item("Grand Livre", "Report", "General Ledger TA"),
+            _new_sidebar_item("Livre Client", "Report", "Customer Ledger TA"),
+            _new_sidebar_item("Livre Fournisseur", "Report", "Supplier Ledger TA"),
         ]
     else:
         items = [_new_sidebar_item(workspace_name, "Workspace", workspace_name)]
