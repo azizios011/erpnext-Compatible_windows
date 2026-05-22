@@ -143,7 +143,10 @@ def _replace_workspace_sidebar(title: str, items: list):
 def _ensure_folder_sidebar():
     items = []
     for workspace_name in CHILD_WORKSPACES:
-        if frappe.db.exists("Workspace", workspace_name):
+        if (
+            frappe.db.exists("Workspace", workspace_name)
+            and frappe.db.exists("Workspace Sidebar", workspace_name)
+        ):
             items.append(_new_sidebar_item(workspace_name, "Workspace", workspace_name))
 
     if items:
