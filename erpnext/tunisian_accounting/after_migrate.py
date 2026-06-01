@@ -36,6 +36,11 @@ CONFIG_SHORTCUTS = [
         "color": "Yellow",
     },
 ]
+STATES_LEDGER_DOCTYPES = [
+    {"label": "General Ledger", "link_to": "General Ledger", "color": "Blue"},
+    {"label": "Customer Ledger", "link_to": "Customer Ledger", "color": "Green"},
+    {"label": "Supplier Ledger", "link_to": "Supplier Ledger", "color": "Orange"},
+]
 HIDE_ICONS = [
     "Assets",
     "Buying",
@@ -122,12 +127,88 @@ def _ensure_config_workspace_shortcuts():
     )
 
 
-def _new_sidebar_item(label: str, link_type: str, link_to: str = "", url: str = ""):
+def _ensure_states_workspace_shortcuts():
+    if not frappe.db.exists("Workspace", "States"):
+        return
+
+    shortcut_labels = [shortcut["label"] for shortcut in STATES_LEDGER_DOCTYPES]
+    for shortcut_name in frappe.get_all(
+        "Workspace Shortcut",
+        filters={"parent": "States", "label": ["in", shortcut_labels]},
+        pluck="name",
+    ):
+        frappe.delete_doc("Workspace Shortcut", shortcut_name, ignore_permissions=True, force=True)
+
+    for idx, shortcut in enumerate(STATES_LEDGER_DOCTYPES, start=1):
+        frappe.get_doc(
+            {
+                "doctype": "Workspace Shortcut",
+                "parent": "States",
+                "parenttype": "Workspace",
+                "parentfield": "shortcuts",
+                "idx": idx,
+                "type": "DocType",
+                "link_to": shortcut["link_to"],
+                "doc_view": "List",
+                "color": shortcut["color"],
+                "label": shortcut["label"],
+            }
+        ).insert(ignore_permissions=True)
+
+    for link_name in frappe.get_all(
+        "Workspace Link",
+        filters={"parent": "States"},
+        pluck="name",
+    ):
+        frappe.delete_doc("Workspace Link", link_name, ignore_permissions=True, force=True)
+
+    content = [
+        {
+            "id": "hdr",
+            "type": "header",
+            "data": {"text": '<span class="h4">States</span>', "col": 12},
+        },
+        {
+            "id": "card_ledgers",
+            "type": "card",
+            "data": {"card_name": "Ledgers", "col": 12},
+        },
+    ]
+    for idx, shortcut in enumerate(STATES_LEDGER_DOCTYPES, start=1):
+        content.append(
+            {
+                "id": f"sc{idx}",
+                "type": "shortcut",
+                "data": {"shortcut_name": shortcut["label"], "col": 4},
+            }
+        )
+
+    frappe.db.set_value(
+        "Workspace",
+        "States",
+        "content",
+        json.dumps(content, separators=(",", ":")),
+        update_modified=False,
+    )
+
+
+def _new_sidebar_section(label: str):
+    item = frappe.new_doc("Workspace Sidebar Item")
+    item.label = label
+    item.type = "Section Break"
+    item.indent = 1
+    item.collapsible = 1
+    item.child = 0
+    return item
+
+
+def _new_sidebar_item(label: str, link_type: str, link_to: str = "", url: str = "", child: int = 0):
     item = frappe.new_doc("Workspace Sidebar Item")
     item.label = label
     item.type = "Link"
     item.link_type = link_type
     item.link_to = link_to
+    item.child = child
     if url:
         item.url = url
         item.open_in_new_tab = 0
@@ -199,11 +280,11 @@ def _ensure_workspace_sidebar(workspace_name: str):
             _new_sidebar_item("Entry of Entries", "DocType", "Entry of Entries")
         ]
     elif workspace_name == "States":
-        items = [
-            _new_sidebar_item("Grand Livre", "Report", "General Ledger"),
-            _new_sidebar_item("Livre Client", "Report", "Customer Ledger Summary"),
-            _new_sidebar_item("Livre Fournisseur", "Report", "Supplier Ledger Summary"),
-        ]
+        items = [_new_sidebar_section("Ledgers")]
+        for shortcut in STATES_LEDGER_DOCTYPES:
+            items.append(
+                _new_sidebar_item(shortcut["label"], "DocType", shortcut["link_to"], child=1)
+            )
     else:
         items = [_new_sidebar_item(workspace_name, "Workspace", workspace_name)]
 
@@ -225,6 +306,7 @@ def apply_tunisian_accounting_desktop_layout():
         _ensure_workspace_exists(ws_name)
 
     _ensure_config_workspace_shortcuts()
+    _ensure_states_workspace_shortcuts()
 
     for ws_name in CHILD_WORKSPACES:
         _ensure_workspace_sidebar(ws_name)
