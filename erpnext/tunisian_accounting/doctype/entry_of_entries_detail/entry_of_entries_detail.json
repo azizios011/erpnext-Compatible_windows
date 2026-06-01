@@ -7,7 +7,6 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "abbr",
   "account",
   "party_type",
   "party",
@@ -15,15 +14,6 @@
   "credit"
  ],
  "fields": [
-  {
-   "fieldname": "abbr",
-   "fieldtype": "Link",
-   "label": "Abbr",
-   "options": "Journals Creations",
-   "reqd": 1,
-   "in_list_view": 1,
-   "columns": 2
-  },
   {
    "fieldname": "account",
    "fieldtype": "Link",
