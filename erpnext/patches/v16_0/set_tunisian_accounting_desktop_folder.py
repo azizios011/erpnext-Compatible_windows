@@ -81,6 +81,7 @@ def execute():
         {
             "icon_type": "Folder",
             "link_type": "Workspace Sidebar",
+            "link_to": FOLDER_LABEL,
             "parent_icon": None,
             "hidden": 0,
             "restrict_removal": 1,

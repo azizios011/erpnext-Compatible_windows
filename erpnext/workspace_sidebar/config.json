@@ -1,0 +1,57 @@
+{
+ "app": "erpnext",
+ "docstatus": 0,
+ "doctype": "Workspace Sidebar",
+ "header_icon": "setting-gear",
+ "idx": 0,
+ "items": [
+  {
+   "child": 0,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Plan Comptable",
+   "link_to": "Chart of Accounts",
+   "link_type": "DocType",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Fiscal Year",
+   "link_to": "Fiscal Year",
+   "link_type": "DocType",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Chart of Accounts Importer",
+   "link_to": "Chart of Accounts Importer",
+   "link_type": "DocType",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Journals Creations",
+   "link_to": "Journals Creations",
+   "link_type": "DocType",
+   "show_arrow": 0,
+   "type": "Link"
+  }
+ ],
+ "module": "Tunisian Accounting",
+ "name": "Config",
+ "standard": 1,
+ "title": "Config"
+}

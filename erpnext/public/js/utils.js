@@ -170,9 +170,13 @@ $.extend(erpnext, {
 	},
 });
 
-// Monkey-patch frappe.ui.Sidebar.setup and prepare to prevent TypeError crashes
-$(document).on("app_ready", () => {
-	if (frappe.ui.Sidebar) {
+// Guard desk sidebar when workspace_sidebar_item is missing from boot (e.g. Tunisian Accounting)
+(function patch_erpnext_sidebar() {
+	const apply = () => {
+		if (!frappe?.ui?.Sidebar || frappe.ui.Sidebar.prototype._erpnext_sidebar_patched) {
+			return Boolean(frappe?.ui?.Sidebar?.prototype?._erpnext_sidebar_patched);
+		}
+
 		const original_setup = frappe.ui.Sidebar.prototype.setup;
 		frappe.ui.Sidebar.prototype.setup = function (workspace_title) {
 			if (workspace_title === undefined || workspace_title === null) {
@@ -183,20 +187,30 @@ $(document).on("app_ready", () => {
 
 		const original_prepare = frappe.ui.Sidebar.prototype.prepare;
 		frappe.ui.Sidebar.prototype.prepare = function () {
-			try {
-				if (this.workspace_title && (!frappe.boot.workspace_sidebar_item || !frappe.boot.workspace_sidebar_item[this.workspace_title])) {
-					if (!frappe.boot.workspace_sidebar_item) {
-						frappe.boot.workspace_sidebar_item = {};
-					}
-					frappe.boot.workspace_sidebar_item[this.workspace_title] = { items: [] };
+			const title = this.workspace_title;
+			if (title) {
+				if (!frappe.boot.workspace_sidebar_item) {
+					frappe.boot.workspace_sidebar_item = {};
 				}
-				original_prepare.call(this);
-			} catch (e) {
-				console.error("Error in Sidebar.prepare monkey-patch:", e);
+				if (!frappe.boot.workspace_sidebar_item[title]) {
+					frappe.boot.workspace_sidebar_item[title] = { items: [] };
+				}
 			}
+			return original_prepare.call(this);
 		};
+
+		frappe.ui.Sidebar.prototype._erpnext_sidebar_patched = true;
+		return true;
+	};
+
+	if (!apply()) {
+		const timer = setInterval(() => {
+			if (apply()) {
+				clearInterval(timer);
+			}
+		}, 50);
 	}
-});
+})();
 
 $.extend(erpnext.utils, {
 	set_party_dashboard_indicators: function (frm) {

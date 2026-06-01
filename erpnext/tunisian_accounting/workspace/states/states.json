@@ -27,7 +27,7 @@
       "type": "Link",
       "label": "Livre Client",
       "link_type": "Report",
-      "link_to": "Customer Ledger",
+      "link_to": "Customer Ledger Summary",
       "is_query_report": true,
       "onboard": 1
     },
@@ -35,7 +35,7 @@
       "type": "Link",
       "label": "Livre Fournisseur",
       "link_type": "Report",
-      "link_to": "Supplier Ledger",
+      "link_to": "Supplier Ledger Summary",
       "is_query_report": true,
       "onboard": 1
     }

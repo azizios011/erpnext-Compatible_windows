@@ -1,0 +1,46 @@
+{
+ "app": "erpnext",
+ "docstatus": 0,
+ "doctype": "Workspace Sidebar",
+ "header_icon": "flag",
+ "idx": 0,
+ "items": [
+  {
+   "child": 0,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Grand Livre",
+   "link_to": "General Ledger",
+   "link_type": "Report",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Livre Client",
+   "link_to": "Customer Ledger Summary",
+   "link_type": "Report",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Livre Fournisseur",
+   "link_to": "Supplier Ledger Summary",
+   "link_type": "Report",
+   "show_arrow": 0,
+   "type": "Link"
+  }
+ ],
+ "module": "Tunisian Accounting",
+ "name": "States",
+ "standard": 1,
+ "title": "States"
+}

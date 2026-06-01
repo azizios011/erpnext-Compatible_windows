@@ -203,9 +203,9 @@ def _ensure_workspace_sidebar(workspace_name: str):
         ]
     elif workspace_name == "States":
         items = [
-            _new_sidebar_item("Grand Livre", "Report", "General Ledger TA"),
-            _new_sidebar_item("Livre Client", "Report", "Customer Ledger TA"),
-            _new_sidebar_item("Livre Fournisseur", "Report", "Supplier Ledger TA"),
+            _new_sidebar_item("Grand Livre", "Report", "General Ledger"),
+            _new_sidebar_item("Livre Client", "Report", "Customer Ledger Summary"),
+            _new_sidebar_item("Livre Fournisseur", "Report", "Supplier Ledger Summary"),
         ]
     else:
         items = [_new_sidebar_item(workspace_name, "Workspace", workspace_name)]
@@ -240,6 +240,7 @@ def apply_tunisian_accounting_desktop_layout():
         {
             "icon_type": "Folder",
             "link_type": "Workspace Sidebar",
+            "link_to": FOLDER_LABEL,
             "parent_icon": None,
             "hidden": 0,
             "restrict_removal": 1,

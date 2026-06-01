@@ -1,0 +1,24 @@
+{
+ "app": "erpnext",
+ "docstatus": 0,
+ "doctype": "Workspace Sidebar",
+ "header_icon": "heart",
+ "idx": 0,
+ "items": [
+  {
+   "child": 0,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Entry of Entries",
+   "link_to": "Entry of Entries",
+   "link_type": "DocType",
+   "show_arrow": 0,
+   "type": "Link"
+  }
+ ],
+ "module": "Tunisian Accounting",
+ "name": "Treatments",
+ "standard": 1,
+ "title": "Treatments"
+}
