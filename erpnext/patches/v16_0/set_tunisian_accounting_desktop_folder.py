@@ -67,8 +67,7 @@ def _ensure_folder_sidebar():
         if frappe.db.exists("Workspace", workspace_name):
             items.append(_new_sidebar_item(workspace_name, "Workspace", workspace_name))
 
-    if items:
-        _replace_workspace_sidebar(FOLDER_LABEL, items)
+    _replace_workspace_sidebar(FOLDER_LABEL, items)
 
 
 def execute():
@@ -81,7 +80,7 @@ def execute():
         {
             "icon_type": "Folder",
             "link_type": "Workspace Sidebar",
-            "link_to": FOLDER_LABEL,
+            "link_to": "",
             "parent_icon": None,
             "hidden": 0,
             "restrict_removal": 1,

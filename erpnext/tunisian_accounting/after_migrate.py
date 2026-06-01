@@ -150,14 +150,11 @@ def _replace_workspace_sidebar(title: str, items: list):
 def _ensure_folder_sidebar():
     items = []
     for workspace_name in CHILD_WORKSPACES:
-        if (
-            frappe.db.exists("Workspace", workspace_name)
-            and frappe.db.exists("Workspace Sidebar", workspace_name)
-        ):
+        if frappe.db.exists("Workspace", workspace_name):
             items.append(_new_sidebar_item(workspace_name, "Workspace", workspace_name))
 
-    if items:
-        _replace_workspace_sidebar(FOLDER_LABEL, items)
+    # Always create the folder sidebar so fixtures/boot can resolve it during install.
+    _replace_workspace_sidebar(FOLDER_LABEL, items)
 
 
 def _ensure_workspace_exists(workspace_name: str):
@@ -218,7 +215,7 @@ def _upsert_desktop_icon(label: str, values: dict):
         frappe.db.set_value("Desktop Icon", label, values, update_modified=False)
     else:
         doc = frappe.get_doc({"doctype": "Desktop Icon", "label": label, **values})
-        doc.insert(ignore_permissions=True)
+        doc.insert(ignore_permissions=True, ignore_links=True)
 
 
 def apply_tunisian_accounting_desktop_layout():
@@ -228,10 +225,11 @@ def apply_tunisian_accounting_desktop_layout():
         _ensure_workspace_exists(ws_name)
 
     _ensure_config_workspace_shortcuts()
-    _ensure_folder_sidebar()
 
     for ws_name in CHILD_WORKSPACES:
         _ensure_workspace_sidebar(ws_name)
+
+    _ensure_folder_sidebar()
 
     frappe.clear_cache()
 
@@ -240,7 +238,7 @@ def apply_tunisian_accounting_desktop_layout():
         {
             "icon_type": "Folder",
             "link_type": "Workspace Sidebar",
-            "link_to": FOLDER_LABEL,
+            "link_to": "",
             "parent_icon": None,
             "hidden": 0,
             "restrict_removal": 1,
