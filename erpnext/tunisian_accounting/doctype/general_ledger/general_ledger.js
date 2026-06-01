@@ -34,6 +34,13 @@ function load_ledger_entries(frm, silent = false) {
 				Object.assign(entry, row);
 			});
 			frm.refresh_field("entries");
+			if (!r.message?.length && !silent) {
+				frappe.msgprint(
+					__(
+						"No submitted Entry of Entries found for this period. Save and submit invoices under Treatments first."
+					)
+				);
+			}
 		},
 	});
 }

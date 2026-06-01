@@ -6,7 +6,11 @@ from frappe.utils import flt
 
 
 def fetch_entry_lines(company, from_date, to_date, party_type=None, party=None, account=None):
-	"""Load ledger lines from submitted Entry of Entries documents."""
+	"""Load ledger lines from submitted Entry of Entries (invoice) documents.
+
+	Only submitted entries are included — draft/cancelled invoices are excluded
+	from General Ledger, Customer Ledger, and Supplier Ledger in States.
+	"""
 	if not company:
 		frappe.throw(frappe._("Company is required"))
 

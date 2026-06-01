@@ -41,6 +41,7 @@ STATES_LEDGER_DOCTYPES = [
     {"label": "Customer Ledger", "link_to": "Customer Ledger", "color": "Green"},
     {"label": "Supplier Ledger", "link_to": "Supplier Ledger", "color": "Orange"},
 ]
+ENTRY_OF_ENTRIES_NEW_URL = "/desk/entry-of-entries/new-entry-of-entries-1"
 HIDE_ICONS = [
     "Assets",
     "Buying",
@@ -192,6 +193,68 @@ def _ensure_states_workspace_shortcuts():
     )
 
 
+def _ensure_treatments_workspace_shortcuts():
+    if not frappe.db.exists("Workspace", "Treatments"):
+        return
+
+    for shortcut_name in frappe.get_all(
+        "Workspace Shortcut",
+        filters={"parent": "Treatments"},
+        pluck="name",
+    ):
+        frappe.delete_doc("Workspace Shortcut", shortcut_name, ignore_permissions=True, force=True)
+
+    frappe.get_doc(
+        {
+            "doctype": "Workspace Shortcut",
+            "parent": "Treatments",
+            "parenttype": "Workspace",
+            "parentfield": "shortcuts",
+            "idx": 1,
+            "type": "DocType",
+            "link_to": "Entry of Entries",
+            "doc_view": "New",
+            "color": "Blue",
+            "label": "New Entry of Entries",
+        }
+    ).insert(ignore_permissions=True)
+
+    content = [
+        {
+            "id": "hdr",
+            "type": "header",
+            "data": {
+                "text": '<span class="h4"><b>Treatments</b></span>',
+                "col": 12,
+            },
+        },
+        {
+            "id": "hdr2",
+            "type": "header",
+            "data": {
+                "text": (
+                    '<span class="h6">Create an invoice (Entry of Entries). '
+                    "Submitted entries feed the ledgers in States.</span>"
+                ),
+                "col": 12,
+            },
+        },
+        {
+            "id": "sc1",
+            "type": "shortcut",
+            "data": {"shortcut_name": "New Entry of Entries", "col": 4},
+        },
+    ]
+
+    frappe.db.set_value(
+        "Workspace",
+        "Treatments",
+        "content",
+        json.dumps(content, separators=(",", ":")),
+        update_modified=False,
+    )
+
+
 def _new_sidebar_section(label: str):
     item = frappe.new_doc("Workspace Sidebar Item")
     item.label = label
@@ -277,7 +340,11 @@ def _ensure_workspace_sidebar(workspace_name: str):
                 items.append(_new_sidebar_item(shortcut["label"], shortcut["type"], shortcut["link_to"]))
     elif workspace_name == "Treatments":
         items = [
-            _new_sidebar_item("Entry of Entries", "DocType", "Entry of Entries")
+            _new_sidebar_item(
+                "New Entry of Entries",
+                "URL",
+                url=ENTRY_OF_ENTRIES_NEW_URL,
+            )
         ]
     elif workspace_name == "States":
         items = [_new_sidebar_section("Ledgers")]
@@ -307,6 +374,7 @@ def apply_tunisian_accounting_desktop_layout():
 
     _ensure_config_workspace_shortcuts()
     _ensure_states_workspace_shortcuts()
+    _ensure_treatments_workspace_shortcuts()
 
     for ws_name in CHILD_WORKSPACES:
         _ensure_workspace_sidebar(ws_name)

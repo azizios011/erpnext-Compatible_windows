@@ -1,5 +1,6 @@
 import "./conf";
 import "./utils";
+import "./tunisian_accounting_desk";
 import "./stock_reservation";
 import "./queries";
 import "./sms_manager";
