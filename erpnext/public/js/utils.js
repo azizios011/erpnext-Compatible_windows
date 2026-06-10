@@ -187,15 +187,18 @@ $.extend(erpnext, {
 
 		const original_prepare = frappe.ui.Sidebar.prototype.prepare;
 		frappe.ui.Sidebar.prototype.prepare = function () {
-			const title = this.workspace_title;
-			if (title) {
-				if (!frappe.boot.workspace_sidebar_item) {
-					frappe.boot.workspace_sidebar_item = {};
-				}
-				if (!frappe.boot.workspace_sidebar_item[title]) {
-					frappe.boot.workspace_sidebar_item[title] = { items: [] };
-				}
+			if (!frappe.boot.workspace_sidebar_item) {
+				frappe.boot.workspace_sidebar_item = {};
 			}
+
+			const title = (this.workspace_title || this.sidebar_title || "").toLowerCase();
+			if (title && !frappe.boot.workspace_sidebar_item[title]) {
+				frappe.boot.workspace_sidebar_item[title] = {
+					label: this.sidebar_title || title,
+					items: [],
+				};
+			}
+
 			return original_prepare.call(this);
 		};
 

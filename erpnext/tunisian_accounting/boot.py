@@ -10,12 +10,17 @@ def extend_bootinfo(bootinfo):
 		return
 
 	for title in TUNISIAN_SIDEBAR_TITLES:
-		if sidebars.get(title):
+		key = title.lower()
+		if sidebars.get(key):
 			continue
 		if not frappe.db.exists("Workspace Sidebar", title):
 			continue
 
 		sidebar = frappe.get_doc("Workspace Sidebar", title)
-		sidebars[title] = {
-			"items": [item.as_dict(convert_dates_to_str=True) for item in sidebar.items]
+		sidebars[key] = {
+			"label": title,
+			"items": [item.as_dict(convert_dates_to_str=True) for item in sidebar.items],
+			"header_icon": sidebar.header_icon,
+			"module": sidebar.module,
+			"app": sidebar.app,
 		}

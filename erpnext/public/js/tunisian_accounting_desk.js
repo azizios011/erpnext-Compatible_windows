@@ -1,6 +1,7 @@
 // Tunisian Accounting desk routing — Treatments opens a new Entry of Entries (invoice entry).
 
 const ENTRY_OF_ENTRIES_NEW_ROUTE = ["Form", "Entry of Entries", "new-entry-of-entries-1"];
+const TREATMENTS_SIDEBAR = "Treatments";
 
 function route_is_treatments_workspace() {
 	const route = frappe.get_route() || [];
@@ -11,9 +12,9 @@ function route_is_treatments_workspace() {
 	}
 
 	return (
-		(route[0] === "Workspaces" && route.includes("Treatments")) ||
-		(route[0] === "workspace" && route[1] === "Treatments") ||
-		(route.length === 1 && route[0] === "Treatments")
+		(route[0] === "Workspaces" && normalized.includes("treatments")) ||
+		(route[0] === "workspace" && normalized[1] === "treatments") ||
+		(route.length === 1 && normalized[0] === "treatments")
 	);
 }
 
@@ -26,6 +27,9 @@ function open_new_entry_of_entries() {
 	if (frappe.get_route().join("/") === ENTRY_OF_ENTRIES_NEW_ROUTE.join("/")) {
 		return;
 	}
+
+	frappe.route_options = frappe.route_options || {};
+	frappe.route_options.sidebar = TREATMENTS_SIDEBAR;
 	frappe.set_route(...ENTRY_OF_ENTRIES_NEW_ROUTE);
 }
 

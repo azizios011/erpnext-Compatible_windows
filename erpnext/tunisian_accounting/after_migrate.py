@@ -6,6 +6,11 @@ import frappe
 FOLDER_LABEL = "Tunisian Accounting"
 PLAN_COMPTABLE_LABEL = "Plan Comptable"
 CHILD_WORKSPACES = ["Config", "States", "Treatments"]
+WORKSPACE_HEADER_ICONS = {
+    "Config": "setting-gear",
+    "States": "flag",
+    "Treatments": "heart",
+}
 CONFIG_SHORTCUTS = [
     {
         "label": PLAN_COMPTABLE_LABEL,
@@ -41,7 +46,6 @@ STATES_LEDGER_DOCTYPES = [
     {"label": "Customer Ledger", "link_to": "Customer Ledger", "color": "Green"},
     {"label": "Supplier Ledger", "link_to": "Supplier Ledger", "color": "Orange"},
 ]
-ENTRY_OF_ENTRIES_NEW_URL = "/desk/entry-of-entries/new-entry-of-entries-1"
 HIDE_ICONS = [
     "Assets",
     "Buying",
@@ -286,6 +290,8 @@ def _replace_workspace_sidebar(title: str, items: list):
     sidebar.title = title
     sidebar.standard = 1
     sidebar.app = "erpnext"
+    sidebar.module = "Tunisian Accounting"
+    sidebar.header_icon = WORKSPACE_HEADER_ICONS.get(title)
     for item in items:
         sidebar.append("items", item)
     sidebar.insert(ignore_permissions=True, ignore_links=True)
@@ -342,8 +348,8 @@ def _ensure_workspace_sidebar(workspace_name: str):
         items = [
             _new_sidebar_item(
                 "New Entry of Entries",
-                "URL",
-                url=ENTRY_OF_ENTRIES_NEW_URL,
+                "DocType",
+                link_to="Entry of Entries",
             )
         ]
     elif workspace_name == "States":
