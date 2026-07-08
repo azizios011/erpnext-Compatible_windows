@@ -32,5 +32,8 @@ def execute():
 	for sidebar in frappe.get_all("Workspace Sidebar", filters={"module": OLD_LABEL}, pluck="name"):
 		frappe.db.set_value("Workspace Sidebar", sidebar, "module", NEW_LABEL, update_modified=False)
 
+	frappe.cache.delete_value("app_modules")
+	frappe.cache.delete_value("installed_app_modules")
 	frappe.db.commit()
+	frappe.setup_module_map(include_all_apps=False)
 	apply_tunisian_accounting_desktop_layout()
