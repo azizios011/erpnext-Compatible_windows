@@ -1,101 +1,128 @@
 {
  "actions": [],
- "creation": "2026-06-01 00:00:00.000000",
+ "creation": "2026-07-08 00:00:00.000000",
  "custom": 0,
  "docstatus": 0,
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "movement_no",
+  "journal_code",
+  "account_display",
   "posting_date",
-  "account",
-  "voucher_type",
-  "voucher_no",
-  "party_type",
-  "party",
+  "libelle",
+  "tresorerie",
   "debit",
   "credit",
-  "balance"
+  "lettering",
+  "document_no"
  ],
  "fields": [
   {
+   "columns": 1,
+   "fieldname": "movement_no",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Mvt",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "journal_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Jrn",
+   "read_only": 1
+  },
+  {
+   "columns": 3,
+   "fieldname": "account_display",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Compte Comptable",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Posting Date",
-   "read_only": 1,
-   "columns": 2
-  },
-  {
-   "fieldname": "account",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Account",
-   "options": "Account",
-   "read_only": 1,
-   "columns": 2
-  },
-  {
-   "fieldname": "voucher_type",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Voucher Type",
-   "read_only": 1,
-   "columns": 2
-  },
-  {
-   "fieldname": "voucher_no",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Voucher No",
-   "options": "Entry of Entries",
-   "read_only": 1,
-   "columns": 2
-  },
-  {
-   "fieldname": "party_type",
-   "fieldtype": "Data",
-   "label": "Party Type",
+   "label": "Date",
    "read_only": 1
   },
   {
-   "fieldname": "party",
-   "fieldtype": "Dynamic Link",
-   "label": "Party",
-   "options": "party_type",
+   "columns": 2,
+   "fieldname": "libelle",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Libellé",
    "read_only": 1
   },
   {
+   "columns": 2,
+   "fieldname": "tresorerie",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Trésorerie",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
    "default": "0",
    "fieldname": "debit",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Debit",
-   "read_only": 1,
-   "columns": 2
+   "label": "Débit",
+   "options": "currency",
+   "read_only": 1
   },
   {
+   "columns": 2,
    "default": "0",
    "fieldname": "credit",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Credit",
-   "read_only": 1,
-   "columns": 2
+   "label": "Crédit",
+   "options": "currency",
+   "read_only": 1
   },
   {
-   "default": "0",
-   "fieldname": "balance",
-   "fieldtype": "Currency",
+   "columns": 1,
+   "fieldname": "lettering",
+   "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Balance",
-   "read_only": 1,
-   "columns": 2
+   "label": "Lettrage",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "document_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "N° Doc",
+   "read_only": 1
+  },
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Account",
+   "options": "Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "voucher_no",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Voucher No",
+   "options": "Entry of Entries",
+   "read_only": 1
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2026-06-01 00:00:00.000000",
+ "modified": "2026-07-08 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "General Accounting",
  "name": "General Ledger Detail",

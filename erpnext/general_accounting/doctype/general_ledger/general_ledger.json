@@ -8,12 +8,30 @@
  "engine": "InnoDB",
  "field_order": [
   "company",
-  "from_date",
-  "column_break_filters",
-  "to_date",
+  "ledger_type",
+  "journal_code",
+  "column_break_1",
+  "period_type",
+  "month",
+  "fiscal_year",
+  "column_break_2",
+  "currency",
+  "lettering",
+  "extract_type",
+  "column_break_3",
   "account",
+  "voucher_filter",
+  "column_break_4",
+  "from_date",
+  "to_date",
   "section_entries",
-  "entries"
+  "entries",
+  "section_totals",
+  "total_debit",
+  "column_break_totals",
+  "total_credit",
+  "column_break_balance",
+  "balance"
  ],
  "fields": [
   {
@@ -25,41 +43,153 @@
    "reqd": 1
   },
   {
-   "fieldname": "from_date",
-   "fieldtype": "Date",
-   "in_list_view": 1,
-   "label": "From Date",
+   "default": "Général",
+   "fieldname": "ledger_type",
+   "fieldtype": "Select",
+   "label": "Type grand livre",
+   "options": "Général\nAuxiliaire",
    "reqd": 1
   },
   {
-   "fieldname": "column_break_filters",
+   "fieldname": "journal_code",
+   "fieldtype": "Link",
+   "label": "Code Journal",
+   "options": "Journals Creations"
+  },
+  {
+   "fieldname": "column_break_1",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "Mensuelle",
+   "fieldname": "period_type",
+   "fieldtype": "Select",
+   "label": "Période",
+   "options": "Mensuelle\nTrimestrielle\nAnnuelle",
+   "reqd": 1
+  },
+  {
+   "default": "Janvier",
+   "fieldname": "month",
+   "fieldtype": "Select",
+   "label": "Mois",
+   "options": "Janvier\nFévrier\nMars\nAvril\nMai\nJuin\nJuillet\nAoût\nSeptembre\nOctobre\nNovembre\nDécembre"
+  },
+  {
+   "default": "2026",
+   "fieldname": "fiscal_year",
+   "fieldtype": "Select",
+   "label": "Exercice",
+   "options": "2026\n2025\n2024\n2023",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "TND",
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Devise",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "lettering",
+   "fieldtype": "Select",
+   "label": "Lettrage",
+   "options": "\nLettré\nNon lettré"
+  },
+  {
+   "default": "Tous les comptes",
+   "fieldname": "extract_type",
+   "fieldtype": "Select",
+   "label": "Type Extrait",
+   "options": "Tous les comptes\nCompte sélectionné",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.extract_type == 'Compte sélectionné'",
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "label": "Compte",
+   "mandatory_depends_on": "eval:doc.extract_type == 'Compte sélectionné'",
+   "options": "Account"
+  },
+  {
+   "fieldname": "voucher_filter",
+   "fieldtype": "Data",
+   "label": "Pièce comptable"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date",
+   "read_only": 1
   },
   {
    "fieldname": "to_date",
    "fieldtype": "Date",
-   "in_list_view": 1,
    "label": "To Date",
-   "reqd": 1
-  },
-  {
-   "fieldname": "account",
-   "fieldtype": "Link",
-   "label": "Account",
-   "options": "Account"
+   "read_only": 1
   },
   {
    "fieldname": "section_entries",
    "fieldtype": "Section Break",
-   "label": "Entries"
+   "label": "Grand Livre"
   },
   {
    "fieldname": "entries",
    "fieldtype": "Table",
-   "label": "Ledger Entries",
+   "label": "Entries",
    "options": "General Ledger Detail",
    "cannot_add_rows": 1,
    "cannot_delete_rows": 1
+  },
+  {
+   "fieldname": "section_totals",
+   "fieldtype": "Section Break",
+   "label": "Totals"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_debit",
+   "fieldtype": "Currency",
+   "label": "Total Débit",
+   "options": "currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_totals",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_credit",
+   "fieldtype": "Currency",
+   "label": "Total Crédit",
+   "options": "currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_balance",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "balance",
+   "fieldtype": "Currency",
+   "label": "Solde",
+   "options": "currency",
+   "read_only": 1
   }
  ],
  "links": [],
