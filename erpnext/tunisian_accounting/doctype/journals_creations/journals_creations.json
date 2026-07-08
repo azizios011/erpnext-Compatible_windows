@@ -14,7 +14,9 @@
   "column_break_1",
   "company",
   "is_opening",
-  "multi_currency"
+  "multi_currency",
+  "section_accounting_entries",
+  "accounting_entries"
  ],
  "fields": [
   {
@@ -33,7 +35,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Journal Entry Type",
-   "options": "Journal Entry\nInter Company Journal Entry\nBank Entry\nCash Entry\nCredit Card Entry\nDebit Note\nCredit Note\nContra Entry\nExcise Entry\nWrite Off Entry\nOpening Entry\nDepreciation Entry\nExchange Rate Revaluation",
+   "options": "Other\nCredit note\nSell credit\nOrder form\nCase Piece\nCheck\nContract\nExport file\nImport folder\nBank extract\nPurchase Invoice\nSales Invoice\nTransfer order\nBank Coin\nBank statement\nRS on purchase\nRS on sale\nMilking",
    "reqd": 1
   },
   {
@@ -71,6 +73,17 @@
    "fieldname": "multi_currency",
    "fieldtype": "Check",
    "label": "Multi Currency"
+  },
+  {
+   "fieldname": "section_accounting_entries",
+   "fieldtype": "Section Break",
+   "label": "Accounting Entries"
+  },
+  {
+   "fieldname": "accounting_entries",
+   "fieldtype": "Table",
+   "label": "Accounting Entries",
+   "options": "Journals Creations Detail"
   }
  ],
  "links": [],
