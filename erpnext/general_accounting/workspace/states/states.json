@@ -8,7 +8,7 @@
   "is_hidden": 0,
   "parent_page": "",
   "icon": "flag",
-  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">States</span>\",\"col\":12}},{\"id\":\"card_ledgers\",\"type\":\"card\",\"data\":{\"card_name\":\"Ledgers\",\"col\":12}},{\"id\":\"sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"General Ledger\",\"col\":4}},{\"id\":\"sc2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer Ledger\",\"col\":4}},{\"id\":\"sc3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Supplier Ledger\",\"col\":4}}]",
+  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">States</span>\",\"col\":12}},{\"id\":\"card_ledgers\",\"type\":\"card\",\"data\":{\"card_name\":\"Ledgers\",\"col\":12}},{\"id\":\"sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"General Ledger\",\"col\":4}}]",
   "shortcuts": [
     {
       "label": "General Ledger",
@@ -16,20 +16,6 @@
       "link_to": "General Ledger",
       "doc_view": "List",
       "color": "Blue"
-    },
-    {
-      "label": "Customer Ledger",
-      "type": "DocType",
-      "link_to": "Customer Ledger",
-      "doc_view": "List",
-      "color": "Green"
-    },
-    {
-      "label": "Supplier Ledger",
-      "type": "DocType",
-      "link_to": "Supplier Ledger",
-      "doc_view": "List",
-      "color": "Orange"
     }
   ],
   "links": [],

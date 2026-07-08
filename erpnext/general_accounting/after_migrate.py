@@ -44,8 +44,6 @@ CONFIG_SHORTCUTS = [
 ]
 STATES_LEDGER_DOCTYPES = [
     {"label": "General Ledger", "link_to": "General Ledger", "color": "Blue"},
-    {"label": "Customer Ledger", "link_to": "Customer Ledger", "color": "Green"},
-    {"label": "Supplier Ledger", "link_to": "Supplier Ledger", "color": "Orange"},
 ]
 HIDE_ICONS = [
     "Assets",
@@ -239,7 +237,7 @@ def _ensure_treatments_workspace_shortcuts():
             "data": {
                 "text": (
                     '<span class="h6">Create an invoice (Entry of Entries). '
-                    "Submitted entries feed the ledgers in States.</span>"
+                    "Submitted entries feed the General Ledger in States.</span>"
                 ),
                 "col": 12,
             },

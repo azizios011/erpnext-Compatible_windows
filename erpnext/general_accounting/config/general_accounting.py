@@ -27,16 +27,6 @@ def get_data():
 					"name": "General Ledger",
 					"label": _("General Ledger"),
 				},
-				{
-					"type": "doctype",
-					"name": "Customer Ledger",
-					"label": _("Customer Ledger"),
-				},
-				{
-					"type": "doctype",
-					"name": "Supplier Ledger",
-					"label": _("Supplier Ledger"),
-				},
 			],
 		}
 	]

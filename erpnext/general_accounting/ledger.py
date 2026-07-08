@@ -5,12 +5,8 @@ import frappe
 from frappe.utils import flt
 
 
-def fetch_entry_lines(company, from_date, to_date, party_type=None, party=None, account=None):
-	"""Load ledger lines from submitted Entry of Entries (invoice) documents.
-
-	Only submitted entries are included — draft/cancelled invoices are excluded
-	from General Ledger, Customer Ledger, and Supplier Ledger in States.
-	"""
+def fetch_entry_lines(company, from_date, to_date, account=None):
+	"""Load ledger lines from submitted Entry of Entries documents."""
 	if not company:
 		frappe.throw(frappe._("Company is required"))
 
@@ -23,12 +19,6 @@ def fetch_entry_lines(company, from_date, to_date, party_type=None, party=None, 
 	if to_date:
 		conditions.append("eoe.posting_date <= %(to_date)s")
 		values["to_date"] = to_date
-	if party_type:
-		conditions.append("detail.party_type = %(party_type)s")
-		values["party_type"] = party_type
-	if party:
-		conditions.append("detail.party = %(party)s")
-		values["party"] = party
 	if account:
 		conditions.append("detail.account = %(account)s")
 		values["account"] = account
@@ -69,20 +59,6 @@ def lines_to_general_ledger_detail(rows):
 			"voucher_no": row.voucher_no,
 			"party_type": row.party_type,
 			"party": row.party,
-			"debit": row.debit,
-			"credit": row.credit,
-			"balance": row.balance,
-		}
-		for row in rows
-	]
-
-
-def lines_to_party_ledger_detail(rows):
-	return [
-		{
-			"posting_date": row.posting_date,
-			"voucher_type": row.voucher_type,
-			"voucher_no": row.voucher_no,
 			"debit": row.debit,
 			"credit": row.credit,
 			"balance": row.balance,
