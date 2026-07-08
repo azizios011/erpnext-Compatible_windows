@@ -1,0 +1,40 @@
+{
+  "doctype": "Workspace",
+  "name": "General Ledger",
+  "title": "General Ledger",
+  "label": "General Ledger",
+  "module": "General Accounting",
+  "public": 1,
+  "is_hidden": 0,
+  "parent_page": "",
+  "icon": "table",
+  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">General Ledger</span>\",\"col\":12}},{\"id\":\"sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"General Ledger\",\"col\":4}},{\"id\":\"nc1\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Outgoing Bills\",\"col\":3}},{\"id\":\"nc2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Incoming Bills\",\"col\":3}},{\"id\":\"nc3\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Incoming Payment\",\"col\":3}},{\"id\":\"nc4\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Outgoing Payment\",\"col\":3}}]",
+  "shortcuts": [
+    {
+      "label": "General Ledger",
+      "type": "Report",
+      "link_to": "Grand Livre",
+      "color": "Blue"
+    }
+  ],
+  "number_cards": [
+    {
+      "label": "Outgoing Bills",
+      "number_card_name": "Total Outgoing Bills"
+    },
+    {
+      "label": "Incoming Bills",
+      "number_card_name": "Total Incoming Bills"
+    },
+    {
+      "label": "Incoming Payment",
+      "number_card_name": "Total Incoming Payment"
+    },
+    {
+      "label": "Outgoing Payment",
+      "number_card_name": "Total Outgoing Payment"
+    }
+  ],
+  "links": [],
+  "roles": []
+}

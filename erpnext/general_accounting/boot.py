@@ -1,6 +1,6 @@
 import frappe
 
-GENERAL_ACCOUNTING_SIDEBAR_TITLES = ("General Accounting", "Config", "States", "Treatments")
+GENERAL_ACCOUNTING_SIDEBAR_TITLES = ("General Accounting", "Config", "General Ledger", "Treatments")
 
 
 def extend_bootinfo(bootinfo):

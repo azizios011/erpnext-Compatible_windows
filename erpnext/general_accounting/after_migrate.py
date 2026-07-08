@@ -6,10 +6,10 @@ import frappe
 FOLDER_LABEL = "General Accounting"
 OLD_FOLDER_LABEL = "Tunisian Accounting"
 PLAN_COMPTABLE_LABEL = "Plan Comptable"
-CHILD_WORKSPACES = ["Config", "States", "Treatments"]
+CHILD_WORKSPACES = ["Config", "General Ledger", "Treatments"]
 WORKSPACE_HEADER_ICONS = {
     "Config": "setting-gear",
-    "States": "flag",
+    "General Ledger": "table",
     "Treatments": "heart",
 }
 CONFIG_SHORTCUTS = [
@@ -42,8 +42,14 @@ CONFIG_SHORTCUTS = [
         "color": "Yellow",
     },
 ]
-STATES_LEDGER_DOCTYPES = [
+GENERAL_LEDGER_SHORTCUTS = [
     {"label": "General Ledger", "link_to": "Grand Livre", "color": "Blue", "type": "Report"},
+]
+GENERAL_LEDGER_NUMBER_CARDS = [
+    {"label": "Outgoing Bills", "number_card_name": "Total Outgoing Bills"},
+    {"label": "Incoming Bills", "number_card_name": "Total Incoming Bills"},
+    {"label": "Incoming Payment", "number_card_name": "Total Incoming Payment"},
+    {"label": "Outgoing Payment", "number_card_name": "Total Outgoing Payment"},
 ]
 HIDE_ICONS = [
     "Assets",
@@ -131,22 +137,29 @@ def _ensure_config_workspace_shortcuts():
     )
 
 
-def _ensure_states_workspace_shortcuts():
-    if not frappe.db.exists("Workspace", "States"):
+def _remove_legacy_states_workspace():
+    for name in ("States",):
+        _delete_doc_if_exists("Workspace Sidebar", name)
+        _delete_doc_if_exists("Desktop Icon", name)
+        _delete_doc_if_exists("Workspace", name)
+
+
+def _ensure_general_ledger_workspace_shortcuts():
+    if not frappe.db.exists("Workspace", "General Ledger"):
         return
 
-    shortcut_labels = [shortcut["label"] for shortcut in STATES_LEDGER_DOCTYPES]
+    shortcut_labels = [shortcut["label"] for shortcut in GENERAL_LEDGER_SHORTCUTS]
     for shortcut_name in frappe.get_all(
         "Workspace Shortcut",
-        filters={"parent": "States", "label": ["in", shortcut_labels]},
+        filters={"parent": "General Ledger", "label": ["in", shortcut_labels]},
         pluck="name",
     ):
         frappe.delete_doc("Workspace Shortcut", shortcut_name, ignore_permissions=True, force=True)
 
-    for idx, shortcut in enumerate(STATES_LEDGER_DOCTYPES, start=1):
+    for idx, shortcut in enumerate(GENERAL_LEDGER_SHORTCUTS, start=1):
         shortcut_doc = {
             "doctype": "Workspace Shortcut",
-            "parent": "States",
+            "parent": "General Ledger",
             "parenttype": "Workspace",
             "parentfield": "shortcuts",
             "idx": idx,
@@ -159,9 +172,29 @@ def _ensure_states_workspace_shortcuts():
             shortcut_doc["doc_view"] = shortcut.get("doc_view", "List")
         frappe.get_doc(shortcut_doc).insert(ignore_permissions=True)
 
+    for card_name in frappe.get_all(
+        "Workspace Number Card",
+        filters={"parent": "General Ledger"},
+        pluck="name",
+    ):
+        frappe.delete_doc("Workspace Number Card", card_name, ignore_permissions=True, force=True)
+
+    for idx, card in enumerate(GENERAL_LEDGER_NUMBER_CARDS, start=1):
+        frappe.get_doc(
+            {
+                "doctype": "Workspace Number Card",
+                "parent": "General Ledger",
+                "parenttype": "Workspace",
+                "parentfield": "number_cards",
+                "idx": idx,
+                "label": card["label"],
+                "number_card_name": card["number_card_name"],
+            }
+        ).insert(ignore_permissions=True)
+
     for link_name in frappe.get_all(
         "Workspace Link",
-        filters={"parent": "States"},
+        filters={"parent": "General Ledger"},
         pluck="name",
     ):
         frappe.delete_doc("Workspace Link", link_name, ignore_permissions=True, force=True)
@@ -170,15 +203,10 @@ def _ensure_states_workspace_shortcuts():
         {
             "id": "hdr",
             "type": "header",
-            "data": {"text": '<span class="h4">States</span>', "col": 12},
-        },
-        {
-            "id": "card_ledgers",
-            "type": "card",
-            "data": {"card_name": "Ledgers", "col": 12},
+            "data": {"text": '<span class="h4">General Ledger</span>', "col": 12},
         },
     ]
-    for idx, shortcut in enumerate(STATES_LEDGER_DOCTYPES, start=1):
+    for idx, shortcut in enumerate(GENERAL_LEDGER_SHORTCUTS, start=1):
         content.append(
             {
                 "id": f"sc{idx}",
@@ -186,10 +214,18 @@ def _ensure_states_workspace_shortcuts():
                 "data": {"shortcut_name": shortcut["label"], "col": 4},
             }
         )
+    for idx, card in enumerate(GENERAL_LEDGER_NUMBER_CARDS, start=1):
+        content.append(
+            {
+                "id": f"nc{idx}",
+                "type": "number_card",
+                "data": {"number_card_name": card["label"], "col": 3},
+            }
+        )
 
     frappe.db.set_value(
         "Workspace",
-        "States",
+        "General Ledger",
         "content",
         json.dumps(content, separators=(",", ":")),
         update_modified=False,
@@ -237,7 +273,7 @@ def _ensure_treatments_workspace_shortcuts():
             "data": {
                 "text": (
                     '<span class="h6">Create an invoice (Entry of Entries). '
-                    "Submitted entries feed the General Ledger in States.</span>"
+                    "Submitted entries feed the General Ledger.</span>"
                 ),
                 "col": 12,
             },
@@ -351,17 +387,15 @@ def _ensure_workspace_sidebar(workspace_name: str):
                 link_to="Entry of Entries",
             )
         ]
-    elif workspace_name == "States":
-        items = [_new_sidebar_section("Ledgers")]
-        for shortcut in STATES_LEDGER_DOCTYPES:
-            items.append(
-                _new_sidebar_item(
-                    shortcut["label"],
-                    shortcut.get("type", "DocType"),
-                    shortcut["link_to"],
-                    child=1,
-                )
+    elif workspace_name == "General Ledger":
+        items = [
+            _new_sidebar_item(
+                shortcut["label"],
+                shortcut.get("type", "DocType"),
+                shortcut["link_to"],
             )
+            for shortcut in GENERAL_LEDGER_SHORTCUTS
+        ]
     else:
         items = [_new_sidebar_item(workspace_name, "Workspace", workspace_name)]
 
@@ -401,12 +435,13 @@ def _remove_old_folder_labels():
 def apply_general_accounting_desktop_layout():
     _remove_stale_plan_comptable_workspace()
     _remove_old_folder_labels()
+    _remove_legacy_states_workspace()
 
     for ws_name in CHILD_WORKSPACES:
         _ensure_workspace_exists(ws_name)
 
     _ensure_config_workspace_shortcuts()
-    _ensure_states_workspace_shortcuts()
+    _ensure_general_ledger_workspace_shortcuts()
     _ensure_treatments_workspace_shortcuts()
 
     for ws_name in CHILD_WORKSPACES:

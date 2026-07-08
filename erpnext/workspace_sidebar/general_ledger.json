@@ -2,21 +2,11 @@
  "app": "erpnext",
  "docstatus": 0,
  "doctype": "Workspace Sidebar",
- "header_icon": "flag",
+ "header_icon": "table",
  "idx": 0,
  "items": [
   {
    "child": 0,
-   "collapsible": 1,
-   "indent": 1,
-   "keep_closed": 0,
-   "label": "Ledgers",
-   "link_type": "DocType",
-   "show_arrow": 0,
-   "type": "Section Break"
-  },
-  {
-   "child": 1,
    "collapsible": 1,
    "indent": 0,
    "keep_closed": 0,
@@ -28,7 +18,7 @@
   }
  ],
  "module": "General Accounting",
- "name": "States",
+ "name": "General Ledger",
  "standard": 1,
- "title": "States"
+ "title": "General Ledger"
 }

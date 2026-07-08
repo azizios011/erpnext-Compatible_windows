@@ -33,14 +33,13 @@
   },
   {
     "doctype": "Desktop Icon",
-    "label": "States",
+    "label": "General Ledger",
     "icon_type": "Link",
     "link_type": "Workspace Sidebar",
-    "link_to": "States",
+    "link_to": "General Ledger",
     "parent_icon": "General Accounting",
     "hidden": 0,
     "restrict_removal": 1,
     "roles": []
   }
 ]
-
