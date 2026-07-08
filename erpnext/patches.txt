@@ -493,3 +493,4 @@ erpnext.patches.v16_0.rename_tunisian_accounting_to_general_accounting
 erpnext.patches.v16_0.update_states_general_ledger_report_link
 erpnext.patches.v16_0.replace_states_with_general_ledger_workspace
 erpnext.patches.v16_0.restore_states_workspace_layout
+erpnext.patches.v16_0.update_treatments_entry_of_entries_shortcuts

@@ -51,6 +51,22 @@ STATES_NUMBER_CARDS = [
     {"label": "Incoming Payment", "number_card_name": "Total Incoming Payment"},
     {"label": "Outgoing Payment", "number_card_name": "Total Outgoing Payment"},
 ]
+TREATMENTS_SHORTCUTS = [
+    {
+        "label": "New Entry of Entries",
+        "type": "DocType",
+        "link_to": "Entry of Entries",
+        "doc_view": "New",
+        "color": "Blue",
+    },
+    {
+        "label": "Entry of Entries",
+        "type": "DocType",
+        "link_to": "Entry of Entries",
+        "doc_view": "List",
+        "color": "Grey",
+    },
+]
 HIDE_ICONS = [
     "Assets",
     "Buying",
@@ -236,27 +252,32 @@ def _ensure_treatments_workspace_shortcuts():
     if not frappe.db.exists("Workspace", "Treatments"):
         return
 
+    shortcut_labels = [shortcut["label"] for shortcut in TREATMENTS_SHORTCUTS]
     for shortcut_name in frappe.get_all(
         "Workspace Shortcut",
-        filters={"parent": "Treatments"},
+        filters={"parent": "Treatments", "label": ["in", shortcut_labels]},
         pluck="name",
     ):
         frappe.delete_doc("Workspace Shortcut", shortcut_name, ignore_permissions=True, force=True)
 
-    frappe.get_doc(
-        {
-            "doctype": "Workspace Shortcut",
-            "parent": "Treatments",
-            "parenttype": "Workspace",
-            "parentfield": "shortcuts",
-            "idx": 1,
-            "type": "DocType",
-            "link_to": "Entry of Entries",
-            "doc_view": "New",
-            "color": "Blue",
-            "label": "New Entry of Entries",
-        }
-    ).insert(ignore_permissions=True)
+    for idx, shortcut in enumerate(TREATMENTS_SHORTCUTS, start=1):
+        frappe.get_doc(
+            {
+                "doctype": "Workspace Shortcut",
+                "parent": "Treatments",
+                "parenttype": "Workspace",
+                "parentfield": "shortcuts",
+                "idx": idx,
+                **shortcut,
+            }
+        ).insert(ignore_permissions=True)
+
+    for link_name in frappe.get_all(
+        "Workspace Link",
+        filters={"parent": "Treatments"},
+        pluck="name",
+    ):
+        frappe.delete_doc("Workspace Link", link_name, ignore_permissions=True, force=True)
 
     content = [
         {
@@ -272,18 +293,21 @@ def _ensure_treatments_workspace_shortcuts():
             "type": "header",
             "data": {
                 "text": (
-                    '<span class="h6">Create an invoice (Entry of Entries). '
+                    '<span class="h6">Create purchase or sales entries. '
                     "Submitted entries feed the General Ledger.</span>"
                 ),
                 "col": 12,
             },
         },
-        {
-            "id": "sc1",
-            "type": "shortcut",
-            "data": {"shortcut_name": "New Entry of Entries", "col": 4},
-        },
     ]
+    for idx, shortcut in enumerate(TREATMENTS_SHORTCUTS, start=1):
+        content.append(
+            {
+                "id": f"sc{idx}",
+                "type": "shortcut",
+                "data": {"shortcut_name": shortcut["label"], "col": 4},
+            }
+        )
 
     frappe.db.set_value(
         "Workspace",
@@ -380,13 +404,24 @@ def _ensure_workspace_sidebar(workspace_name: str):
             else:
                 items.append(_new_sidebar_item(shortcut["label"], shortcut["type"], shortcut["link_to"]))
     elif workspace_name == "Treatments":
-        items = [
-            _new_sidebar_item(
-                "New Entry of Entries",
-                "DocType",
-                link_to="Entry of Entries",
-            )
-        ]
+        items = []
+        for shortcut in TREATMENTS_SHORTCUTS:
+            if shortcut.get("doc_view") == "New":
+                items.append(
+                    _new_sidebar_item(
+                        shortcut["label"],
+                        "URL",
+                        url="/desk/entry-of-entries/new-entry-of-entries",
+                    )
+                )
+            else:
+                items.append(
+                    _new_sidebar_item(
+                        shortcut["label"],
+                        shortcut.get("type", "DocType"),
+                        shortcut["link_to"],
+                    )
+                )
     elif workspace_name == "States":
         items = [
             _new_sidebar_item(

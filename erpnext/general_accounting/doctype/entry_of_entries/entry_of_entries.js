@@ -2,6 +2,11 @@ frappe.ui.form.on('Entry of Entries', {
     setup(frm) {
         frm.set_query('abbr', () => ({}));
     },
+    onload(frm) {
+        if (frm.is_new() && frappe.route_options?.entry_type && !frm.doc.entry_type) {
+            frm.set_value('entry_type', frappe.route_options.entry_type);
+        }
+    },
     refresh(frm) {
         calculate_totals(frm);
     }

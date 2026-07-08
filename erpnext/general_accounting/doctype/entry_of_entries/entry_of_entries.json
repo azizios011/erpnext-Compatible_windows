@@ -8,6 +8,7 @@
  "engine": "InnoDB",
  "field_order": [
   "company",
+  "entry_type",
   "abbr",
   "column_break_1",
   "naming_series",
@@ -31,6 +32,16 @@
    "options": "Company",
    "reqd": 1,
    "in_list_view": 1
+  },
+  {
+   "default": "Purchase",
+   "fieldname": "entry_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Entry Type",
+   "options": "Purchase\nSales",
+   "reqd": 1
   },
   {
    "fieldname": "naming_series",
