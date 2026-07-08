@@ -16,6 +16,13 @@ const MONTHS = [
 	"Décembre",
 ];
 
+const GRAND_LIVRE_NUMBER_CARDS = [
+	{ label: "Outgoing Bills", number_card_name: "Total Outgoing Bills" },
+	{ label: "Incoming Bills", number_card_name: "Total Incoming Bills" },
+	{ label: "Incoming Payment", number_card_name: "Total Incoming Payment" },
+	{ label: "Outgoing Payment", number_card_name: "Total Outgoing Payment" },
+];
+
 frappe.query_reports["Grand Livre"] = {
 	filters: [
 		{
@@ -125,6 +132,11 @@ frappe.query_reports["Grand Livre"] = {
 
 	onload(report) {
 		update_period_filters();
+		setTimeout(() => setup_grand_livre_number_cards(), 300);
+	},
+
+	after_datatable_render() {
+		setup_grand_livre_number_cards();
 	},
 
 	formatter(value, row, column, data, default_formatter) {
@@ -173,4 +185,28 @@ function update_period_filters() {
 		"to_date",
 		`${fiscal_year}-${String(month_no).padStart(2, "0")}-${String(last_day).padStart(2, "0")}`
 	);
+}
+
+function setup_grand_livre_number_cards() {
+	const report = frappe.query_report;
+	if (!report?.$report?.length || report.$grand_livre_cards?.length) {
+		return;
+	}
+
+	report.$grand_livre_cards = $('<div class="grand-livre-number-cards layout-main-section"></div>').insertAfter(
+		report.$report
+	);
+
+	const row = $('<div class="row"></div>').appendTo(report.$grand_livre_cards);
+
+	GRAND_LIVRE_NUMBER_CARDS.forEach((card) => {
+		const col = $('<div class="col-sm-3 col-xs-12 mb-4"></div>').appendTo(row);
+		frappe.widget.make_widget({
+			widget_type: "number_card",
+			container: col[0],
+			name: card.number_card_name,
+			number_card_name: card.number_card_name,
+			label: card.label,
+		});
+	});
 }
