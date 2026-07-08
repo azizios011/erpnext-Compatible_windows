@@ -2,8 +2,8 @@ import frappe
 
 
 def execute():
-    folder_label = "Tunisian Accounting"
-    workspace_labels = ["Tunisian Accounting Setup", "Treatments", "States"]
+    folder_label = "General Accounting"
+    workspace_labels = ["General Accounting Setup", "Treatments", "States"]
 
     # Ensure folder icon exists
     if not frappe.db.exists("Desktop Icon", folder_label):

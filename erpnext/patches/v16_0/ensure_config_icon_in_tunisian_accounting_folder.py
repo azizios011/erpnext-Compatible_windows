@@ -2,7 +2,7 @@ import frappe
 
 
 def execute():
-    folder = "Tunisian Accounting"
+    folder = "General Accounting"
     child = "Config"
 
     # Ensure folder exists

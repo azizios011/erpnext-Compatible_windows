@@ -3,7 +3,7 @@ from frappe import _
 def get_data():
     return [
         {
-            "label": _("Tunisian Accounting"),
+            "label": _("General Accounting"),
             "icon": "octicon octicon-repo",
             "items": [
                 {

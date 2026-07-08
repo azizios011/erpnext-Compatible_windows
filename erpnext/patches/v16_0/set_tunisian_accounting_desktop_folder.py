@@ -1,7 +1,7 @@
 import frappe
 
 
-FOLDER_LABEL = "Tunisian Accounting"
+FOLDER_LABEL = "General Accounting"
 PLAN_COMPTABLE_LABEL = "Plan Comptable"
 CHILD_WORKSPACES = ["Config", "Treatments", "States"]
 HIDE_ICONS = [

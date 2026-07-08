@@ -10,7 +10,7 @@ def execute():
     else:
         doc = frappe.new_doc("DocType")
         doc.name = doctype_name
-        doc.module = "Tunisian Accounting"
+        doc.module = "General Accounting"
         doc.custom = 0
         doc.istable = 0
         doc.editable_grid = 1

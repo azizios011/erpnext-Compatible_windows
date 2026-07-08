@@ -1,7 +1,7 @@
 [
   {
     "doctype": "Desktop Icon",
-    "label": "Tunisian Accounting",
+    "label": "General Accounting",
     "icon_type": "Folder",
     "link_type": "Workspace Sidebar",
     "link_to": "",
@@ -15,7 +15,7 @@
     "icon_type": "Link",
     "link_type": "Workspace Sidebar",
     "link_to": "Config",
-    "parent_icon": "Tunisian Accounting",
+    "parent_icon": "General Accounting",
     "hidden": 0,
     "restrict_removal": 1,
     "roles": []
@@ -26,7 +26,7 @@
     "icon_type": "Link",
     "link_type": "Workspace Sidebar",
     "link_to": "Treatments",
-    "parent_icon": "Tunisian Accounting",
+    "parent_icon": "General Accounting",
     "hidden": 0,
     "restrict_removal": 1,
     "roles": []
@@ -37,7 +37,7 @@
     "icon_type": "Link",
     "link_type": "Workspace Sidebar",
     "link_to": "States",
-    "parent_icon": "Tunisian Accounting",
+    "parent_icon": "General Accounting",
     "hidden": 0,
     "restrict_removal": 1,
     "roles": []

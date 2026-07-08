@@ -1,4 +1,4 @@
-// Tunisian Accounting desk routing — Treatments opens a new Entry of Entries (invoice entry).
+// General Accounting desk routing — Treatments opens a new Entry of Entries (invoice entry).
 
 const ENTRY_OF_ENTRIES_NEW_ROUTE = ["Form", "Entry of Entries", "new-entry-of-entries-1"];
 const TREATMENTS_SIDEBAR = "Treatments";

@@ -170,7 +170,7 @@ $.extend(erpnext, {
 	},
 });
 
-// Guard desk sidebar when workspace_sidebar_item is missing from boot (e.g. Tunisian Accounting)
+// Guard desk sidebar when workspace_sidebar_item is missing from boot (e.g. General Accounting)
 (function patch_erpnext_sidebar() {
 	const apply = () => {
 		if (!frappe?.ui?.Sidebar || frappe.ui.Sidebar.prototype._erpnext_sidebar_patched) {

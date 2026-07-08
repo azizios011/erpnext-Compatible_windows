@@ -1,10 +1,10 @@
 import frappe
 
-TUNISIAN_SIDEBAR_TITLES = ("Tunisian Accounting", "Config", "States", "Treatments")
+TUNISIAN_SIDEBAR_TITLES = ("General Accounting", "Config", "States", "Treatments")
 
 
 def extend_bootinfo(bootinfo):
-	"""Ensure Tunisian Accounting workspace sidebars are present in desk boot data."""
+	"""Ensure General Accounting workspace sidebars are present in desk boot data."""
 	sidebars = bootinfo.get("workspace_sidebar_item")
 	if sidebars is None:
 		return

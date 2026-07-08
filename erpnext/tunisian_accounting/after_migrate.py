@@ -3,7 +3,8 @@ import os
 
 import frappe
 
-FOLDER_LABEL = "Tunisian Accounting"
+FOLDER_LABEL = "General Accounting"
+OLD_FOLDER_LABEL = "Tunisian Accounting"
 PLAN_COMPTABLE_LABEL = "Plan Comptable"
 CHILD_WORKSPACES = ["Config", "States", "Treatments"]
 WORKSPACE_HEADER_ICONS = {
@@ -290,7 +291,7 @@ def _replace_workspace_sidebar(title: str, items: list):
     sidebar.title = title
     sidebar.standard = 1
     sidebar.app = "erpnext"
-    sidebar.module = "Tunisian Accounting"
+    sidebar.module = "General Accounting"
     sidebar.header_icon = WORKSPACE_HEADER_ICONS.get(title)
     for item in items:
         sidebar.append("items", item)
@@ -372,8 +373,31 @@ def _upsert_desktop_icon(label: str, values: dict):
         doc.insert(ignore_permissions=True, ignore_links=True)
 
 
+def _remove_old_folder_labels():
+    for label in (OLD_FOLDER_LABEL,):
+        _delete_doc_if_exists("Workspace Sidebar", label)
+        _delete_doc_if_exists("Desktop Icon", label)
+
+    for icon_name in frappe.get_all(
+        "Desktop Icon",
+        filters={"parent_icon": OLD_FOLDER_LABEL},
+        pluck="name",
+    ):
+        frappe.db.set_value(
+            "Desktop Icon",
+            icon_name,
+            "parent_icon",
+            FOLDER_LABEL,
+            update_modified=False,
+        )
+
+    if frappe.db.exists("Module Def", OLD_FOLDER_LABEL):
+        frappe.rename_doc("Module Def", OLD_FOLDER_LABEL, FOLDER_LABEL, force=True)
+
+
 def apply_tunisian_accounting_desktop_layout():
     _remove_stale_plan_comptable_workspace()
+    _remove_old_folder_labels()
 
     for ws_name in CHILD_WORKSPACES:
         _ensure_workspace_exists(ws_name)

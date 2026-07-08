@@ -2,7 +2,7 @@ import frappe
 
 
 def execute():
-    old_name_candidates = ["Accounting Setup", "Tunisian Accounting Setup", "Setup"]
+    old_name_candidates = ["Accounting Setup", "General Accounting Setup", "Setup"]
     new_name = "Config"
 
     # Rename workspace to Config if needed
@@ -37,7 +37,7 @@ def execute():
                 "link_to": "Config",
                 "link_type": "Workspace Sidebar",
                 "icon_type": "Link",
-                "parent_icon": "Tunisian Accounting",
+                "parent_icon": "General Accounting",
                 "hidden": 0,
             },
             update_modified=False,
