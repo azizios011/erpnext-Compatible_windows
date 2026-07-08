@@ -12,9 +12,8 @@
   "shortcuts": [
     {
       "label": "General Ledger",
-      "type": "DocType",
-      "link_to": "General Ledger",
-      "doc_view": "List",
+      "type": "Report",
+      "link_to": "Grand Livre",
       "color": "Blue"
     }
   ],

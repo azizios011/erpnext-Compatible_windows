@@ -23,8 +23,8 @@ def get_data():
 					"label": _("Entry of Entries"),
 				},
 				{
-					"type": "doctype",
-					"name": "General Ledger",
+					"type": "report",
+					"name": "Grand Livre",
 					"label": _("General Ledger"),
 				},
 			],

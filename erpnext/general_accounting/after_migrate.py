@@ -43,7 +43,7 @@ CONFIG_SHORTCUTS = [
     },
 ]
 STATES_LEDGER_DOCTYPES = [
-    {"label": "General Ledger", "link_to": "General Ledger", "color": "Blue"},
+    {"label": "General Ledger", "link_to": "Grand Livre", "color": "Blue", "type": "Report"},
 ]
 HIDE_ICONS = [
     "Assets",
@@ -144,20 +144,20 @@ def _ensure_states_workspace_shortcuts():
         frappe.delete_doc("Workspace Shortcut", shortcut_name, ignore_permissions=True, force=True)
 
     for idx, shortcut in enumerate(STATES_LEDGER_DOCTYPES, start=1):
-        frappe.get_doc(
-            {
-                "doctype": "Workspace Shortcut",
-                "parent": "States",
-                "parenttype": "Workspace",
-                "parentfield": "shortcuts",
-                "idx": idx,
-                "type": "DocType",
-                "link_to": shortcut["link_to"],
-                "doc_view": "List",
-                "color": shortcut["color"],
-                "label": shortcut["label"],
-            }
-        ).insert(ignore_permissions=True)
+        shortcut_doc = {
+            "doctype": "Workspace Shortcut",
+            "parent": "States",
+            "parenttype": "Workspace",
+            "parentfield": "shortcuts",
+            "idx": idx,
+            "type": shortcut.get("type", "DocType"),
+            "link_to": shortcut["link_to"],
+            "color": shortcut["color"],
+            "label": shortcut["label"],
+        }
+        if shortcut.get("type", "DocType") == "DocType":
+            shortcut_doc["doc_view"] = shortcut.get("doc_view", "List")
+        frappe.get_doc(shortcut_doc).insert(ignore_permissions=True)
 
     for link_name in frappe.get_all(
         "Workspace Link",
@@ -355,7 +355,12 @@ def _ensure_workspace_sidebar(workspace_name: str):
         items = [_new_sidebar_section("Ledgers")]
         for shortcut in STATES_LEDGER_DOCTYPES:
             items.append(
-                _new_sidebar_item(shortcut["label"], "DocType", shortcut["link_to"], child=1)
+                _new_sidebar_item(
+                    shortcut["label"],
+                    shortcut.get("type", "DocType"),
+                    shortcut["link_to"],
+                    child=1,
+                )
             )
     else:
         items = [_new_sidebar_item(workspace_name, "Workspace", workspace_name)]
