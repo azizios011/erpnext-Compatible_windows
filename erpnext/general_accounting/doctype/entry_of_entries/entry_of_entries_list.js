@@ -10,14 +10,30 @@ frappe.listview_settings["Entry of Entries"] = {
 	},
 
 	onload(listview) {
-		listview.page.add_inner_button(__("New Purchase Entry"), () => {
-			frappe.route_options = { entry_type: "Purchase" };
-			frappe.new_doc("Entry of Entries");
-		});
-
-		listview.page.add_inner_button(__("New Sales Entry"), () => {
-			frappe.route_options = { entry_type: "Sales" };
-			frappe.new_doc("Entry of Entries");
-		});
+		listview.page.clear_primary_action();
+		set_treatments_breadcrumbs(__("Entry of Entries"));
 	},
 };
+
+function set_treatments_breadcrumbs(leaf_label) {
+	setTimeout(() => {
+		frappe.breadcrumbs.clear();
+		frappe.breadcrumbs.append_breadcrumb_element(
+			get_treatments_route(),
+			__("Treatments"),
+			"worksapce-breadcrumb"
+		);
+		frappe.breadcrumbs.append_breadcrumb_element("", leaf_label);
+		$("body").addClass("no-breadcrumbs");
+	}, 100);
+}
+
+function get_treatments_route() {
+	if (frappe.utils.get_desktop_icon_by_label) {
+		const icon = frappe.utils.get_desktop_icon_by_label("Treatments");
+		if (icon) {
+			return frappe.utils.get_route_for_icon(icon) || "/desk/treatments";
+		}
+	}
+	return "/desk/treatments";
+}

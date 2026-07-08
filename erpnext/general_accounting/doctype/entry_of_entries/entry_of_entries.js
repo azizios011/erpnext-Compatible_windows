@@ -9,6 +9,11 @@ frappe.ui.form.on('Entry of Entries', {
     },
     refresh(frm) {
         calculate_totals(frm);
+        if (frm.is_new()) {
+            set_treatments_breadcrumbs(__("New Entry of Entries"));
+        } else {
+            set_treatments_breadcrumbs(frm.doc.name);
+        }
     }
 });
 
@@ -27,4 +32,27 @@ function calculate_totals(frm) {
     });
     frm.set_value('total_debit', total_debit);
     frm.set_value('total_credit', total_credit);
+}
+
+function set_treatments_breadcrumbs(leaf_label) {
+    setTimeout(() => {
+        frappe.breadcrumbs.clear();
+        frappe.breadcrumbs.append_breadcrumb_element(
+            get_treatments_route(),
+            __("Treatments"),
+            "worksapce-breadcrumb"
+        );
+        frappe.breadcrumbs.append_breadcrumb_element("", leaf_label);
+        $("body").addClass("no-breadcrumbs");
+    }, 100);
+}
+
+function get_treatments_route() {
+    if (frappe.utils.get_desktop_icon_by_label) {
+        const icon = frappe.utils.get_desktop_icon_by_label("Treatments");
+        if (icon) {
+            return frappe.utils.get_route_for_icon(icon) || "/desk/treatments";
+        }
+    }
+    return "/desk/treatments";
 }

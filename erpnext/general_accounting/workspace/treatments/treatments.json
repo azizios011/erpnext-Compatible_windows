@@ -8,7 +8,7 @@
   "is_hidden": 0,
   "parent_page": "",
   "icon": "heart",
-  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Treatments</b></span>\",\"col\":12}},{\"id\":\"hdr2\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h6\\\">Create purchase or sales entries. Submitted entries feed the General Ledger.</span>\",\"col\":12}},{\"id\":\"sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"New Entry of Entries\",\"col\":4}},{\"id\":\"sc2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Entry of Entries\",\"col\":4}}]",
+  "content": "[{\"id\":\"hdr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Treatments</b></span>\",\"col\":12}},{\"id\":\"hdr2\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h6\\\">Create entries with New Entry of Entries. View saved entries in Entry of Entries.</span>\",\"col\":12}},{\"id\":\"sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"New Entry of Entries\",\"col\":4}},{\"id\":\"sc2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Entry of Entries\",\"col\":4}}]",
   "shortcuts": [
     {
       "label": "New Entry of Entries",

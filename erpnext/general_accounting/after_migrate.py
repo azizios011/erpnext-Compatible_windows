@@ -293,8 +293,8 @@ def _ensure_treatments_workspace_shortcuts():
             "type": "header",
             "data": {
                 "text": (
-                    '<span class="h6">Create purchase or sales entries. '
-                    "Submitted entries feed the General Ledger.</span>"
+                    '<span class="h6">Create entries with New Entry of Entries. '
+                    "View saved entries in Entry of Entries.</span>"
                 ),
                 "col": 12,
             },
