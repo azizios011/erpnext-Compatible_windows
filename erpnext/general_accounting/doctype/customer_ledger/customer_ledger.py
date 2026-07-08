@@ -4,24 +4,24 @@
 import frappe
 from frappe.model.document import Document
 
-from erpnext.tunisian_accounting.ledger import (
+from erpnext.general_accounting.ledger import (
 	fetch_entry_lines,
 	lines_to_party_ledger_detail,
 	with_running_balance,
 )
 
 
-class SupplierLedger(Document):
+class CustomerLedger(Document):
 	pass
 
 
 @frappe.whitelist()
-def get_entries(company, from_date, to_date, supplier=None):
+def get_entries(company, from_date, to_date, customer=None):
 	rows = fetch_entry_lines(
 		company,
 		from_date,
 		to_date,
-		party_type="Supplier",
-		party=supplier,
+		party_type="Customer",
+		party=customer,
 	)
 	return lines_to_party_ledger_detail(with_running_balance(rows))

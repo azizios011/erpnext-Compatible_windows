@@ -33,12 +33,12 @@ function open_new_entry_of_entries() {
 	frappe.set_route(...ENTRY_OF_ENTRIES_NEW_ROUTE);
 }
 
-function setup_tunisian_accounting_desk_routes() {
-	if (!frappe.router || frappe.tunisian_accounting_desk_routes_setup) {
+function setup_general_accounting_desk_routes() {
+	if (!frappe.router || frappe.general_accounting_desk_routes_setup) {
 		return;
 	}
 
-	frappe.tunisian_accounting_desk_routes_setup = true;
+	frappe.general_accounting_desk_routes_setup = true;
 	frappe.router.on("change", () => {
 		if (route_is_treatments_workspace() || route_is_entry_of_entries_list()) {
 			open_new_entry_of_entries();
@@ -47,7 +47,7 @@ function setup_tunisian_accounting_desk_routes() {
 }
 
 if (frappe.router) {
-	setup_tunisian_accounting_desk_routes();
+	setup_general_accounting_desk_routes();
 } else {
-	$(document).on("app_ready", setup_tunisian_accounting_desk_routes);
+	$(document).on("app_ready", setup_general_accounting_desk_routes);
 }

@@ -6,7 +6,7 @@ frappe.ui.form.on("Journals Creations", {
 		if (frm.is_new()) {
 			frappe.call({
 				type: "GET",
-				method: "erpnext.tunisian_accounting.doctype.journals_creations.journals_creations.get_naming_series",
+				method: "erpnext.general_accounting.doctype.journals_creations.journals_creations.get_naming_series",
 				callback(r) {
 					if (r.message) {
 						frm.set_df_property("naming_series", "options", r.message.split("\n"));

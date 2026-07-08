@@ -1,0 +1,1 @@
+erpnext.general_accounting.patches.set_general_accounting_desktop_folder

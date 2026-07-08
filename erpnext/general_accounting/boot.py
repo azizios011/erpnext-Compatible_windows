@@ -1,6 +1,6 @@
 import frappe
 
-TUNISIAN_SIDEBAR_TITLES = ("General Accounting", "Config", "States", "Treatments")
+GENERAL_ACCOUNTING_SIDEBAR_TITLES = ("General Accounting", "Config", "States", "Treatments")
 
 
 def extend_bootinfo(bootinfo):
@@ -9,7 +9,7 @@ def extend_bootinfo(bootinfo):
 	if sidebars is None:
 		return
 
-	for title in TUNISIAN_SIDEBAR_TITLES:
+	for title in GENERAL_ACCOUNTING_SIDEBAR_TITLES:
 		key = title.lower()
 		if sidebars.get(key):
 			continue

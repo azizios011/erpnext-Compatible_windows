@@ -1,20 +1,25 @@
 import frappe
 
-from erpnext.tunisian_accounting.after_migrate import apply_tunisian_accounting_desktop_layout
+from erpnext.general_accounting.after_migrate import apply_general_accounting_desktop_layout
 
 OLD_LABEL = "Tunisian Accounting"
 NEW_LABEL = "General Accounting"
 
 
+def _rename_or_drop_old(doctype: str):
+	if not frappe.db.exists(doctype, OLD_LABEL):
+		return
+
+	if frappe.db.exists(doctype, NEW_LABEL):
+		frappe.delete_doc(doctype, OLD_LABEL, ignore_permissions=True, force=True)
+	else:
+		frappe.rename_doc(doctype, OLD_LABEL, NEW_LABEL, force=True)
+
+
 def execute():
-	if frappe.db.exists("Module Def", OLD_LABEL) and not frappe.db.exists("Module Def", NEW_LABEL):
-		frappe.rename_doc("Module Def", OLD_LABEL, NEW_LABEL, force=True)
-
-	if frappe.db.exists("Workspace Sidebar", OLD_LABEL):
-		frappe.rename_doc("Workspace Sidebar", OLD_LABEL, NEW_LABEL, force=True)
-
-	if frappe.db.exists("Desktop Icon", OLD_LABEL):
-		frappe.rename_doc("Desktop Icon", OLD_LABEL, NEW_LABEL, force=True)
+	_rename_or_drop_old("Module Def")
+	_rename_or_drop_old("Workspace Sidebar")
+	_rename_or_drop_old("Desktop Icon")
 
 	for icon_name in frappe.get_all(
 		"Desktop Icon",
@@ -36,4 +41,4 @@ def execute():
 	frappe.cache.delete_value("installed_app_modules")
 	frappe.db.commit()
 	frappe.setup_module_map(include_all_apps=False)
-	apply_tunisian_accounting_desktop_layout()
+	apply_general_accounting_desktop_layout()

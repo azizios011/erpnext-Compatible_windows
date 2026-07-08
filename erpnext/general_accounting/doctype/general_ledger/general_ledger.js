@@ -19,7 +19,7 @@ function load_ledger_entries(frm, silent = false) {
 	}
 
 	frappe.call({
-		method: "erpnext.tunisian_accounting.doctype.general_ledger.general_ledger.get_entries",
+		method: "erpnext.general_accounting.doctype.general_ledger.general_ledger.get_entries",
 		args: {
 			company: frm.doc.company,
 			from_date: frm.doc.from_date,

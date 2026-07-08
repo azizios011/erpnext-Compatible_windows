@@ -1,5 +1,5 @@
 """
-erpnext/tunisian_accounting/setup.py
+erpnext/general_accounting/setup.py
 
 Two responsibilities, both triggered by after_install in erpnext/hooks.py:
 
@@ -187,13 +187,13 @@ def _load_all_accounts():
     for n in range(1, 8):
         fpath = os.path.join(DATA_DIR, f"class{n}_accounts.json")
         if not os.path.exists(fpath):
-            print(f"[tunisian_accounting] WARNING: {fpath} not found — skipping class {n}")
+            print(f"[general_accounting] WARNING: {fpath} not found — skipping class {n}")
             continue
         with open(fpath, encoding="utf-8") as f:
             data = json.load(f)
         accounts = data["plan_comptable"]["accounts"]
         all_accounts.extend(accounts)
-        print(f"[tunisian_accounting] Loaded class {n}: {len(accounts)} accounts")
+        print(f"[general_accounting] Loaded class {n}: {len(accounts)} accounts")
     return all_accounts
 
 
@@ -235,11 +235,11 @@ def _build_tree(all_accounts):
 
 
 def build_coa_json():
-    """Generate tn_plan_comptable_avec_code.json from tunisian_accounting/data/."""
-    print("[tunisian_accounting] Building Tunisian COA JSON …")
+    """Generate tn_plan_comptable_avec_code.json from general_accounting/data/."""
+    print("[general_accounting] Building Tunisian COA JSON …")
     all_accounts = _load_all_accounts()
     if not all_accounts:
-        print("[tunisian_accounting] ERROR: No accounts loaded — aborting.")
+        print("[general_accounting] ERROR: No accounts loaded — aborting.")
         return
     tree = _build_tree(all_accounts)
     output = {
@@ -250,7 +250,7 @@ def build_coa_json():
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
-    print(f"[tunisian_accounting] COA JSON written → {OUTPUT_FILE}")
+    print(f"[general_accounting] COA JSON written → {OUTPUT_FILE}")
 
 
 # ---------------------------------------------------------------------------
@@ -265,16 +265,16 @@ def populate_plan_comptable():
         Poste groups  (code 'P-10', parent = root group code)
         Leaf accounts (6-digit code, parent = poste group code)
     """
-    print("[tunisian_accounting] Populating Chart of Accounts DocType …")
+    print("[general_accounting] Populating Chart of Accounts DocType …")
 
     # Idempotent — skip if already done
     if frappe.db.count("Chart of Accounts") > 0:
-        print("[tunisian_accounting] Chart of Accounts already populated — skipping.")
+        print("[general_accounting] Chart of Accounts already populated — skipping.")
         return
 
     all_accounts = _load_all_accounts()
     if not all_accounts:
-        print("[tunisian_accounting] ERROR: No accounts loaded — aborting populate.")
+        print("[general_accounting] ERROR: No accounts loaded — aborting populate.")
         return
 
     # Bucket: group_name → poste(2-digit) → [account dicts]
@@ -360,7 +360,7 @@ def populate_plan_comptable():
                 )
 
     frappe.db.commit()
-    print(f"[tunisian_accounting] Done — {inserted} Chart of Accounts records inserted.")
+    print(f"[general_accounting] Done — {inserted} Chart of Accounts records inserted.")
 
 
 # ---------------------------------------------------------------------------

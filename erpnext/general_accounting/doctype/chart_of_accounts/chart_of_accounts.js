@@ -1,4 +1,4 @@
-// erpnext/tunisian_accounting/doctype/chart_of_accounts/chart_of_accounts.js
+// erpnext/general_accounting/doctype/chart_of_accounts/chart_of_accounts.js
 
 // Auto-redirect list view to tree view.
 frappe.listview_settings["Chart of Accounts"] = {
@@ -11,7 +11,7 @@ frappe.treeview_settings["Chart of Accounts"] = {
 	breadcrumb: "Config",
 	title: __("Plan Comptable - Tunisie"),
 	get_tree_nodes:
-		"erpnext.tunisian_accounting.doctype.chart_of_accounts.chart_of_accounts.get_children",
+		"erpnext.general_accounting.doctype.chart_of_accounts.chart_of_accounts.get_children",
 
 	// What to show next to each node in the tree
 	get_label: function (node) {

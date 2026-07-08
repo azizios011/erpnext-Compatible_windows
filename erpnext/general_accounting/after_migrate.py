@@ -315,7 +315,7 @@ def _ensure_workspace_exists(workspace_name: str):
     # Try to load from JSON fixture if it doesn't exist in DB
     folder_name = workspace_name.lower().replace(" ", "_")
     file_path = frappe.get_app_path(
-        "erpnext", "tunisian_accounting", "workspace", folder_name, f"{folder_name}.json"
+        "erpnext", "general_accounting", "workspace", folder_name, f"{folder_name}.json"
     )
 
     if os.path.exists(file_path):
@@ -395,7 +395,7 @@ def _remove_old_folder_labels():
         frappe.rename_doc("Module Def", OLD_FOLDER_LABEL, FOLDER_LABEL, force=True)
 
 
-def apply_tunisian_accounting_desktop_layout():
+def apply_general_accounting_desktop_layout():
     _remove_stale_plan_comptable_workspace()
     _remove_old_folder_labels()
 

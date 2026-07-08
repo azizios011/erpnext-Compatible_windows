@@ -1,4 +1,4 @@
-# erpnext/tunisian_accounting/doctype/chart_of_accounts/chart_of_accounts.py
+# erpnext/general_accounting/doctype/chart_of_accounts/chart_of_accounts.py
 
 import frappe
 from frappe import _

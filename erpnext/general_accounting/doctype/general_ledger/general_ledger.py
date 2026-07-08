@@ -4,7 +4,7 @@
 import frappe
 from frappe.model.document import Document
 
-from erpnext.tunisian_accounting.ledger import (
+from erpnext.general_accounting.ledger import (
 	fetch_entry_lines,
 	lines_to_general_ledger_detail,
 	with_running_balance,

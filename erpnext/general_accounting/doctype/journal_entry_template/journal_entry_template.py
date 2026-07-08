@@ -16,7 +16,7 @@ class JournalEntryTemplate(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		from erpnext.tunisian_accounting.doctype.journal_entry_template_account.journal_entry_template_account import (
+		from erpnext.general_accounting.doctype.journal_entry_template_account.journal_entry_template_account import (
 			JournalEntryTemplateAccount,
 		)
 
