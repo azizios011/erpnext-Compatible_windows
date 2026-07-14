@@ -65,8 +65,6 @@ setup_wizard_stages = "erpnext.setup.setup_wizard.setup_wizard.get_setup_stages"
 
 after_install = [
 	"erpnext.setup.install.after_install",
-	"erpnext.general_accounting.setup.build_and_populate",
-	"erpnext.general_accounting.after_migrate.apply_general_accounting_desktop_layout"
 ]
 
 boot_session = "erpnext.startup.boot.boot_session"
@@ -691,7 +689,6 @@ additional_timeline_content = {"*": ["erpnext.telephony.doctype.call_log.call_lo
 extend_bootinfo = [
 	"erpnext.support.doctype.service_level_agreement.service_level_agreement.add_sla_doctypes",
 	"erpnext.startup.boot.bootinfo",
-	"erpnext.general_accounting.boot.extend_bootinfo",
 ]
 
 
@@ -717,5 +714,4 @@ repost_allowed_doctypes = [
 	"Purchase Receipt",
 ]
 
-after_migrate = ["erpnext.general_accounting.after_migrate.apply_general_accounting_desktop_layout"]
 

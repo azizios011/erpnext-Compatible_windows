@@ -170,51 +170,6 @@ $.extend(erpnext, {
 	},
 });
 
-// Guard desk sidebar when workspace_sidebar_item is missing from boot (e.g. General Accounting)
-(function patch_erpnext_sidebar() {
-	const apply = () => {
-		if (!frappe?.ui?.Sidebar || frappe.ui.Sidebar.prototype._erpnext_sidebar_patched) {
-			return Boolean(frappe?.ui?.Sidebar?.prototype?._erpnext_sidebar_patched);
-		}
-
-		const original_setup = frappe.ui.Sidebar.prototype.setup;
-		frappe.ui.Sidebar.prototype.setup = function (workspace_title) {
-			if (workspace_title === undefined || workspace_title === null) {
-				workspace_title = this.sidebar_title || "";
-			}
-			original_setup.call(this, workspace_title);
-		};
-
-		const original_prepare = frappe.ui.Sidebar.prototype.prepare;
-		frappe.ui.Sidebar.prototype.prepare = function () {
-			if (!frappe.boot.workspace_sidebar_item) {
-				frappe.boot.workspace_sidebar_item = {};
-			}
-
-			const title = (this.workspace_title || this.sidebar_title || "").toLowerCase();
-			if (title && !frappe.boot.workspace_sidebar_item[title]) {
-				frappe.boot.workspace_sidebar_item[title] = {
-					label: this.sidebar_title || title,
-					items: [],
-				};
-			}
-
-			return original_prepare.call(this);
-		};
-
-		frappe.ui.Sidebar.prototype._erpnext_sidebar_patched = true;
-		return true;
-	};
-
-	if (!apply()) {
-		const timer = setInterval(() => {
-			if (apply()) {
-				clearInterval(timer);
-			}
-		}, 50);
-	}
-})();
-
 $.extend(erpnext.utils, {
 	set_party_dashboard_indicators: function (frm) {
 		if (frm.doc.__onload && frm.doc.__onload.dashboard_info) {
