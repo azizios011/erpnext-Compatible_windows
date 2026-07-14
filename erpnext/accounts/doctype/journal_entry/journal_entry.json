@@ -500,15 +500,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "from_template",
-   "fieldtype": "Link",
-   "label": "From Template",
-   "no_copy": 1,
-   "options": "Journal Entry Template",
-   "print_hide": 1,
-   "report_hide": 1
-  },
-  {
    "depends_on": "eval:doc.apply_tds",
    "fieldname": "tax_withholding_category",
    "fieldtype": "Link",

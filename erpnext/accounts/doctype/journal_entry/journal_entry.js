@@ -253,22 +253,6 @@ frappe.ui.form.on("Journal Entry", {
 		}
 	},
 
-	from_template: function (frm) {
-		if (frm.doc.from_template) {
-			frappe.db.get_doc("Journal Entry Template", frm.doc.from_template).then((doc) => {
-				frappe.model.clear_table(frm.doc, "accounts");
-				frm.set_value({
-					company: doc.company,
-					voucher_type: doc.voucher_type,
-					naming_series: doc.naming_series,
-					is_opening: doc.is_opening,
-					multi_currency: doc.multi_currency,
-				});
-				update_jv_details(frm.doc, doc.accounts);
-			});
-		}
-	},
-
 	apply_tds: function (frm) {
 		frm.clear_table("tax_withholding_entries");
 	},
