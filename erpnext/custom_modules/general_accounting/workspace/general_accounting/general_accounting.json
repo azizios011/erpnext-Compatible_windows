@@ -26,7 +26,50 @@
  "roles": [],
  "sequence_id": 49.0,
  "shortcuts": [],
- "sidebar_items": [],
+ "sidebar_items": [
+  {
+   "child": 0,
+   "collapsible": 1,
+   "default_workspace": 0,
+   "icon": "folder",
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "General Ledger Setup",
+   "link_to": "General Ledger Setup",
+   "link_type": "Workspace",
+   "open_in_new_tab": 0,
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
+   "default_workspace": 0,
+   "icon": "folder",
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Treatments",
+   "link_to": "Treatments",
+   "link_type": "Workspace",
+   "open_in_new_tab": 0,
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
+   "default_workspace": 0,
+   "icon": "folder",
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "States",
+   "link_to": "States",
+   "link_type": "Workspace",
+   "open_in_new_tab": 0,
+   "show_arrow": 0,
+   "type": "Link"
+  }
+ ],
  "standard": 1,
  "title": "General Accounting",
  "type": "Workspace"
