@@ -30,47 +30,266 @@
   {
    "child": 0,
    "collapsible": 1,
-   "default_workspace": 0,
-   "icon": "folder",
-   "indent": 0,
+   "indent": 1,
    "keep_closed": 0,
    "label": "General Ledger Setup",
-   "link_to": "General Ledger Setup",
    "link_type": "Workspace",
-   "open_in_new_tab": 0,
-   "show_arrow": 0,
+   "link_to": "General Ledger Setup",
+   "type": "Section Break"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Chart of Accounts",
+   "link_to": "Chart of Accounts",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Journals (families)",
+   "link_to": "Journals (families)",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Cash Flow",
+   "link_to": "Cash Flow",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Writing Templates",
+   "link_to": "Writing Templates",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Document Types",
+   "link_to": "Document Types",
+   "link_type": "Workspace",
    "type": "Link"
   },
   {
    "child": 0,
    "collapsible": 1,
-   "default_workspace": 0,
-   "icon": "folder",
-   "indent": 0,
+   "indent": 1,
    "keep_closed": 0,
    "label": "Treatments",
-   "link_to": "Treatments",
    "link_type": "Workspace",
-   "open_in_new_tab": 0,
-   "show_arrow": 0,
+   "link_to": "Treatments",
+   "type": "Section Break"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Entry of entries",
+   "link_to": "Entry of entries",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Import of entries",
+   "link_to": "Import of entries",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Document processing",
+   "link_to": "Document processing",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Scanned document capture",
+   "link_to": "Scanned document capture",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Lettering",
+   "link_to": "Lettering",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Bank reconciliation",
+   "link_to": "Bank reconciliation",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Account Replacement",
+   "link_to": "Account Replacement",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Sending Documents",
+   "link_to": "Sending Documents",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Log management",
+   "link_to": "Log management",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Tax rate management",
+   "link_to": "Tax rate management",
+   "link_type": "Workspace",
    "type": "Link"
   },
   {
    "child": 0,
    "collapsible": 1,
-   "default_workspace": 0,
-   "icon": "folder",
-   "indent": 0,
+   "indent": 1,
    "keep_closed": 0,
    "label": "States",
-   "link_to": "States",
    "link_type": "Workspace",
-   "open_in_new_tab": 0,
-   "show_arrow": 0,
+   "link_to": "States",
+   "type": "Section Break"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Log consultation",
+   "link_to": "Log consultation",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "General Ledger",
+   "link_to": "General Ledger",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Account Query",
+   "link_to": "Account Query",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Balance",
+   "link_to": "Balance",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Conclusion",
+   "link_to": "Conclusion",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Income statement",
+   "link_to": "Income statement",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Cash flow statement",
+   "link_to": "Cash flow statement",
+   "link_type": "Workspace",
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Global Financial Statements",
+   "link_to": "Global Financial Statements",
+   "link_type": "Workspace",
    "type": "Link"
   }
  ],
  "standard": 1,
  "title": "General Accounting",
- "type": "Workspace"
+ "type": "Workspace",
+ "parent_page": ""
 }
