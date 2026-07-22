@@ -43,8 +43,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Chart of Accounts",
-   "link_to": "Chart of Accounts",
-   "link_type": "Workspace",
+   "link_to": "chart-of-accounts",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -53,8 +53,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Journals (families)",
-   "link_to": "Journals (families)",
-   "link_type": "Workspace",
+   "link_to": "journals-families",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -63,8 +63,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Cash Flow",
-   "link_to": "Cash Flow",
-   "link_type": "Workspace",
+   "link_to": "cash-flow",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -73,8 +73,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Writing Templates",
-   "link_to": "Writing Templates",
-   "link_type": "Workspace",
+   "link_to": "writing-templates",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -83,8 +83,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Document Types",
-   "link_to": "Document Types",
-   "link_type": "Workspace",
+   "link_to": "document-types",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -103,8 +103,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Entry of entries",
-   "link_to": "Entry of entries",
-   "link_type": "Workspace",
+   "link_to": "entry-of-entries",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -113,8 +113,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Import of entries",
-   "link_to": "Import of entries",
-   "link_type": "Workspace",
+   "link_to": "import-of-entries",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -123,8 +123,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Document processing",
-   "link_to": "Document processing",
-   "link_type": "Workspace",
+   "link_to": "document-processing",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -133,8 +133,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Scanned document capture",
-   "link_to": "Scanned document capture",
-   "link_type": "Workspace",
+   "link_to": "scanned-document-capture",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -143,8 +143,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Lettering",
-   "link_to": "Lettering",
-   "link_type": "Workspace",
+   "link_to": "lettering",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -153,8 +153,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Bank reconciliation",
-   "link_to": "Bank reconciliation",
-   "link_type": "Workspace",
+   "link_to": "bank-reconciliation",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -163,8 +163,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Account Replacement",
-   "link_to": "Account Replacement",
-   "link_type": "Workspace",
+   "link_to": "account-replacement",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -173,8 +173,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Sending Documents",
-   "link_to": "Sending Documents",
-   "link_type": "Workspace",
+   "link_to": "sending-documents",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -183,8 +183,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Log management",
-   "link_to": "Log management",
-   "link_type": "Workspace",
+   "link_to": "log-management",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -193,8 +193,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Tax rate management",
-   "link_to": "Tax rate management",
-   "link_type": "Workspace",
+   "link_to": "tax-rate-management",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -213,8 +213,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Log consultation",
-   "link_to": "Log consultation",
-   "link_type": "Workspace",
+   "link_to": "log-consultation",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -223,8 +223,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "General Ledger",
-   "link_to": "General Ledger",
-   "link_type": "Workspace",
+   "link_to": "general-ledger",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -233,8 +233,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Account Query",
-   "link_to": "Account Query",
-   "link_type": "Workspace",
+   "link_to": "account-query",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -243,8 +243,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Balance",
-   "link_to": "Balance",
-   "link_type": "Workspace",
+   "link_to": "balance",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -253,8 +253,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Conclusion",
-   "link_to": "Conclusion",
-   "link_type": "Workspace",
+   "link_to": "conclusion",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -263,8 +263,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Income statement",
-   "link_to": "Income statement",
-   "link_type": "Workspace",
+   "link_to": "income-statement",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -273,8 +273,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Cash flow statement",
-   "link_to": "Cash flow statement",
-   "link_type": "Workspace",
+   "link_to": "cash-flow-statement",
+   "link_type": "Page",
    "type": "Link"
   },
   {
@@ -283,8 +283,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Global Financial Statements",
-   "link_to": "Global Financial Statements",
-   "link_type": "Workspace",
+   "link_to": "global-financial-statements",
+   "link_type": "Page",
    "type": "Link"
   }
  ],
