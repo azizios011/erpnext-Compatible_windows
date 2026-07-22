@@ -9,6 +9,7 @@ from frappe import N_ as _
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 from frappe.desk.page.setup_wizard.setup_wizard import add_all_roles_to
 
+import erpnext.custom_modules.setup
 from erpnext.setup.doctype.incoterm.incoterm import create_incoterms
 
 from .default_success_action import get_default_success_action
@@ -41,6 +42,7 @@ def after_install():
 	update_pegged_currencies()
 	set_default_print_formats()
 	toggle_hidden_fields()
+	erpnext.custom_modules.setup.after_install()
 	frappe.db.commit()
 
 
