@@ -83,8 +83,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Document Types",
-   "link_to": "document-types",
-   "link_type": "Page",
+   "link_to": "Document Type Template",
+   "link_type": "DocType",
    "type": "Link"
   },
   {
