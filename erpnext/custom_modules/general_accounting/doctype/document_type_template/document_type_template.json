@@ -14,7 +14,7 @@
   "company",
   "entry_mode",
   "section_break_3",
-  "accounts"
+  "amount_breakdown"
  ],
  "fields": [
   {
@@ -63,10 +63,10 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "accounts",
+   "fieldname": "amount_breakdown",
    "fieldtype": "Table",
-   "label": "Accounting Entries",
-   "options": "Document Type Template Account"
+   "label": "Amount Breakdown",
+   "options": "Document Type Template Amount"
   }
  ],
  "links": [],

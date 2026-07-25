@@ -15,11 +15,11 @@ class DocumentTypeTemplate(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		from erpnext.custom_modules.general_accounting.doctype.document_type_template_account.document_type_template_account import (
-			DocumentTypeTemplateAccount,
+		from erpnext.custom_modules.general_accounting.doctype.document_type_template_amount.document_type_template_amount import (
+			DocumentTypeTemplateAmount,
 		)
 
-		accounts: DF.Table[DocumentTypeTemplateAccount]
+		amount_breakdown: DF.Table[DocumentTypeTemplateAmount]
 		company: DF.Link
 		entry_mode: DF.Literal["Single", "Bulk"]
 		meaning: DF.Literal["", "Debtor", "Creditor", "Debtor or Creditor"]
@@ -32,7 +32,7 @@ class DocumentTypeTemplate(Document):
 
 	def validate_account_company(self):
 		"""Each row's account must belong to the template's company."""
-		for account in self.accounts:
+		for account in self.amount_breakdown:
 			if (
 				account.account
 				and frappe.get_cached_value("Account", account.account, "company") != self.company
@@ -47,7 +47,7 @@ class DocumentTypeTemplate(Document):
 		"""
 		Loop over all accounts and see if party and party type is set correctly
 		"""
-		for account in self.accounts:
+		for account in self.amount_breakdown:
 			if account.party_type:
 				account_type = frappe.get_cached_value("Account", account.account, "account_type")
 				if account_type not in ["Receivable", "Payable"]:
