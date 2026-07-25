@@ -59,11 +59,30 @@ def dedupe_home_links():
 		doc.save(ignore_permissions=True)
 
 
+def force_reload_custom_workspaces():
+	"""Force-reload each custom module's own workspace fixture from disk on every
+	install/migrate, bypassing the modified-timestamp check that can otherwise cause
+	normal fixture sync to permanently skip re-syncing a workspace once its DB record
+	has been resaved outside of a plain import."""
+	for module_label in get_custom_module_names():
+		module_name = frappe.scrub(module_label)
+		if not frappe.db.exists("Workspace", module_label):
+			continue
+		try:
+			frappe.reload_doc(module_name, "workspace", module_name, force=True)
+		except OSError:
+			# No workspace fixture file for this module — nothing to reload.
+			continue
+	frappe.db.commit()
+
+
 def after_install():
+	force_reload_custom_workspaces()
 	fix_workspace_hierarchy()
 	dedupe_home_links()
 
 
 def after_migrate():
+	force_reload_custom_workspaces()
 	fix_workspace_hierarchy()
 	dedupe_home_links()
