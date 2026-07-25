@@ -13,6 +13,7 @@
   "column_break_3",
   "company",
   "entry_mode",
+  "section_break_bulk",
   "bulk_column_config",
   "section_break_3",
   "amount_breakdown"
@@ -58,6 +59,11 @@
    "fieldtype": "Select",
    "label": "Entry Mode",
    "options": "Single\nBulk"
+  },
+  {
+   "depends_on": "eval:doc.entry_mode=='Bulk'",
+   "fieldname": "section_break_bulk",
+   "fieldtype": "Section Break"
   },
   {
    "default": "[\n  {\"column\": \"\", \"maps_to\": \"\"}\n]",
