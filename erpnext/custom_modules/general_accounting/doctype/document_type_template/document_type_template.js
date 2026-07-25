@@ -7,39 +7,28 @@ frappe.ui.form.on("Document Type Template", {
 	},
 	refresh: function (frm) {
 		frappe.model.set_default_values(frm.doc);
-
-		frm.set_query("account", "accounts", function () {
-			var filters = {
-				company: frm.doc.company,
-				is_group: 0,
-			};
-
-			return { filters: filters };
-		});
-
-		frm.set_query("project", "accounts", function (doc, cdt, cdn) {
-			let row = frappe.get_doc(cdt, cdn);
-			let filters = {
-				company: doc.company,
-			};
-			if (row.party_type == "Customer") {
-				filters.customer = row.party;
-			}
-			return {
-				query: "erpnext.controllers.queries.get_project_name",
-				filters,
-			};
-		});
-
-		frm.set_query("party_type", "accounts", function (doc, cdt, cdn) {
-			const row = locals[cdt][cdn];
-
-			return {
-				query: "erpnext.setup.doctype.party_type.party_type.get_party_type",
-				filters: {
-					account: row.account,
-				},
-			};
-		});
+		setup_amount_breakdown(frm);
+	},
+	entry_mode: function (frm) {
+		setup_amount_breakdown(frm);
 	},
 });
+
+function setup_amount_breakdown(frm) {
+	if (frm.doc.entry_mode === "Single") {
+		frm.set_df_property("amount_breakdown", "cannot_add_rows", true);
+		frm.set_df_property("amount_breakdown", "cannot_delete_rows", true);
+
+		if (!frm.doc.amount_breakdown || frm.doc.amount_breakdown.length === 0) {
+			["TTC", "TVA", "HT TVA", "Timbre"].forEach((comp) => {
+				let row = frappe.model.add_child(frm.doc, "Document Type Template Amount", "amount_breakdown");
+				row.component = comp;
+			});
+		}
+		frm.refresh_field("amount_breakdown");
+	} else {
+		frm.set_df_property("amount_breakdown", "cannot_add_rows", false);
+		frm.set_df_property("amount_breakdown", "cannot_delete_rows", false);
+		frm.refresh_field("amount_breakdown");
+	}
+}
