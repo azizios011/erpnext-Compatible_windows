@@ -9,6 +9,7 @@
  "field_order": [
   "section_break_1",
   "template_title",
+  "meaning",
   "column_break_3",
   "company",
   "entry_mode",
@@ -26,6 +27,14 @@
    "label": "Template Title",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "meaning",
+   "fieldtype": "Select",
+   "label": "Meaning",
+   "options": "\nDebtor\nCreditor\nDebtor or Creditor",
+   "placeholder": "Choose a direction",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_3",

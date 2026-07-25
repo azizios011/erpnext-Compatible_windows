@@ -22,6 +22,7 @@ class DocumentTypeTemplate(Document):
 		accounts: DF.Table[DocumentTypeTemplateAccount]
 		company: DF.Link
 		entry_mode: DF.Literal["Single", "Bulk"]
+		meaning: DF.Literal["", "Debtor", "Creditor", "Debtor or Creditor"]
 		template_title: DF.Data
 	# end: auto-generated types
 
