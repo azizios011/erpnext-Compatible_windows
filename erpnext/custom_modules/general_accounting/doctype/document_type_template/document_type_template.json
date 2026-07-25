@@ -9,12 +9,9 @@
  "field_order": [
   "section_break_1",
   "template_title",
-  "voucher_type",
-  "naming_series",
   "column_break_3",
   "company",
-  "is_opening",
-  "multi_currency",
+  "entry_mode",
   "section_break_3",
   "accounts"
  ],
@@ -31,23 +28,6 @@
    "unique": 1
   },
   {
-   "fieldname": "voucher_type",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Journal Entry Type",
-   "options": "Journal Entry\nInter Company Journal Entry\nBank Entry\nCash Entry\nCredit Card Entry\nDebit Note\nCredit Note\nContra Entry\nExcise Entry\nWrite Off Entry\nOpening Entry\nDepreciation Entry\nExchange Rate Revaluation",
-   "reqd": 1
-  },
-  {
-   "fieldname": "naming_series",
-   "fieldtype": "Select",
-   "label": "Series",
-   "no_copy": 1,
-   "print_hide": 1,
-   "reqd": 1,
-   "set_only_once": 1
-  },
-  {
    "fieldname": "column_break_3",
    "fieldtype": "Column Break"
   },
@@ -62,17 +42,12 @@
    "reqd": 1
   },
   {
-   "default": "No",
-   "fieldname": "is_opening",
+   "default": "Single",
+   "description": "Single: one document per entry. Bulk: multiple documents (one row per invoice) per entry.",
+   "fieldname": "entry_mode",
    "fieldtype": "Select",
-   "label": "Is Opening",
-   "options": "No\nYes"
-  },
-  {
-   "default": "0",
-   "fieldname": "multi_currency",
-   "fieldtype": "Check",
-   "label": "Multi Currency"
+   "label": "Entry Mode",
+   "options": "Single\nBulk"
   },
   {
    "fieldname": "section_break_3",
@@ -117,7 +92,7 @@
    "write": 1
   }
  ],
- "search_fields": "voucher_type, company",
+ "search_fields": "company",
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": [],
