@@ -20,6 +20,7 @@ class DocumentTypeTemplate(Document):
 		)
 
 		amount_breakdown: DF.Table[DocumentTypeTemplateAmount]
+		bulk_column_config: DF.Code | None
 		company: DF.Link
 		entry_mode: DF.Literal["Single", "Bulk"]
 		meaning: DF.Literal["", "Debtor", "Creditor", "Debtor or Creditor"]
