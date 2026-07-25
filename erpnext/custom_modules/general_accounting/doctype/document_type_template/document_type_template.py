@@ -21,25 +21,8 @@ class DocumentTypeTemplate(Document):
 
 		accounts: DF.Table[DocumentTypeTemplateAccount]
 		company: DF.Link
-		is_opening: DF.Literal["No", "Yes"]
-		multi_currency: DF.Check
-		naming_series: DF.Literal
+		entry_mode: DF.Literal["Single", "Bulk"]
 		template_title: DF.Data
-		voucher_type: DF.Literal[
-			"Journal Entry",
-			"Inter Company Journal Entry",
-			"Bank Entry",
-			"Cash Entry",
-			"Credit Card Entry",
-			"Debit Note",
-			"Credit Note",
-			"Contra Entry",
-			"Excise Entry",
-			"Write Off Entry",
-			"Opening Entry",
-			"Depreciation Entry",
-			"Exchange Rate Revaluation",
-		]
 	# end: auto-generated types
 
 	def validate(self):
@@ -79,8 +62,3 @@ class DocumentTypeTemplate(Document):
 						account.idx, account.account
 					)
 				)
-
-
-@frappe.whitelist()
-def get_naming_series():
-	return frappe.get_meta("Journal Entry").get_field("naming_series").options
