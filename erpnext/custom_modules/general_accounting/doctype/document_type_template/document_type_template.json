@@ -13,6 +13,7 @@
   "column_break_3",
   "company",
   "entry_mode",
+  "bulk_column_config",
   "section_break_3",
   "amount_breakdown"
  ],
@@ -59,10 +60,22 @@
    "options": "Single\nBulk"
   },
   {
+   "default": "[\n  {\"column\": \"\", \"maps_to\": \"\"}\n]",
+   "depends_on": "eval:doc.entry_mode=='Bulk'",
+   "description": "Define which column in the bulk file maps to which field, one entry per row (e.g. account, amount, date, reference).",
+   "fieldname": "bulk_column_config",
+   "fieldtype": "Code",
+   "label": "Column Mapping (JSON)",
+   "mandatory_depends_on": "eval:doc.entry_mode=='Bulk'",
+   "options": "JSON"
+  },
+  {
+   "depends_on": "eval:doc.entry_mode=='Single'",
    "fieldname": "section_break_3",
    "fieldtype": "Section Break"
   },
   {
+   "depends_on": "eval:doc.entry_mode=='Single'",
    "fieldname": "amount_breakdown",
    "fieldtype": "Table",
    "label": "Amount Breakdown",
