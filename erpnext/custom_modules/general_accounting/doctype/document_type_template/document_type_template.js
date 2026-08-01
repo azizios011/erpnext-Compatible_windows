@@ -7,28 +7,5 @@ frappe.ui.form.on("Document Type Template", {
 	},
 	refresh: function (frm) {
 		frappe.model.set_default_values(frm.doc);
-		setup_amount_breakdown(frm);
-	},
-	entry_mode: function (frm) {
-		setup_amount_breakdown(frm);
 	},
 });
-
-function setup_amount_breakdown(frm) {
-	if (frm.doc.entry_mode === "Single") {
-		frm.set_df_property("amount_breakdown", "cannot_add_rows", true);
-		frm.set_df_property("amount_breakdown", "cannot_delete_rows", true);
-
-		if (!frm.doc.amount_breakdown || frm.doc.amount_breakdown.length === 0) {
-			["TTC", "TVA", "HT TVA", "Timbre"].forEach((comp) => {
-				let row = frappe.model.add_child(frm.doc, "Document Type Template Amount", "amount_breakdown");
-				row.component = comp;
-			});
-		}
-		frm.refresh_field("amount_breakdown");
-	} else {
-		frm.set_df_property("amount_breakdown", "cannot_add_rows", false);
-		frm.set_df_property("amount_breakdown", "cannot_delete_rows", false);
-		frm.refresh_field("amount_breakdown");
-	}
-}
