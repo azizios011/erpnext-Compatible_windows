@@ -11,12 +11,7 @@
   "template_title",
   "meaning",
   "column_break_3",
-  "company",
-  "entry_mode",
-  "section_break_bulk",
-  "bulk_column_config",
-  "section_break_3",
-  "amount_breakdown"
+  "company"
  ],
  "fields": [
   {
@@ -51,41 +46,6 @@
    "options": "Company",
    "remember_last_selected_value": 1,
    "reqd": 1
-  },
-  {
-   "default": "Single",
-   "description": "Single: one document per entry. Bulk: multiple documents (one row per invoice) per entry.",
-   "fieldname": "entry_mode",
-   "fieldtype": "Select",
-   "label": "Entry Mode",
-   "options": "Single\nBulk"
-  },
-  {
-   "depends_on": "eval:doc.entry_mode=='Bulk'",
-   "fieldname": "section_break_bulk",
-   "fieldtype": "Section Break"
-  },
-  {
-   "default": "[\n  {\"column\": \"\", \"maps_to\": \"\"}\n]",
-   "depends_on": "eval:doc.entry_mode=='Bulk'",
-   "description": "Define which column in the bulk file maps to which field, one entry per row (e.g. account, amount, date, reference).",
-   "fieldname": "bulk_column_config",
-   "fieldtype": "Code",
-   "label": "Column Mapping (JSON)",
-   "mandatory_depends_on": "eval:doc.entry_mode=='Bulk'",
-   "options": "JSON"
-  },
-  {
-   "depends_on": "eval:doc.entry_mode=='Single'",
-   "fieldname": "section_break_3",
-   "fieldtype": "Section Break"
-  },
-  {
-   "depends_on": "eval:doc.entry_mode=='Single'",
-   "fieldname": "amount_breakdown",
-   "fieldtype": "Table",
-   "label": "Amount Breakdown",
-   "options": "Document Type Template Amount"
   }
  ],
  "links": [],
