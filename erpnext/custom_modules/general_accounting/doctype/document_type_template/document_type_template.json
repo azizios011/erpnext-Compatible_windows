@@ -13,7 +13,8 @@
   "meaning",
   "column_break_3",
   "company",
-  "preview_tab"
+  "preview_tab",
+  "preview_placeholder"
  ],
  "fields": [
   {
@@ -58,6 +59,11 @@
    "fieldname": "preview_tab",
    "fieldtype": "Tab Break",
    "label": "Preview"
+  },
+  {
+   "fieldname": "preview_placeholder",
+   "fieldtype": "HTML",
+   "options": "<div class=\"text-muted\">Preview will appear here once a template is configured.</div>"
   }
  ],
  "links": [],
