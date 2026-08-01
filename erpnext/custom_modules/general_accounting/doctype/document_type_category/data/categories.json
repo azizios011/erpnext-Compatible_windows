@@ -1,0 +1,10 @@
+[
+  {"category_name": "Facture Achat", "folder_name": "facture_achat"},
+  {"category_name": "Facture Vente", "folder_name": "facture_vente"},
+  {"category_name": "Extrait Banque", "folder_name": "extrait_banque"},
+  {"category_name": "Relevé Bancaire", "folder_name": "releve_bancaire"},
+  {"category_name": "Relevé Vente", "folder_name": "releve_vente"},
+  {"category_name": "Relevé Achat", "folder_name": "releve_achat"},
+  {"category_name": "Extrait Vente", "folder_name": "extrait_vente"},
+  {"category_name": "Extrait Achat", "folder_name": "extrait_achat"}
+]

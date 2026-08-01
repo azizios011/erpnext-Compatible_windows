@@ -12,7 +12,7 @@
   "template_title",
   "meaning",
   "column_break_3",
-  "company",
+  "document_type_category",
   "preview_tab",
   "preview_placeholder"
  ],
@@ -46,12 +46,12 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "company",
+   "fieldname": "document_type_category",
    "fieldtype": "Link",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Company",
-   "options": "Company",
+   "label": "Type",
+   "options": "Document Type Category",
    "remember_last_selected_value": 1,
    "reqd": 1
   },
@@ -98,7 +98,7 @@
    "write": 1
   }
  ],
- "search_fields": "company",
+ "search_fields": "document_type_category",
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": [],

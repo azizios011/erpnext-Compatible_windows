@@ -76,13 +76,39 @@ def force_reload_custom_workspaces():
 	frappe.db.commit()
 
 
+def seed_document_type_categories():
+	"""Idempotently upsert the dev-curated list of Document Type Category records.
+	Accountants cannot create new categories themselves — only a dev editing the
+	seed JSON and redeploying can add one."""
+	import json
+	base_dir = os.path.dirname(os.path.abspath(__file__))
+	seed_path = os.path.join(
+		base_dir, "general_accounting", "doctype", "document_type_category", "data", "categories.json"
+	)
+	if not os.path.exists(seed_path):
+		return
+	with open(seed_path) as f:
+		categories = json.load(f)
+	for entry in categories:
+		if frappe.db.exists("Document Type Category", entry["category_name"]):
+			continue
+		doc = frappe.new_doc("Document Type Category")
+		doc.category_name = entry["category_name"]
+		doc.folder_name = entry["folder_name"]
+		doc.insert(ignore_permissions=True)
+	frappe.db.commit()
+
+
 def after_install():
+	seed_document_type_categories()
 	force_reload_custom_workspaces()
 	fix_workspace_hierarchy()
 	dedupe_home_links()
 
 
 def after_migrate():
+	seed_document_type_categories()
 	force_reload_custom_workspaces()
 	fix_workspace_hierarchy()
 	dedupe_home_links()
+
