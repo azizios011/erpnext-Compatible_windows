@@ -51,6 +51,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Type",
+   "options": "Facture Achat\nFacture Vente\nExtrait Banque\nRelevé Bancaire\nRelevé Vente\nRelevé Achat\nExtrait Vente\nExtrait Achat",
    "remember_last_selected_value": 1,
    "reqd": 1
   },
