@@ -1,7 +1,6 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-import frappe
 from frappe.model.document import Document
 
 
@@ -20,17 +19,3 @@ class DocumentTypeTemplate(Document):
 	# end: auto-generated types
 
 	pass
-
-
-@frappe.whitelist()
-def get_document_type_categories(txt=None, **kwargs):
-	from erpnext.custom_modules.general_accounting.doctype.document_type_template.facturation import (
-		CATEGORIES,
-	)
-
-	txt = (txt or "").lower()
-	return [
-		{"value": folder_name, "label": label}
-		for folder_name, label in CATEGORIES.items()
-		if txt in label.lower() or txt in folder_name.lower()
-	]
