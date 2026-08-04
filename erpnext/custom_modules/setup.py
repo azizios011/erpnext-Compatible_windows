@@ -101,6 +101,8 @@ def import_pct_chart_of_accounts():
 					"doctype": "Chart of Accounts",
 					"account": account_val,
 					"label": row.get("label", ""),
+					"is_group": row.get("is_group", 0),
+					"parent_account": row.get("parent_account", ""),
 					"account_type": row.get("account_type", ""),
 					"nature": row.get("nature", "In Progress"),
 					"direction": row.get("direction", ""),
