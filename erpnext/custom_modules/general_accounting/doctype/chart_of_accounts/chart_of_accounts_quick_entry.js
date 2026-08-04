@@ -23,9 +23,8 @@ frappe.ui.form.ChartOfAccountsQuickEntryForm = class ChartOfAccountsQuickEntryFo
 			{
 				label: __("Account Type"),
 				fieldname: "account_type",
-				fieldtype: "Select",
-				options: "\nGroup\nLedger",
-				reqd: 1,
+				fieldtype: "Data",
+				reqd: 0,
 			},
 			{
 				label: __("Nature"),
@@ -35,8 +34,8 @@ frappe.ui.form.ChartOfAccountsQuickEntryForm = class ChartOfAccountsQuickEntryFo
 			{
 				label: __("Direction"),
 				fieldname: "direction",
-				fieldtype: "Select",
-				options: "\nDebit\nCredit",
+				fieldtype: "Data",
+				reqd: 0,
 			},
 		];
 
