@@ -76,13 +76,49 @@ def force_reload_custom_workspaces():
 	frappe.db.commit()
 
 
+def import_pct_chart_of_accounts():
+	json_path = os.path.join(
+		os.path.dirname(os.path.abspath(__file__)),
+		"general_accounting",
+		"doctype",
+		"chart_of_accounts",
+		"data",
+		"pct_chart_of_accounts.json",
+	)
+	if not os.path.exists(json_path):
+		return
+
+	with open(json_path, "r", encoding="utf-8") as f:
+		records = frappe.parse_json(f.read())
+
+	for row in records:
+		account_val = row.get("account")
+		if not account_val:
+			continue
+		if not frappe.db.exists("Chart of Accounts", account_val):
+			doc = frappe.get_doc(
+				{
+					"doctype": "Chart of Accounts",
+					"account": account_val,
+					"label": row.get("label", ""),
+					"account_type": row.get("account_type", ""),
+					"nature": row.get("nature", "In Progress"),
+					"direction": row.get("direction", ""),
+				}
+			)
+			doc.insert(ignore_permissions=True)
+
+
 def after_install():
 	force_reload_custom_workspaces()
 	fix_workspace_hierarchy()
 	dedupe_home_links()
+	import_pct_chart_of_accounts()
 
 
 def after_migrate():
 	force_reload_custom_workspaces()
 	fix_workspace_hierarchy()
 	dedupe_home_links()
+	import_pct_chart_of_accounts()
+
