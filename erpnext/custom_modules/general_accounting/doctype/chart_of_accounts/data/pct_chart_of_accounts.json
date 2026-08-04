@@ -1,0 +1,3516 @@
+[
+  {
+    "account": "101000",
+    "label": "Capital social",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "101100",
+    "label": "Capital souscrit - non appelé",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "101200",
+    "label": "Capital souscrit - appelé, non versé",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "101300",
+    "label": "Capital souscrit - appelé, versé",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "101310",
+    "label": "Capital non amorti",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "101320",
+    "label": "Capital amorti",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "111000",
+    "label": "Réserve légale",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "112000",
+    "label": "Réserves statutaires",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "117100",
+    "label": "Primes d'émission",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "117200",
+    "label": "Primes de fusion",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "117300",
+    "label": "Primes d'apport",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "117400",
+    "label": "Primes de conversion d'obligation",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "118100",
+    "label": "Réserves pour fonds social",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "119000",
+    "label": "Avoirs des actionnaires",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "121000",
+    "label": "Résultats reportés",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "121300",
+    "label": "Amortissements différés",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "128000",
+    "label": "Modifications comptables affectant les résultats reportés",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "131000",
+    "label": "Résultat bénéficiaire",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "135000",
+    "label": "Résultat déficitaire",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "141000",
+    "label": "Titres soumis à des réglementations particulières",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "142000",
+    "label": "Réserves réglementées & réserves soumises à un régime fiscal particulier",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "142100",
+    "label": "Réserves indisponibles",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "143000",
+    "label": "Amortissements dérogatoires",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "144000",
+    "label": "Réserve spéciale de réévaluation",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "145100",
+    "label": "Subventions d'investissement",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "145800",
+    "label": "Autres subventions d'investissement",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "145900",
+    "label": "Subventions d'investissement inscrites aux comptes de résultat",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "147000",
+    "label": "Compte du concédant",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "149000",
+    "label": "Amortissement subvention d'investissement",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "151000",
+    "label": "Provisions pour risques",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "151100",
+    "label": "Provisions pour litiges",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "151200",
+    "label": "Provisions pour garanties données aux clients",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "151300",
+    "label": "Provisions pour pertes sur marchés à achèvement futur",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "151400",
+    "label": "Provisions pour amendes & pénalités",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "151500",
+    "label": "Provisions pour pertes de change",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "151800",
+    "label": "Autres provisions pour risques",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "152200",
+    "label": "Provisions pour grosses réparations",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "153000",
+    "label": "Provisions pour retraites et obligations similaires",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "154000",
+    "label": "Provisions d'origine réglementaire",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "155000",
+    "label": "Provisions pour impôts",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "156000",
+    "label": "Provisions pour renouvellement des immobilisations",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "157000",
+    "label": "Provisions pour amortissement",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "158000",
+    "label": "Autres provisions pour charges",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "161100",
+    "label": "Emprunts obligataires convertibles en actions",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "161800",
+    "label": "Autres emprunts obligataires",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "162100",
+    "label": "Emprunts bancaires",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "162600",
+    "label": "Refinancements acquis",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "163000",
+    "label": "Emprunts auprès d'autres établissements financiers (assorties de sûretés)",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "164100",
+    "label": "Avances bloquées pour augmentation du capital",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "164200",
+    "label": "Avances reçues et comptes courants des associés bloqués",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "164400",
+    "label": "Avances conditionnées de l'Etat & organismes internationaux",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "165000",
+    "label": "Emprunts non assorties de sûretés",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "166100",
+    "label": "Dettes rattachées à des participations (groupe)",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "166200",
+    "label": "Dettes rattachées à des participations (hors groupe)",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "166300",
+    "label": "Dettes rattachées à des sociétés en participation",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "167000",
+    "label": "Dépôts & cautionnements reçus",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "168100",
+    "label": "Autres emprunts",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "168500",
+    "label": "Crédit fournisseurs d'immobilisations",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "171000",
+    "label": "Comptes des liaison des établissements",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "176000",
+    "label": "Biens & prestations de services échangés entre établissements (charges)",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "177000",
+    "label": "Biens & prestations de services échangés entre établissements (produits)",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "185000",
+    "label": "Écarts de conversion",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "188000",
+    "label": "Autres",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "211000",
+    "label": "Investissements de recherche & de développement",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "212000",
+    "label": "Concessions de marques, brevets, licences, marques, procédés & valeurs similaires",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "213000",
+    "label": "Logiciels",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "214000",
+    "label": "Fonds commercial",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "216000",
+    "label": "Droit au bail",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "218000",
+    "label": "Autres immobilisations incorporelles",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "221300",
+    "label": "Terrains nus",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "221400",
+    "label": "Terrains aménagés",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "221500",
+    "label": "Terrains bâtis",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "221600",
+    "label": "Agencements & aménagements des terrains",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "222100",
+    "label": "Bâtiments",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "222500",
+    "label": "Installations générales, agencements & aménagements des constructions",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "222600",
+    "label": "Ouvrages d'infrastructure",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "222700",
+    "label": "Constructions sur sol d'autrui",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "223100",
+    "label": "Installations techniques",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "223400",
+    "label": "Matériel industriel",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "223500",
+    "label": "Outillage industriel",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "223700",
+    "label": "Agencements & aménagements du matériel & outillage industriels",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "224100",
+    "label": "Matériel de transport de biens",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "224400",
+    "label": "Matériel de transport de personnes",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "228100",
+    "label": "Installations générales, agencements et aménagements divers",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "228200",
+    "label": "Équipement de bureau",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "228300",
+    "label": "Matériels Informatiques",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "228600",
+    "label": "Emballages récupérables identifiables",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "231000",
+    "label": "Immobilisations incorporelles en cours",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "232100",
+    "label": "Travaux Génie Civil",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "232200",
+    "label": "Travaux Charpente",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "232300",
+    "label": "Travaux Voirie",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "232400",
+    "label": "Travaux Administrations et locaux",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "232500",
+    "label": "Etudes sur Immobilisations en cours",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "232600",
+    "label": "Travaux de plomberie",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "237000",
+    "label": "Avances & acomptes versés sur immobilisations incorporelles",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "238000",
+    "label": "Avances & acomptes versés sur commandes d'immobilisations corporelles",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "240000",
+    "label": "Immobilisations à statut juridique particulier",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "251100",
+    "label": "Actions",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "251800",
+    "label": "Autres titres",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "256000",
+    "label": "Autres formes de participation",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "257100",
+    "label": "Créances rattachées à des participations (groupe)",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "257400",
+    "label": "Créances rattachées à des participations (hors groupe)",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "257500",
+    "label": "Versements représentatifs d'apports non capitalisés (appel de fonds)",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "257600",
+    "label": "Avances consolidables",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "257700",
+    "label": "Autres créances rattachées à des participations",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "258000",
+    "label": "Créances rattachées à des sociétés en participation",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "259000",
+    "label": "Versements restant à effectuer sur titres de participation non libérés",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "261100",
+    "label": "Actions",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "261800",
+    "label": "Autres titres",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "262100",
+    "label": "Obligations",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "262200",
+    "label": "Bons",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "264100",
+    "label": "Prêts participatifs",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "264200",
+    "label": "Prêts aux associés",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "264300",
+    "label": "Prêts au personnel",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "264500",
+    "label": "Prêts assortis de sûretés",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "264800",
+    "label": "Autres prêts",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "265100",
+    "label": "Dépôts",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "265500",
+    "label": "Cautionnements",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "265600",
+    "label": "Dépôts bancaires non courants",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "265800",
+    "label": "Autres",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "266100",
+    "label": "Créances immobilisées",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "266700",
+    "label": "Créances diverses",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "266800",
+    "label": "Autres créances non courantes",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "269000",
+    "label": "Versements restant à effectuer sur titres immobilisés non libérés",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "271000",
+    "label": "Frais préliminaires",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "272000",
+    "label": "Charges à répartir",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "273000",
+    "label": "Frais d'émission et primes de remboursement des emprunts",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "275000",
+    "label": "Écarts de conversion",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "278000",
+    "label": "Autres",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "281100",
+    "label": "Amorts de l’investissement en recherche et developpement",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "281200",
+    "label": "Amortissement de Concessions de marques, brevets, licences, marques, procédés & valeurs similaires",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "281300",
+    "label": "Amortissement Logiciels",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "281400",
+    "label": "Amortissement Fonds Commercial",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "282000",
+    "label": "Amortissements des immobilisations corporelles",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "282100",
+    "label": "Amortissements Terrains",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "282160",
+    "label": "Amortissements Agenc.& Aménagements Terrains",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "282200",
+    "label": "Amortissements Constructions",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "282250",
+    "label": "Amts.Install.Géné.Agenc.& Aménag.Construction",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "282280",
+    "label": "Amortissements équipements de bureau",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "282310",
+    "label": "Amortissements .Installations Techniques",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "282340",
+    "label": "Amortissements Matériels Industriels",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "282350",
+    "label": "Amortissements Outillage Industriel",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "282370",
+    "label": "Amortissements Agenc.& Aménag.du Mat.Ind",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "282410",
+    "label": "Amortissements Matériel Transport de biens",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "282440",
+    "label": "Amortissements Matériel Transport de personnes",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "282810",
+    "label": "Amortissements Install.Géné.Agenc.& Aménag.Divers",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "282820",
+    "label": "Amortissements Equipements de bureau",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "282830",
+    "label": "Amortissements Matériels Informatiques",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "284000",
+    "label": "Amortissements des immobilisations à statut juridique particulier",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "291000",
+    "label": "Provisions pour dépréciation des immobilisations incorporelles",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "292000",
+    "label": "Provisions pour dépréciation des immobilisations corporelles",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "293000",
+    "label": "Provisions pour dépréciation des immobilisations en cours",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "294000",
+    "label": "Provisions pour dépréciation des immobilisations à statut juridique particulier",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "295000",
+    "label": "Provisions pour dépréciation des participations et des créances liées à des participations",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "296000",
+    "label": "Provisions pour dépréciation des autres immobilisations financières",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "297000",
+    "label": "Provision pour dépréciation des autres immobilisations financières",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "311000",
+    "label": "Matières premières",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "313000",
+    "label": "Fournitures",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "317000",
+    "label": "Autres",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "321000",
+    "label": "Matières consommables",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "322000",
+    "label": "Fournitures consommables",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "326000",
+    "label": "Emballages",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "327000",
+    "label": "Autres",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "331000",
+    "label": "Produits en cours",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "335000",
+    "label": "Travaux en cours",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "341000",
+    "label": "Études en cours",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "345000",
+    "label": "Prestations de services en cours",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "351000",
+    "label": "Produits intermédiaires",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "355000",
+    "label": "Produits finis",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "357000",
+    "label": "Produits résiduels",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "370000",
+    "label": "STOCKS MSES",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "391100",
+    "label": "Provisions pour Dépréciation stocks MP",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "391300",
+    "label": "Provisions pour Dépréciation Fournitures",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "393100",
+    "label": "Provisions pour Dépréciation des Produit en cours",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "395500",
+    "label": "Provisions pour Dépréciation PF",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "401100",
+    "label": "Fournisseurs - achats de biens ou de prestations de services",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "401700",
+    "label": "Fournisseurs - retenues de garantie",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "403000",
+    "label": "Fournisseurs d'exploitation - effets à payer",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "404100",
+    "label": "Fournisseurs - achats d'immobilisations",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "404700",
+    "label": "Fournisseurs d'immobilisations - retenues de garantie",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "405000",
+    "label": "Fournisseurs d'immobilisations - effets à payer",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "408100",
+    "label": "Fournisseurs d'exploitation",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "408400",
+    "label": "Fournisseurs d'immobilisations",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "408800",
+    "label": "Fournisseurs - intérêts courus",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "409100",
+    "label": "Fournisseurs - avances et acomptes versés sur commandes",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "409600",
+    "label": "Fournisseurs - créances pour emballages et matériel à rendre",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "409710",
+    "label": "Fournisseurs d'exploitation",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "409740",
+    "label": "Fournisseurs d'immobilisations",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "409800",
+    "label": "Rabais, remises, ristournes à obtenir et autres avoirs non encore reçus",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "411100",
+    "label": "Clients - ventes de biens ou de prestations de services",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "411700",
+    "label": "Clients - retenues de garantie",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "413000",
+    "label": "Clients - effets à recevoir",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "414000",
+    "label": "CHEQUE IMPAYEE",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "416000",
+    "label": "Clients douteux ou litigieux",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "417000",
+    "label": "Créances sur travaux non encore facturables",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "418100",
+    "label": "Factures à établir",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "418800",
+    "label": "Intérêts courus",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "419100",
+    "label": "Clients - avances et acomptes reçus sur commandes",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "419600",
+    "label": "Clients - dettes pour emballages et matériel consignés",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "419800",
+    "label": "Rabais, remises, ristournes à accorder et autres avoirs à établir",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "421000",
+    "label": "Personnel - avances et acomptes",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "422000",
+    "label": "Comités d'entreprises et autres organes représentatifs du personnel",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "423000",
+    "label": "Personnel, œuvres sociales",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "425000",
+    "label": "Personnel - rémunérations dues",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "425100",
+    "label": "SALAIRE GERANT",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "426000",
+    "label": "Personnel - dépôts",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "427000",
+    "label": "Personnel - oppositions",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "428200",
+    "label": "Dettes provisionnées pour congés à payer",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "428600",
+    "label": "Autres charges à payer",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "428700",
+    "label": "Produits à recevoir",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "431000",
+    "label": "Etat - subventions à recevoir",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "432000",
+    "label": "RETENUE A LA SOURCE",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "432100",
+    "label": "Retenue à la source sur salaires",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "432200",
+    "label": "Retenue à la source sur honoraires",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "432300",
+    "label": "Retenue sur loyer",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "432400",
+    "label": "Retenue à la source sur marchés",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "432500",
+    "label": "Retenue à la source sur intérêts",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "432600",
+    "label": "Retenue à la source sur commissions",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "433000",
+    "label": "Opérations particulières avec l'Etat, les collectivités publiques, les organismes internationaux",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "434100",
+    "label": "Etat, Retenue à la source",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "434200",
+    "label": "Etat, Acomptes provisionnels",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "434300",
+    "label": "Impôt à liquider",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "434310",
+    "label": "Etat, report d'impôt",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "434900",
+    "label": "Impôts différés",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "435000",
+    "label": "Obligations cautionnées",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "436510",
+    "label": "TVA à payer",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "436520",
+    "label": "TCL à payer",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "436580",
+    "label": "Autres taxes sur le chiffre d'affaires",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "436600",
+    "label": "TVA/ACHAT 19%",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "436607",
+    "label": "TVA ACHAT 7%",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "436613",
+    "label": "TVA/ACHAT 13%",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "436620",
+    "label": "TVA sur immobilisations",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "436630",
+    "label": "TVA transférée par d'autres entreprises",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "436660",
+    "label": "TVA sur autres biens et services",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "436670",
+    "label": "Crédit de TVA à reporter",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "436680",
+    "label": "Autres taxes sur le chiffre d'affaires",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "436710",
+    "label": "TVA collectée",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "436780",
+    "label": "Autres taxes sur le chiffre d'affaires",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "437000",
+    "label": "Autres impôts, taxes et versements assimilés",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "438200",
+    "label": "Charges fiscales sur congés à payer",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "438600",
+    "label": "Autres charges à payer",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "438700",
+    "label": "Produits à recevoir",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "441100",
+    "label": "Créances et intérêts courus",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "441200",
+    "label": "Dettes et intérêts à payer",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "442100",
+    "label": "Principal",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "442800",
+    "label": "Intérêts courus",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "446000",
+    "label": "Associés - opérations sur le capital",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "447000",
+    "label": "Associés - dividendes à payer",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "448100",
+    "label": "Opérations courantes",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "448800",
+    "label": "Intérêts courus",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "452000",
+    "label": "Créances sur cessions d'immobilisations",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "453110",
+    "label": "CNSS",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "453180",
+    "label": "Autres",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "453820",
+    "label": "Charges sociales sur congés à payer",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "453860",
+    "label": "Autres charges à payer",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "453870",
+    "label": "Produits à recevoir",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "454000",
+    "label": "Dettes sur acquisitions de valeurs mobilières de placement",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "455000",
+    "label": "Créances sur cessions de valeurs mobilières de placement",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "457000",
+    "label": "Autres comptes débiteurs ou créditeurs",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "458600",
+    "label": "Charges à payer",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "458700",
+    "label": "Produits à recevoir",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "461000",
+    "label": "Compte d'attente",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "465100",
+    "label": "Différences de conversion actif",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "465200",
+    "label": "Différences de conversion passif",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "468000",
+    "label": "Autres comptes transitoires",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "471000",
+    "label": "Charges constatées d'avance",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "472000",
+    "label": "Produits constatés d'avance",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "478600",
+    "label": "Charges",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "478700",
+    "label": "Produits",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "491000",
+    "label": "Provisions pour dépréciation des comptes clients",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "494100",
+    "label": "Comptes du groupe",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "494200",
+    "label": "Comptes courants des associés",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "494800",
+    "label": "Opérations faites en commun",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "495200",
+    "label": "Créances sur cession d'immobilisation",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "495500",
+    "label": "Créances sur cession des valeurs mobilières de placement",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "495700",
+    "label": "Autres comptes débiteurs",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "501000",
+    "label": "Emprunts courants liés au cycle d'exploitation",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "505000",
+    "label": "Échéances à moins d'un an sur emprunts non courants",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "506100",
+    "label": "Crédit de mobilisation de créances commerciales",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "506300",
+    "label": "Mobilisation de créances nées à l'étranger",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "507000",
+    "label": "Emprunts échus et impayés",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "508000",
+    "label": "Intérêts courus",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "511000",
+    "label": "Prêts courants liés au cycle d'exploitation",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "516000",
+    "label": "Échéances à moins d'un an sur prêts non courants",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "517000",
+    "label": "Échéances à moins d'un an sur autres créances financières",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "518000",
+    "label": "Intérêts courus",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "523100",
+    "label": "Titres cotés",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "523200",
+    "label": "Titres non cotés",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "524000",
+    "label": "Autres titres conférant un droit de propriété",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "525000",
+    "label": "Obligations et bons émis par la société et rachetés par elle",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "526100",
+    "label": "Titres cotés",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "526500",
+    "label": "Titres non cotés",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "526600",
+    "label": "Échéances à moins d'un an sur les obligations immobilisées",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "527000",
+    "label": "Bons du trésor et bons de caisse à court terme",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "528100",
+    "label": "Autres valeurs mobilières",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "528800",
+    "label": "Intérêts courus sur obligations, bons et valeurs assimilées",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "529000",
+    "label": "Versements restant à effectuer sur valeurs mobilières de placement non libérées",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "531100",
+    "label": "Coupons échus à l'encaissement",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "531200",
+    "label": "Chèques à encaisser",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "531300",
+    "label": "Effets à l'encaissement",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "531400",
+    "label": "Effets à l'escompte",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "532000",
+    "label": "ATTIJATRI BANK",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "532100",
+    "label": "Comptes en dinars",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "532101",
+    "label": "BQ ATB",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "532200",
+    "label": "ATB BANK",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "532400",
+    "label": "Comptes en devises",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "534000",
+    "label": "C.C.P",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "535000",
+    "label": "Comptes au trésor",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "537000",
+    "label": "Autres organismes financiers",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "541100",
+    "label": "Caisse en dinars",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "541400",
+    "label": "Caisse en devises",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "542000",
+    "label": "Caisses succursales",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "550000",
+    "label": "Régies d'avances et accréditifs",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "580000",
+    "label": "Virements internes",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "601000",
+    "label": "Achats stockés - Matières premières et fournitures liées",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "602100",
+    "label": "Matières consommables",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "602200",
+    "label": "Fournitures consommables",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "602600",
+    "label": "Emballages",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "603100",
+    "label": "Variation des stocks de matière première et fournitures",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "603200",
+    "label": "Variation des stocks des autres approvisionnements",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "603300",
+    "label": "Variation des stocks de marchandises",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "603700",
+    "label": "VARIA.STOCKS",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "604000",
+    "label": "Achats d’études et de prestations de services",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "605000",
+    "label": "Achats de matériel, équipements et travaux",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "606000",
+    "label": "Achats non stockés de matières et fournitures",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "606100",
+    "label": "Electricité",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "606200",
+    "label": "FOURNITURE BUREAUTIQUE",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "606600",
+    "label": "CARBURANT",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "607000",
+    "label": "Achats de marchandises",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "607001",
+    "label": "CHARGE A RIENTEGRE",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "608000",
+    "label": "Achats liés à une modification comptable",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "609000",
+    "label": "Rabais, remises et ristournes obtenus sur achats",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "609800",
+    "label": "Liés à une modification comptable",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "611000",
+    "label": "Sous-traitance générale",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "612000",
+    "label": "Redevances pour utilisation d'immobilisations concédées",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "613000",
+    "label": "Locations",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "614000",
+    "label": "Charges locatives et de copropriété",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "615000",
+    "label": "Entretien et réparations",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "616000",
+    "label": "Primes d'assurances",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "617000",
+    "label": "Études, recherches et divers services extérieurs",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "617400",
+    "label": "Frais photocopies",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "618000",
+    "label": "Autres charges liées à une modification comptable",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "619000",
+    "label": "Rabais, remises et ristournes obtenus sur services extérieurs",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "621000",
+    "label": "Personnel extérieur à l'entreprise",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "622000",
+    "label": "Rémunération d'intermédiaires et honoraires",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "623000",
+    "label": "Publicité, publications, relations publiques",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "623100",
+    "label": "Relations publiques",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "624000",
+    "label": "Frais de Transports",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "624100",
+    "label": "Transports sur achats",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "624200",
+    "label": "Transports sur ventes",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "624400",
+    "label": "Transports administratifs",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "624700",
+    "label": "Transports collectifs du personnel",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "624800",
+    "label": "Divers",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "625100",
+    "label": "Voyages et déplacements",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "625200",
+    "label": "Frais de déménagement",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "625600",
+    "label": "Missions",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "625700",
+    "label": "Réceptions",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "626100",
+    "label": "Frais de télécommunications",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "627000",
+    "label": "Services bancaires et assimilés",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "627100",
+    "label": "Frais sur titres",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "627200",
+    "label": "Commissions et frais sur émission d'emprunts",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "627500",
+    "label": "Frais sur effets",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "627600",
+    "label": "Location de coffres",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "627800",
+    "label": "Autres frais et commissions sur prestations de services",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "628000",
+    "label": "Autres services extérieurs liés à une modification comptable",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "629000",
+    "label": "Rabais, remises et ristournes obtenus sur autres services extérieurs",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "631000",
+    "label": "Redevances pour concessions de marques, brevets, licences...",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "633000",
+    "label": "Jetons de présence",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "634100",
+    "label": "Créances de l'exercice",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "634400",
+    "label": "Créances des exercices antérieurs",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "635100",
+    "label": "Quote-part de bénéfice transférée",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "635500",
+    "label": "Quote-part de perte supportée",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "636000",
+    "label": "Charges nettes sur cession",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "636001",
+    "label": "PERTE OU PROFIE",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "637000",
+    "label": "Réduction de valeur",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "638000",
+    "label": "Charges diverses ordinaires liées à une modification comptable",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "640000",
+    "label": "Salaires",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "640100",
+    "label": "Heures supplémentaires",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "640200",
+    "label": "Primes",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "640300",
+    "label": "Gratifications",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "640400",
+    "label": "Avantages en nature",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "640900",
+    "label": "Autres compléments de salaires",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "641000",
+    "label": "SALAIRE GERANT",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "641010",
+    "label": "SALAIRE PERSONNEL",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "642000",
+    "label": "Appointements",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "642100",
+    "label": "Heures supplémentaires",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "642200",
+    "label": "Primes",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "642300",
+    "label": "Gratifications",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "642400",
+    "label": "Avantages en nature",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "642900",
+    "label": "Autres compléments d'appointements",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "643000",
+    "label": "Indemnités représentatives de frais",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "644000",
+    "label": "Commissions sur achats",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "644100",
+    "label": "Commissions sur ventes",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "645000",
+    "label": "Rémunérations des administrateurs, gérants et associés",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "646000",
+    "label": "Congés payés",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "646020",
+    "label": "Indemnités de préavis et de licenciements",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "646040",
+    "label": "Supplément familial",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "647000",
+    "label": "Cotisations de sécurité sociale sur salaires",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "647001",
+    "label": "CHAR.PAT R I",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "647100",
+    "label": "CNSS IND",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "647200",
+    "label": "Cotisations de sécurité sociale Gérant",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "647400",
+    "label": "Cotisations de sécurité sociale sur commissions",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "647500",
+    "label": "Cotisations de sécurité sociale sur rémunérations des administrateurs",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "647600",
+    "label": "Prestations directes",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "648000",
+    "label": "Charges de personnel liées à une modification comptable",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "649000",
+    "label": "Autres charges de personnel",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "649500",
+    "label": "Au tres charges sociales",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "651000",
+    "label": "Redevances / concessions, brevets..",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "651160",
+    "label": "Des emprunts et dettes assimilées",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "651170",
+    "label": "Des dettes rattachées à des participations",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "651500",
+    "label": "Intérêts des comptes courants et des dépôts créditeurs",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "651600",
+    "label": "Intérêts bancaires et sur opérations de financement",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "651700",
+    "label": "Intérêts des obligations cautionnées",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "651800",
+    "label": "Intérêts des autres dettes",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "653000",
+    "label": "Pertes sur créances liées à des participations",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "654000",
+    "label": "Escomptes accordés",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "655000",
+    "label": "Pertes de change",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "656000",
+    "label": "Charges nettes sur cessions de valeurs mobilières",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "657000",
+    "label": "Autres charges financières",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "658000",
+    "label": "Charges financières liées à une modification comptable",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "661100",
+    "label": "TFP",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "661200",
+    "label": "FOPROLOS",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "661800",
+    "label": "Autres",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "665100",
+    "label": "Impôts et taxes divers",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "665200",
+    "label": "Taxes sur le chiffre d'affaires non récupérables",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "665210",
+    "label": "TAXE COLLECTE LOCAL TCL",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "665400",
+    "label": "Droits d'enregistrement et de timbre",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "665500",
+    "label": "Taxes sur les véhicules",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "665800",
+    "label": "Autres droits",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "668000",
+    "label": "Impôts et taxes liés à une modification comptable",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "670000",
+    "label": "Pénalite de retard",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "678002",
+    "label": "CONT.CSS",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "681110",
+    "label": "Immobilisations incorporelles",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "681120",
+    "label": "Immobilisations corporelles",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "681200",
+    "label": "Dotations aux résorptions des charges reportées",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "681500",
+    "label": "Dotations aux provisions pour risques et charges d'exploitation",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "681610",
+    "label": "Immobilisations incorporelles",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "681620",
+    "label": "Immobilisations corporelles",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "681730",
+    "label": "Stocks et en-cours",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "681740",
+    "label": "Créances",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "681800",
+    "label": "Dotations aux amortissements et aux provisions liées à une modification comptable",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "686100",
+    "label": "Dotations aux amortissements des primes de remboursement des obligations",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "686500",
+    "label": "Dotations aux provisions pour risques et charges financières",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "686620",
+    "label": "Immobilisations financières",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "686650",
+    "label": "Placements et prêts courants",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "686800",
+    "label": "Dotations aux amortissements et aux provisions financières",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "691000",
+    "label": "Impôts sur les bénéfices calculés sur le résultat des activités ordinaires",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "701100",
+    "label": "Produits finis achevés",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "701200",
+    "label": "Produits finis non achevés (contrat de longue durée)",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "702000",
+    "label": "Ventes de produits intermédiaires",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "703000",
+    "label": "Ventes de produits résiduels",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "704000",
+    "label": "Travaux",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "705000",
+    "label": "Études et prestations de services",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "706000",
+    "label": "Produits des activités annexes",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "707000",
+    "label": "Ventes de marchandises",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "707007",
+    "label": "HTVA 7%",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "707019",
+    "label": "VT DE MARCHANDISE",
+    "direction": "DC",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "708000",
+    "label": "Ventes liées à une modification comptable",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "709100",
+    "label": "Sur ventes de produits finis",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "709200",
+    "label": "Sur ventes de produits intermédiaires",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "709400",
+    "label": "Sur travaux",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "709500",
+    "label": "Sur études et prestations de services",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "709600",
+    "label": "Sur activités annexes",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "709700",
+    "label": "Sur ventes de marchandises",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "709800",
+    "label": "Sur ventes liées à une modification comptable",
+    "direction": "D",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "713300",
+    "label": "Variations des en-cours de production de biens",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "713400",
+    "label": "Variation des en-cours de production de services",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "713500",
+    "label": "Variation des stocks de produits",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "721000",
+    "label": "Immobilisations incorporelles",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "722000",
+    "label": "Immobilisations corporelles",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "728000",
+    "label": "Production immobilisée liée à une modification comptable",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "731000",
+    "label": "Redevances pour concessions, brevets, licences...",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "732000",
+    "label": "Revenus des immeubles non affectés aux activités professionnelles",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "733000",
+    "label": "Jetons de présence et rémunérations d'administrateurs, gérants",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "734000",
+    "label": "Ristournes perçues des coopératives",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "735000",
+    "label": "Quotes-parts de résultat sur opérations faites en commun",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "736000",
+    "label": "Produits nets sur cessions d'immobilisations et autres gains non récurrents",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "738000",
+    "label": "Produits divers ordinaires liés à une modification comptable",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "739000",
+    "label": "Quotes-parts des subventions d'investissement inscrites au résultat",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "741000",
+    "label": "Subventions d'exploitation",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "745000",
+    "label": "Subventions d'équilibre",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "748000",
+    "label": "Subventions liées à une modification comptable",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "751000",
+    "label": "Produits des participations",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "752000",
+    "label": "Produits des autres immobilisations financières",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "753000",
+    "label": "Revenus des autres créances",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "754000",
+    "label": "Revenus des valeurs mobilières de placement",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "755000",
+    "label": "Escomptes obtenus",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "756000",
+    "label": "Gains de change",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "757000",
+    "label": "Produits nets sur cessions de valeurs mobilières",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "758000",
+    "label": "Produits financiers liés à une modification comptable",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "770000",
+    "label": "Gains extraordinaires",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "781110",
+    "label": "Immobilisations incorporelles",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "781120",
+    "label": "Immobilisations corporelles",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "781500",
+    "label": "Reprises sur provisions pour risques et charges d'exploitation",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "781610",
+    "label": "Immobilisations incorporelles",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "781620",
+    "label": "Immobilisations corporelles",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "781730",
+    "label": "Stocks et en-cours",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "781740",
+    "label": "Créances",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "781800",
+    "label": "Reprises sur provisions liées à une modification comptable",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "786500",
+    "label": "Reprises sur provisions pour risque et charges financières",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "786600",
+    "label": "Reprises sur provisions pour dépréciation des éléments financiers",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  },
+  {
+    "account": "786800",
+    "label": "Reprises sur provisions liées à une modification comptable",
+    "direction": "C",
+    "account_type": "",
+    "nature": "In Progress"
+  }
+]
