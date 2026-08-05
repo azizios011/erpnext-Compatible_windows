@@ -25,31 +25,36 @@
    "in_list_view": 1,
    "label": "Account",
    "reqd": 1,
-   "unique": 1
+   "unique": 1,
+   "width": "130px"
   },
   {
    "fieldname": "label",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Label"
+   "label": "Label",
+   "width": "420px"
   },
   {
    "fieldname": "account_type",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Account Type"
+   "label": "Account Type",
+   "width": "150px"
   },
   {
    "fieldname": "nature",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Nature"
+   "label": "Nature",
+   "width": "130px"
   },
   {
    "fieldname": "direction",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Direction"
+   "label": "Direction",
+   "width": "100px"
   },
   {
    "fieldname": "parent_account",
