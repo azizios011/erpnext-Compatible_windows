@@ -24,6 +24,10 @@ frappe.listview_settings["Chart of Accounts"] = {
 				'<div class="list-row-col hidden-xs"></div>',
 				`<div class="list-row-col hidden-xs">${__("Edition")}</div>`
 			);
+			html = html.replace(
+				/<div class="level-right">[\s\S]*?<\/header>/,
+				'<div class="level-right"></div>\n\t\t\t</header>'
+			);
 			return html;
 		};
 
