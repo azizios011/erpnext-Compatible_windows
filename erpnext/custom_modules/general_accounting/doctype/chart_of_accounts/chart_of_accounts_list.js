@@ -1,11 +1,13 @@
 frappe.listview_settings["Chart of Accounts"] = {
 	hide_name_column: true,
 	onload: function (listview) {
+		listview.$result.addClass("coa-list-result");
+
 		if (!document.getElementById("coa-label-wrap-style")) {
 			const style = document.createElement("style");
 			style.id = "coa-label-wrap-style";
 			style.textContent = `
-				.list-row-col[data-fieldname="label"] {
+				.coa-list-result .list-row-col[data-fieldname="label"] {
 					white-space: normal !important;
 					overflow: visible !important;
 					text-overflow: unset !important;
@@ -13,6 +15,15 @@ frappe.listview_settings["Chart of Accounts"] = {
 					line-height: 1.3;
 					padding-top: 6px;
 					padding-bottom: 6px;
+				}
+				.coa-list-result .list-row .level-left,
+				.coa-list-result .list-row-head .level-left {
+					flex: 1 1 100% !important;
+					min-width: 100% !important;
+				}
+				.coa-list-result .coa-row-actions {
+					flex: 1 1 auto !important;
+					justify-content: flex-end;
 				}
 			`;
 			document.head.appendChild(style);
