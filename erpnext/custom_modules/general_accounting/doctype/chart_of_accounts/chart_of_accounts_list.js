@@ -17,6 +17,30 @@ frappe.listview_settings["Chart of Accounts"] = {
 			</div>`;
 		};
 
+		listview.get_meta_html = function () {
+			return "";
+		};
+
+		listview.get_header_html_skeleton = function (left = "") {
+			return `
+			<div class="list-row-container">
+				<header class="level list-row-head text-muted">
+					<div class="level-left list-header-subject">
+						${left}
+					</div>
+					<div class="level-left checkbox-actions">
+						<div class="level list-subject">
+							<span class="level-item select-like">
+								<input class="list-header-checkbox list-check-all" type="checkbox" title="${__("Select All")}">
+							</span>
+							<span class="level-item list-header-meta"></span>
+						</div>
+					</div>
+				</header>
+			</div>
+			`;
+		};
+
 		const original_get_header_html = listview.get_header_html.bind(listview);
 		listview.get_header_html = function () {
 			let html = original_get_header_html();
@@ -24,15 +48,20 @@ frappe.listview_settings["Chart of Accounts"] = {
 				'<div class="list-row-col hidden-xs"></div>',
 				`<div class="list-row-col hidden-xs">${__("Edition")}</div>`
 			);
-			html = html.replace(
-				/<div class="level-right">[\s\S]*?<\/header>/,
-				'<div class="level-right"></div>\n\t\t\t</header>'
-			);
 			return html;
 		};
 
-		listview.get_meta_html = function () {
-			return "";
+		listview.get_list_row_html_skeleton = function (left = "", { virtual = false } = {}) {
+			const virtual_attr = virtual ? ' data-virtual-row="1"' : "";
+			return `
+				<div class="list-row-container" tabindex="1"${virtual_attr}>
+					<div class="level list-row">
+						<div class="level-left ellipsis">
+							${left}
+						</div>
+					</div>
+				</div>
+			`;
 		};
 
 		listview.$result.on("click", ".coa-row-add", function (e) {
