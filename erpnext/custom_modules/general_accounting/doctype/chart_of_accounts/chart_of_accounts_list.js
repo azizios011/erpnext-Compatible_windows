@@ -1,7 +1,10 @@
 frappe.listview_settings["Chart of Accounts"] = {
 	hide_name_column: true,
 	onload: function (listview) {
-		listview.page.clear_primary_action();
+		listview.set_primary_action = function () {
+			listview.page.clear_primary_action();
+		};
+		listview.set_primary_action();
 
 		listview.settings.button = {
 			show: () => true,
