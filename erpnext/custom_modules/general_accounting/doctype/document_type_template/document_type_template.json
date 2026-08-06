@@ -12,6 +12,32 @@
   "template_title",
   "column_break_3",
   "document_type_category",
+  "logo_section",
+  "logo_enabled",
+  "logo_display_options",
+  "enterprise_logo",
+  "info_section",
+  "info_enabled",
+  "info_display_options",
+  "info_fields",
+  "reference_section",
+  "reference_enabled",
+  "reference_display_options",
+  "reference_fields",
+  "items_section",
+  "items_enabled",
+  "items_display_options",
+  "item_columns",
+  "tax_section",
+  "tax_enabled",
+  "tax_display_options",
+  "tax_rate_rows",
+  "timbre_fields",
+  "fodec_fields",
+  "ttc_section",
+  "ttc_enabled",
+  "ttc_display_options",
+  "ttc_fields",
   "preview_tab",
   "preview_placeholder"
  ],
@@ -45,6 +71,181 @@
    "options": "Facture Achat\nFacture Vente\nExtrait Banque\nRelevé Bancaire\nRelevé Vente\nRelevé Achat\nExtrait Vente\nExtrait Achat",
    "remember_last_selected_value": 1,
    "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "logo_section",
+   "fieldtype": "Section Break",
+   "label": "Logo"
+  },
+  {
+   "default": "1",
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "logo_enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "logo_display_options",
+   "fieldtype": "JSON",
+   "hidden": 1,
+   "label": "Logo Display Options"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "enterprise_logo",
+   "fieldtype": "Attach Image",
+   "label": "Enterprise Logo"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "info_section",
+   "fieldtype": "Section Break",
+   "label": "Info"
+  },
+  {
+   "default": "1",
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "info_enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "info_display_options",
+   "fieldtype": "JSON",
+   "hidden": 1,
+   "label": "Info Display Options"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "info_fields",
+   "fieldtype": "Table",
+   "label": "Info Fields",
+   "options": "Document Type Template Field"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "reference_section",
+   "fieldtype": "Section Break",
+   "label": "Reference"
+  },
+  {
+   "default": "1",
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "reference_enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "reference_display_options",
+   "fieldtype": "JSON",
+   "hidden": 1,
+   "label": "Reference Display Options"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "reference_fields",
+   "fieldtype": "Table",
+   "label": "Reference Fields",
+   "options": "Document Type Template Field"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "items_section",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "default": "1",
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "items_enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "items_display_options",
+   "fieldtype": "JSON",
+   "hidden": 1,
+   "label": "Items Display Options"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "item_columns",
+   "fieldtype": "Table",
+   "label": "Item Columns",
+   "options": "Document Type Template Item Column"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "tax_section",
+   "fieldtype": "Section Break",
+   "label": "Tax"
+  },
+  {
+   "default": "1",
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "tax_enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "tax_display_options",
+   "fieldtype": "JSON",
+   "hidden": 1,
+   "label": "Tax Display Options"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "tax_rate_rows",
+   "fieldtype": "Table",
+   "label": "TVA Base/Montant Recap",
+   "options": "Document Type Template Tax Rate"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "timbre_fields",
+   "fieldtype": "Table",
+   "label": "Timbre",
+   "options": "Document Type Template Field"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "fodec_fields",
+   "fieldtype": "Table",
+   "label": "Fodec",
+   "options": "Document Type Template Field"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "ttc_section",
+   "fieldtype": "Section Break",
+   "label": "TTC"
+  },
+  {
+   "default": "1",
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "ttc_enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "ttc_display_options",
+   "fieldtype": "JSON",
+   "hidden": 1,
+   "label": "TTC Display Options"
+  },
+  {
+   "depends_on": "eval:doc.document_type_category==\"Facture Vente\"",
+   "fieldname": "ttc_fields",
+   "fieldtype": "Table",
+   "label": "TTC Fields",
+   "options": "Document Type Template Field"
   },
   {
    "fieldname": "preview_tab",
