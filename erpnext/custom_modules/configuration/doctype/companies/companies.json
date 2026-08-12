@@ -9,20 +9,24 @@
  "engine": "InnoDB",
  "field_order": [
   "general_info_tab",
+  "general_info_sb",
   "company_name",
   "abbr",
   "tax_id",
   "date_of_establishment",
   "country",
+  "col_break_2",
   "status",
   "activity",
   "legal_form",
   "natural_person",
   "code_exploitation",
+  "col_break_3",
   "code_exploitation_karama",
   "convention",
   "rne_number",
   "file_number",
+  "col_break_4",
   "street_number",
   "street",
   "postal_code",
@@ -34,6 +38,10 @@
    "fieldname": "general_info_tab",
    "fieldtype": "Tab Break",
    "label": "General Info"
+  },
+  {
+   "fieldname": "general_info_sb",
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "company_name",
@@ -67,6 +75,10 @@
    "options": "Country"
   },
   {
+   "fieldname": "col_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
@@ -96,6 +108,10 @@
    "label": "Code Exploitation"
   },
   {
+   "fieldname": "col_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "code_exploitation_karama",
    "fieldtype": "Data",
    "label": "Code Exploitation Karama"
@@ -115,6 +131,10 @@
    "fieldname": "file_number",
    "fieldtype": "Data",
    "label": "File Number"
+  },
+  {
+   "fieldname": "col_break_4",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "street_number",
