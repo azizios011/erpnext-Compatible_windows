@@ -28,7 +28,7 @@
  "shortcuts": [],
  "sidebar_items": [
   {
-   "child": 1,
+   "child": 0,
    "collapsible": 1,
    "indent": 0,
    "keep_closed": 0,
@@ -38,7 +38,7 @@
    "type": "Link"
   },
   {
-   "child": 1,
+   "child": 0,
    "collapsible": 1,
    "indent": 0,
    "keep_closed": 0,
@@ -48,7 +48,7 @@
    "type": "Link"
   },
   {
-   "child": 1,
+   "child": 0,
    "collapsible": 1,
    "indent": 0,
    "keep_closed": 0,
@@ -58,7 +58,7 @@
    "type": "Link"
   },
   {
-   "child": 1,
+   "child": 0,
    "collapsible": 1,
    "indent": 0,
    "keep_closed": 0,
@@ -68,7 +68,7 @@
    "type": "Link"
   },
   {
-   "child": 1,
+   "child": 0,
    "collapsible": 1,
    "indent": 0,
    "keep_closed": 0,
@@ -78,7 +78,7 @@
    "type": "Link"
   },
   {
-   "child": 1,
+   "child": 0,
    "collapsible": 1,
    "indent": 0,
    "keep_closed": 0,
