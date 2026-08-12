@@ -1,7 +1,22 @@
 [
-  {"id": 1, "code": "EURL", "name": null, "description": null},
-  {"id": 2, "code": "SA", "name": null, "description": null},
-  {"id": 3, "code": "SARL", "name": "LLC", "description": "Limited Liability Company"},
-  {"id": 4, "code": "SUARL", "name": null, "description": null},
-  {"id": 5, "code": "P.PHY", "name": "Personne Physique", "description": "Natural Person"}
+  {
+    "code": "EURL",
+    "label": ""
+  },
+  {
+    "code": "SA",
+    "label": ""
+  },
+  {
+    "code": "SARL",
+    "label": "LLC"
+  },
+  {
+    "code": "SUARL",
+    "label": ""
+  },
+  {
+    "code": "P.PHY",
+    "label": "Personne Physique"
+  }
 ]

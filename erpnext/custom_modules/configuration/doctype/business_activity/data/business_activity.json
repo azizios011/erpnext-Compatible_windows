@@ -1,703 +1,2806 @@
 [
-  {"id": 1, "name": "SLAUGHTERHOUSE"},
-  {"id": 2, "name": "ACT.DE MASSAGE & RELAXATION"},
-  {"id": 3, "name": "ACT. THRMALE & THALASSOTHERAPY"},
-  {"id": 4, "name": "ACTIV. TOURIST ENTERTAINMENT"},
-  {"id": 5, "name": "ACTIVE. PARAMEDICS"},
-  {"id": 6, "name": "ENTERTAINMENT ACTIVITY"},
-  {"id": 7, "name": "MISCELLANEOUS AGRICULTURAL ACTIVITIES"},
-  {"id": 8, "name": "MISCELLANEOUS AGRICULTURAL ACTIVITIES (Anc. Cod.)"},
-  {"id": 9, "name": "AGRICULTURAL AND FISHING ACTIVITIES"},
-  {"id": 10, "name": "CRAFT ACTIVITIES"},
-  {"id": 11, "name": "ENGINEERING ACTIVITIES"},
-  {"id": 12, "name": "INTERIM ACTIVITIES"},
-  {"id": 13, "name": "RADIO & TELEVISION ACTIVITIES"},
-  {"id": 14, "name": "RETAIL ACTIVITIES"},
-  {"id": 15, "name": "WHOLESALE ACTIVITIES"},
-  {"id": 16, "name": "PLACEMENT ACTIVITIES OUTSIDE CANADA"},
-  {"id": 17, "name": "POSTAL & COURIER ACTIVITIES"},
-  {"id": 18, "name": "SERVICE DELIVERY ACTIVITIES"},
-  {"id": 19, "name": "FORESTRY ACTIVITIES"},
-  {"id": 20, "name": "INDUSTRIAL ACTIVITIES"},
-  {"id": 21, "name": "IT ACTIVITIES"},
-  {"id": 22, "name": "NON-COMMERCIAL ACTIVITIES"},
-  {"id": 23, "name": "CONTRACT WINNER"},
-  {"id": 24, "name": "CENTRAL ADMINISTRATION"},
-  {"id": 25, "name": "ADMINISTRATION REGIONALE"},
-  {"id": 26, "name": "GENERAL GOVERNMENT AND RELATED BODIES"},
-  {"id": 27, "name": "N.LUCRATIVE IMMOB CASE"},
-  {"id": 28, "name": "ADVERTISING AGENCY"},
-  {"id": 29, "name": "TRAVEL AGENCY"},
-  {"id": 30, "name": "REAL ESTATE AGENCY"},
-  {"id": 31, "name": "INSURANCE AGENT"},
-  {"id": 32, "name": "PLAYER AGENT"},
-  {"id": 33, "name": "AGRICULTURE AND FISHERIES"},
-  {"id": 34, "name": "GENERAL POWER"},
-  {"id": 35, "name": "GENERAL FOOD WHOLESALE"},
-  {"id": 36, "name": "EMBASSY"},
-  {"id": 37, "name": "ANESTHESIA & ANESTH. RESUSCITATION"},
-  {"id": 38, "name": "TOURIST ENTERTAINMENT"},
-  {"id": 39, "name": "WHOLESALE HOUSEHOLD APPLIANCES"},
-  {"id": 40, "name": "APPART-HOTEL"},
-  {"id": 41, "name": "APPRET. LEATHER TANNEMENT"},
-  {"id": 42, "name": "ARCHITECT"},
-  {"id": 43, "name": "INTERIOR DESIGN AND DECORATION"},
-  {"id": 44, "name": "ART CRAFTS COPPER, ZINC & LEAD"},
-  {"id": 45, "name": "ART CRAFTS OF WROUGHT IRON"},
-  {"id": 46, "name": "ART IN THE GLASS TRADES"},
-  {"id": 47, "name": "ART OF FOOD TRADES"},
-  {"id": 48, "name": "CLAY & STONE PDS ART"},
-  {"id": 49, "name": "GRAPHIC ART"},
-  {"id": 50, "name": "ART PRINTING CRAFTS &1000."},
-  {"id": 51, "name": "ART MÉTIERS DE PREST. SERVICES"},
-  {"id": 52, "name": "ART MÉTIERS FIB. PLANTS"},
-  {"id": 53, "name": "CRAFTSMAN IN CLOTHING"},
-  {"id": 54, "name": "CRAFTSMAN OF THE PERFUMERY TRADES"},
-  {"id": 55, "name": "CRAFTSMAN OF WEAVING LOOMS"},
-  {"id": 56, "name": "CRAFTSMAN OF THE WOODWORKING TRADES"},
-  {"id": 57, "name": "SILVER CRAFTSMAN"},
-  {"id": 58, "name": "LEATHER & SHOE CRAFTSMAN"},
-  {"id": 59, "name": "GOLD ARTISAN"},
-  {"id": 60, "name": "PAINTER"},
-  {"id": 61, "name": "GRAPHIC ARTS"},
-  {"id": 62, "name": "ARTS, SPECTACLES & ACTIV. RECREATIVES"},
-  {"id": 63, "name": "SANITISS. ROADS & REMOVABLE. GARBAGE"},
-  {"id": 64, "name": "ASSOCIATION"},
-  {"id": 65, "name": "PLASTIC ARTS WORKSHOP"},
-  {"id": 66, "name": "SCHOOL CAR"},
-  {"id": 67, "name": "OTHER CCE IN DETAIL"},
-  {"id": 68, "name": "OTHER CCE IN DETAIL (Anc. Cod.)"},
-  {"id": 69, "name": "OTHER ACTIVITIES NON-COMMERCIAL"},
-  {"id": 70, "name": "OTHER ACTIVITIES NON-COMMERCIAL (Formerly Cod.)"},
-  {"id": 71, "name": "OTHER CRAFT ACTIVITIES"},
-  {"id": 72, "name": "OTHER CRAFT ACTIVITIES (Anc. Cod.)"},
-  {"id": 73, "name": "OTHER DELIVERY ACTIVITIES"},
-  {"id": 74, "name": "OTHER DELIVERY ACTIVITIES (formerly)"},
-  {"id": 75, "name": "OTHER TELECOMMUNICATIONS ACTIVITIES"},
-  {"id": 76, "name": "OTHER EMPLOYERS"},
-  {"id": 77, "name": "OTHER EMPLOYERS (formerly Cod.)"},
-  {"id": 78, "name": "OTHER MISCELLANEOUS INDUSTRIES"},
-  {"id": 79, "name": "OTHER MISCELLANEOUS INDUSTRY (Anc. Cod.)"},
-  {"id": 80, "name": "OTHER FINANCIAL INSTITUTIONS"},
-  {"id": 81, "name": "LAWYER"},
-  {"id": 82, "name": "BANKING"},
-  {"id": 83, "name": "BAKERY"},
-  {"id": 84, "name": "BROCANTE"},
-  {"id": 85, "name": "BUR ENCAD & ASSISTANCE FISCALE"},
-  {"id": 86, "name": "FOLLOW-UP & HELP RECOVERED DEBTS"},
-  {"id": 87, "name": "DESIGN OFFICE"},
-  {"id": 88, "name": "REFRESHMENT BAR"},
-  {"id": 89, "name": "Buildings"},
-  {"id": 90, "name": "CAFÉ AND BAR"},
-  {"id": 91, "name": "CAFE lere CATEGORY"},
-  {"id": 92, "name": "CALLIGRAPHER"},
-  {"id": 93, "name": "CAMP"},
-  {"id": 94, "name": "CARDIOLOGY"},
-  {"id": 95, "name": "CASINO"},
-  {"id": 96, "name": "CC.GROS PCE REHANG/OTHER EQUIPMENT AND MATERIAL"},
-  {"id": 97, "name": "WATCHMAKING CCE"},
-  {"id": 98, "name": "CCE BIG SILVER SDP"},
-  {"id": 99, "name": "CCE HOUSEHOLD APPLIANCES"},
-  {"id": 100, "name": "CCE GIFT ITEMS"},
-  {"id": 101, "name": "TCE OF SPICES AND CURED MEATS"},
-  {"id": 102, "name": "CCE OF WOOD AND DERIVATIVES"},
-  {"id": 103, "name": "PLANT CCE"},
-  {"id": 104, "name": "PHONE CCE & ACCESSORIES"},
-  {"id": 105, "name": "USED VEHICLE CCE"},
-  {"id": 106, "name": "CCE AGRICULTURAL & WORKS EQUIPMENT"},
-  {"id": 107, "name": "THIS BIG SPORT AND CAMPING ART"},
-  {"id": 108, "name": "THIS BIG WHOLESALE GIFT ITEMS"},
-  {"id": 109, "name": "CCE GROS D'HORLOGERIE"},
-  {"id": 110, "name": "CCE LARGE MUSICAL INSTRUMENTS"},
-  {"id": 111, "name": "CCE WHOLESALE MAT.DE OFFICE & ACCESSORIES"},
-  {"id": 112, "name": "CCE GROS MAST. COMPUTER & ACCESSORIES"},
-  {"id": 113, "name": "CCE WHOLESALE STATIONERY AND BOOKSTORE"},
-  {"id": 114, "name": "CCE BIG GOLD PDTS"},
-  {"id": 115, "name": "THIS BIG USED PIECE & FERAIL"},
-  {"id": 116, "name": "CCE LARGE CLEANING PRODUCT"},
-  {"id": 117, "name": "THIS CLOTHING & READY-TO-WEAR"},
-  {"id": 118, "name": "CCE MUSICAL INSTRUMENTS"},
-  {"id": 119, "name": "CCE LUSTRERIE"},
-  {"id": 120, "name": "CCE LEATHER GOODS AND LEATHER"},
-  {"id": 121, "name": "OFFICE MAT & ACCESSORIES"},
-  {"id": 122, "name": "CCE COMPUTER EQUIPMENT & ACCESSORIES"},
-  {"id": 123, "name": "MEDICAL & SCIENTIFIC MAT."},
-  {"id": 124, "name": "CCE MATTRESS AND FOAM"},
-  {"id": 125, "name": "CCE FURNITURE AND FURNISHINGS"},
-  {"id": 126, "name": "CCE STATIONERY AND BOOKSHOP"},
-  {"id": 127, "name": "CCE HARDWARE PRODUCTS"},
-  {"id": 128, "name": "MEAT PRODUCTS AND MEAT PRODUCTS"},
-  {"id": 129, "name": "CCE AUTOS & AGRICULTURAL PARTS"},
-  {"id": 130, "name": "CCE CLEANING PRODUCTS"},
-  {"id": 131, "name": "CCE TABLEWARE & GLASSWARE THREATENED"},
-  {"id": 132, "name": "THIS WINE, BEER, LIQUEUR & SPIRITS"},
-  {"id": 133, "name": "CALL CENTER"},
-  {"id": 134, "name": "HEMODIALYSIS CENTER"},
-  {"id": 135, "name": "MILK COLLECTION CENTRE"},
-  {"id": 136, "name": "TRAINING CENTER"},
-  {"id": 137, "name": "VEHICLE TRAINING/DRIVING CENTRE"},
-  {"id": 138, "name": "INTEGRATED MANAGEMENT CENTER"},
-  {"id": 139, "name": "PRIVATE CENTER. STAGE & FORM. SPORTS"},
-  {"id": 140, "name": "BED & BREAKFAST"},
-  {"id": 141, "name": "SURGERY"},
-  {"id": 142, "name": "CARDIOVASCULAR SURGERY"},
-  {"id": 143, "name": "PLASTIC & RECONSTRUCTIVE SURGERY"},
-  {"id": 144, "name": "DENTAL SURGEON"},
-  {"id": 145, "name": "CHOCOLATE, BISCUITS & CONFECTIONERY"},
-  {"id": 146, "name": "CINEMA"},
-  {"id": 147, "name": "CLINIC, POLYCLINIC"},
-  {"id": 148, "name": "KIDS CLUB"},
-  {"id": 149, "name": "IT CLUB"},
-  {"id": 150, "name": "INSURANCE & REINSURANCE POLICY"},
-  {"id": 151, "name": "HAIRDRESSER FOR MEN"},
-  {"id": 152, "name": "WOMEN'S HAIRSTYLE"},
-  {"id": 153, "name": "MILK COLLECTION"},
-  {"id": 154, "name": "WASTE COLLECTION"},
-  {"id": 155, "name": "PLASTIC WASTE COLLECTION"},
-  {"id": 156, "name": "LOCAL AUTHORITY"},
-  {"id": 157, "name": "TRADE GOLD ITEM"},
-  {"id": 158, "name": "TRADE SILVER ARTICLE"},
-  {"id": 159, "name": "TRADE REAL ESTATE"},
-  {"id": 160, "name": "FOOTWEAR TRADE"},
-  {"id": 161, "name": "MISCELLANEOUS WHOLESALE TRADE"},
-  {"id": 162, "name": "MISCELLANEOUS WHOLESALE TRADE (Anc. Cod.)"},
-  {"id": 163, "name": "TRADE FRIPERIE"},
-  {"id": 164, "name": "TRADE IN TEXTILE PRODUCTS"},
-  {"id": 165, "name": "STATUTORY AUDITOR"},
-  {"id": 166, "name": "COMMISSION"},
-  {"id": 167, "name": "CUSTOMS BROKER"},
-  {"id": 168, "name": "ACCOUNTANT"},
-  {"id": 169, "name": "VEHICLE DEALERSHIP"},
-  {"id": 170, "name": "CONDIT & EMPACK. T/PRODUCTS"},
-  {"id": 171, "name": "BEER PACKAGING"},
-  {"id": 172, "name": "FRUIT & VEGETABLE PACKAGING"},
-  {"id": 173, "name": "EXPORT CONSULTING"},
-  {"id": 174, "name": "TAX ADVICE"},
-  {"id": 175, "name": "LEGAL ADVICE"},
-  {"id": 176, "name": "VESSEL CONSIGNMENT"},
-  {"id": 177, "name": "CONST FISHING BOATS"},
-  {"id": 178, "name": "CONST NETWORKS ELCTRIQ & TELECOM"},
-  {"id": 179, "name": "CONST VEHICLES AND CARS"},
-  {"id": 180, "name": "CONST. ROAD, BRIDGE, DAM & RAILWAY"},
-  {"id": 181, "name": "METAL CONSTRUCTION"},
-  {"id": 182, "name": "CONSULTANT"},
-  {"id": 183, "name": "VEHICLE TECHNICAL INSPECTION"},
-  {"id": 184, "name": "NETWORK CONSTRUCTION (WATER, GAS)"},
-  {"id": 185, "name": "INSURANCE BROKER"},
-  {"id": 186, "name": "BROKERS & BUSINESS AGENTS"},
-  {"id": 187, "name": "PACKAGING CREATION"},
-  {"id": 188, "name": "CRÈCHE & CHILDREN'S GARDEN & DAYCARE"},
-  {"id": 189, "name": "Retail and wholesale"},
-  {"id": 190, "name": "IT consulting"},
-  {"id": 191, "name": "TOBACCO AND NEWSPAPER OUTLETS"},
-  {"id": 192, "name": "DECORATION"},
-  {"id": 193, "name": "MEDICAL DELEGATE"},
-  {"id": 194, "name": "MOVING"},
-  {"id": 195, "name": "DENTIST"},
-  {"id": 196, "name": "DERMATOLOGY"},
-  {"id": 197, "name": "DESIGN"},
-  {"id": 198, "name": "DRAUGHTSMAN, SURVEYOR & TOPOGRAPHER"},
-  {"id": 199, "name": "DIRECT. ETAB. TOURIST. (HEBERG.)"},
-  {"id": 200, "name": "DISCOTHEQUE"},
-  {"id": 201, "name": "FLOWER DISTILLATION"},
-  {"id": 202, "name": "DISTRIB. FILMS & VIDEOTHEQUE"},
-  {"id": 203, "name": "HYDROCARBON DISTRIBUTION"},
-  {"id": 204, "name": "GAS DISTRIBUTION"},
-  {"id": 205, "name": "VOCATIONAL TRAINING SCHOOL"},
-  {"id": 206, "name": "FREE SCHOOL OR HIGH SCHOOL"},
-  {"id": 207, "name": "PUBLIC WRITER"},
-  {"id": 208, "name": "WRITER (BOOK, CHAN, THEAT, CINEMA)"},
-  {"id": 209, "name": "NEWSPAPER & PERIODICAL PUBLISHING"},
-  {"id": 210, "name": "BOOK PUBLISHING"},
-  {"id": 211, "name": "EDUC. READAP. FORM. PROF. HANDICAP"},
-  {"id": 212, "name": "AUTO ELECTRICITY"},
-  {"id": 213, "name": "SNAIL FARMING"},
-  {"id": 214, "name": "RABBIT BREEDING"},
-  {"id": 215, "name": "ANIMAL BREEDING"},
-  {"id": 216, "name": "ISSUANCE OF RESTAURANT TICKETS & OTHERS"},
-  {"id": 217, "name": "INDIVIDUAL EMPLOYERS"},
-  {"id": 218, "name": "PRIVATE TEACHING"},
-  {"id": 219, "name": "COLD STORAGE"},
-  {"id": 220, "name": "CONSTRUCTION COMPANY"},
-  {"id": 221, "name": "EQUIP. SAFETY & FIRE"},
-  {"id": 222, "name": "ESP. LEISURE FOR CHILDREN AND YOUNG PEOPLE PRIVATE"},
-  {"id": 223, "name": "ETAB. PUBLIC CARACT NON ADMINIS"},
-  {"id": 224, "name": "ETAB. PUBLIC CARACTERE ADMINIS"},
-  {"id": 225, "name": "PRIVATE SCHOOL P/YOUTH"},
-  {"id": 226, "name": "MARKET RESEARCH AND SURVEY"},
-  {"id": 227, "name": "CHARTERED ACCOUNTANT"},
-  {"id": 228, "name": "EXPERT IN ALL SPECIALTIES"},
-  {"id": 229, "name": "EXPLOIT. MOORISH SHOWERS OR BATH"},
-  {"id": 230, "name": "OPERATOR LABO. ANALYSIS"},
-  {"id": 231, "name": "EXPLOITATION AUTOROUTE"},
-  {"id": 232, "name": "MUSEUM OPERATION"},
-  {"id": 233, "name": "EXPLOITATION PARKING"},
-  {"id": 234, "name": "METAL ORE MINING"},
-  {"id": 235, "name": "OIL EXTRACTION & NATURAL GAS"},
-  {"id": 236, "name": "MINERAL EXTRACTS & NATURAL FERTILIZERS"},
-  {"id": 237, "name": "STONE, SAND & CLAY EXTRACTION"},
-  {"id": 238, "name": "EXTRACT, MARBLE CUTTING"},
-  {"id": 239, "name": "FAB MILK AND DERIVATIVES"},
-  {"id": 240, "name": "FAB OFFICE MACHINES"},
-  {"id": 241, "name": "FAB .EQUIP. ELECTRICAL CARS"},
-  {"id": 242, "name": "FAB ACCUMULATOR & ELECTRIC BATTERY"},
-  {"id": 243, "name": "FAB ANIMAL FEED"},
-  {"id": 244, "name": "FAB PHONE DEVICES"},
-  {"id": 245, "name": "FAB FAUCET ITEMS"},
-  {"id": 246, "name": "FAB OTHER ELECTRICAL EQUIPMENT"},
-  {"id": 247, "name": "FAB CONCRETE READY TO EPMLOI"},
-  {"id": 248, "name": "FAB ALCOHOLIC BEVERAGES"},
-  {"id": 249, "name": "FAB CEMENT TILES"},
-  {"id": 250, "name": "FAB CEMENT, LIME AND PLASTER"},
-  {"id": 251, "name": "FAB ELECTRONIC COMPONENTS"},
-  {"id": 252, "name": "FAB OF BODYWORK & TRAILER"},
-  {"id": 253, "name": "GLUE AND GELATIN FAB"},
-  {"id": 254, "name": "INSULATED WIRE & CABLE FAB"},
-  {"id": 255, "name": "GLASS FAB AND GLASS ART"},
-  {"id": 256, "name": "FAB ICE SCALES"},
-  {"id": 257, "name": "FAB ELEMENT/CONST (BETON, PLATRE...)"},
-  {"id": 258, "name": "FAB ENDUIS, MASTIC & PDTS ETANCHITE"},
-  {"id": 259, "name": "FAB TEAM. INDUST REFRIGERATORS"},
-  {"id": 260, "name": "FAB MECHANICAL EQUIPMENT"},
-  {"id": 261, "name": "FAB GAZ A USAGE INDUST & MEDICAL"},
-  {"id": 262, "name": "FAB INSECT, PESTICIDE & HERBICIDE"},
-  {"id": 263, "name": "FAB LAMP & LIGHTING FIXTURE"},
-  {"id": 264, "name": "FAB MAT.DE DISTRIBUTION ELECT"},
-  {"id": 265, "name": "FAB MOTOR & TRANSFORMER ELECT"},
-  {"id": 266, "name": "FAB MOTORCYCLE AND BICYCLE"},
-  {"id": 267, "name": "FAB MISCELLANEOUS ARTICLES OF METAL"},
-  {"id": 268, "name": "FAB PASTA & COUSCOUS"},
-  {"id": 269, "name": "FAB PDTS CHEMICAL USE INDUST"},
-  {"id": 270, "name": "FAB AUTO PARTS & ACCESSORIES"},
-  {"id": 271, "name": "FAB PLATES AND STAMPS"},
-  {"id": 272, "name": "FAB ELECTRIC PUMPS"},
-  {"id": 273, "name": "FAB PRIMARY STEEL LOANS"},
-  {"id": 274, "name": "FAB RESERVOIR METAL & CHAUDIERE"},
-  {"id": 275, "name": "FAB TV, RADIO, RECEIVER & ACCESSORIES"},
-  {"id": 276, "name": "FAB BULK WINES"},
-  {"id": 277, "name": "FAB WINES & BOTTLING"},
-  {"id": 278, "name": "FAB. SOAP, DETERGENT & MAINTENANCE"},
-  {"id": 279, "name": "FAB. ART. JEWEL. FANTASY & ART. SIMILAR"},
-  {"id": 280, "name": "FAB. STATIONERY"},
-  {"id": 281, "name": "FAB. ARTICLES OF WIRE"},
-  {"id": 282, "name": "FAB. ARTICLES EN TEXTILE"},
-  {"id": 283, "name": "FAB. SANITARY WARE"},
-  {"id": 284, "name": "FAB. SHOES & ACCESSORIES"},
-  {"id": 285, "name": "FAB. AIR CONDITIONERS"},
-  {"id": 286, "name": "FAB. PAPER/CARDBOARD PACKAGING"},
-  {"id": 287, "name": "FAB. TEAM & INSTRU. MEDICAL"},
-  {"id": 288, "name": "FAB. DRUMS & METAL PACKAGING"},
-  {"id": 289, "name": "FAB. LINEN HOME, ART BEDDING & FURNITURE"},
-  {"id": 290, "name": "FAB. LUBRICANTS AND GREASES"},
-  {"id": 291, "name": "FAB. METAL TOOLS & HARDWARE"},
-  {"id": 292, "name": "FAB. PHOTOVOLT & SOLAR PANELS"},
-  {"id": 293, "name": "FAB. PAPER. SANITARY & DOMESTIC"},
-  {"id": 294, "name": "FAB. PULP, PAPER & CARDBOARD"},
-  {"id": 295, "name": "FAB. MEDICAL SDPS"},
-  {"id": 296, "name": "FAB. RELATED PAINT, VARNISH"},
-  {"id": 297, "name": "FAB. LOCKS & FITTINGS"},
-  {"id": 298, "name": "FAB. PENS & ART. SCHOOLS"},
-  {"id": 299, "name": "FABR ART TEXTILE"},
-  {"id": 300, "name": "MANUFACTURE OF AGRICULTURAL EQUIPMENT"},
-  {"id": 301, "name": "BEER PRODUCTION"},
-  {"id": 302, "name": "BITUMEN MANUFACTURING"},
-  {"id": 303, "name": "CHEESE MAKING"},
-  {"id": 304, "name": "MANUFACTURE OF GAMES AND TOYS"},
-  {"id": 305, "name": "SUGAR MANUFACTURING"},
-  {"id": 306, "name": "ICE CREAM AND SORBET PRODUCTION"},
-  {"id": 307, "name": "MATTRESS AND FOAM MANUFACTURING"},
-  {"id": 308, "name": "MANUFACTURE OF EXPLOSIVE PRODUCTS"},
-  {"id": 309, "name": "MANUFACTURE OF TILES AND BRICKS"},
-  {"id": 310, "name": "ALCOHOL FORDERING"},
-  {"id": 311, "name": "FAS ESSENTIAL OILS & AROMAS"},
-  {"id": 312, "name": "SCRAP METAL DEALER USED PARTS"},
-  {"id": 313, "name": "SPINNING AND WEAVING"},
-  {"id": 314, "name": "FOUNDRY"},
-  {"id": 315, "name": "MUTUAL FUNDS"},
-  {"id": 316, "name": "DRILLING OF WATER WELLS"},
-  {"id": 317, "name": "BLACKSMITH"},
-  {"id": 318, "name": "CONTINUING EDUCATION"},
-  {"id": 319, "name": "INTERNET SCES PROVIDER"},
-  {"id": 320, "name": "FOURNIT. PDTS. ALIM. CONSOM/PLACE"},
-  {"id": 321, "name": "PRIVATE UNIVERSITY HOSTEL"},
-  {"id": 322, "name": "THRIFT STORE WHOLESALE"},
-  {"id": 323, "name": "GARD, PROTECT. PERS & TRANSP. FONDS"},
-  {"id": 324, "name": "GASTRO-ENTEROLOGY"},
-  {"id": 325, "name": "STRP. PORTFEUIL. VAL. MOB. P/THIRD"},
-  {"id": 326, "name": "STRP. PORT Z.P/CRUISE"},
-  {"id": 327, "name": "HOTEL MANAGEMENT TOURIST CLASS"},
-  {"id": 328, "name": "MANAGEMENT OF HEALTH ESTABLISHMENTS"},
-  {"id": 329, "name": "RURAL COTTAGE"},
-  {"id": 330, "name": "GPMT SERV APPROV & COM PDT ARTIST"},
-  {"id": 331, "name": "CD BURNING"},
-  {"id": 332, "name": "TOUR GUIDE"},
-  {"id": 333, "name": "GYNECOLOGY OBSTETRICS"},
-  {"id": 334, "name": "HEBERG/VOCAT. NO. TOURISM"},
-  {"id": 335, "name": "HOSPITAL"},
-  {"id": 336, "name": "HOTEL DE CHARME"},
-  {"id": 337, "name": "HOTELS CLASSIFIED AS TOURIST"},
-  {"id": 338, "name": "NON-CLASSIFIED TOURIST HOTELS"},
-  {"id": 339, "name": "OYSTER FACTORIES AND BOTTLING"},
-  {"id": 340, "name": "BAILIFF"},
-  {"id": 341, "name": "PRINT"},
-  {"id": 342, "name": "PRINTING ON ALL MEDIA"},
-  {"id": 343, "name": "PRINTING"},
-  {"id": 344, "name": "IND PLASTIC MATERIAL TRANSFER"},
-  {"id": 345, "name": "IND & MOUNT HOME APPLIANCE"},
-  {"id": 346, "name": "IN. ANNEXE/IND. TEXTILES"},
-  {"id": 347, "name": "IND. WOOD AND FURNITURE"},
-  {"id": 348, "name": "IND. DIVERSES MAT. CONSTRUCTION"},
-  {"id": 349, "name": "IND. LEATHER GOODS AND LEATHER"},
-  {"id": 350, "name": "IND. PERFUMERY & COSMETICS"},
-  {"id": 351, "name": "INDUST. PASTRY"},
-  {"id": 352, "name": "INDUST. MISCELLANEOUS FOOD"},
-  {"id": 353, "name": "INDUST. MEAT, POULTRY & RABBIT"},
-  {"id": 354, "name": "SOFT DRINKS INDUSTRY"},
-  {"id": 355, "name": "ALUMINIUM INDUSTRY"},
-  {"id": 356, "name": "BAKERY INDUSTRY"},
-  {"id": 357, "name": "BASIC CHEMICAL INDUSTRY"},
-  {"id": 358, "name": "RUBBER INDUSTRY"},
-  {"id": 359, "name": "THRIFT INDUSTRY"},
-  {"id": 360, "name": "CLOTHING INDUSTRY"},
-  {"id": 361, "name": "CERAMICS INDUSTRY"},
-  {"id": 362, "name": "MINERAL WATER INDUSTRY"},
-  {"id": 363, "name": "PHARMACEUTICAL INDUSTRY"},
-  {"id": 364, "name": "INDUSTRIES PNEUMATQUES"},
-  {"id": 365, "name": "NURSE"},
-  {"id": 366, "name": "INFORM. & PROMOT. MEDIC & SCIENTIF"},
-  {"id": 367, "name": "CONSULTING ENGINEER"},
-  {"id": 368, "name": "INST. GAS MECHANISM FOR CARS"},
-  {"id": 369, "name": "INTERMEDIARY ON THE STOCK EXCHANGE"},
-  {"id": 370, "name": "INTERPRETER & TRANSLATOR"},
-  {"id": 371, "name": "GARDENING & SPACE PLANNING"},
-  {"id": 372, "name": "FREELANCE JOURNALIST"},
-  {"id": 373, "name": "PHYSIOTHERAPY"},
-  {"id": 374, "name": "KIOSK, FUEL RESALE"},
-  {"id": 375, "name": "CITRUS GROWING"},
-  {"id": 376, "name": "APICTURE"},
-  {"id": 377, "name": "AQUACULTURE"},
-  {"id": 378, "name": "ARBORICULTURE"},
-  {"id": 379, "name": "POULTRY FARMING"},
-  {"id": 380, "name": "LIVESTOCK FARMING (CATTLE AND SHEEP)"},
-  {"id": 381, "name": "HORTICULTURE"},
-  {"id": 382, "name": "OLEICULTURE"},
-  {"id": 383, "name": "OSTREICULTURE"},
-  {"id": 384, "name": "MARKET GARDENING"},
-  {"id": 385, "name": "LARGE-SCALE FARMING"},
-  {"id": 386, "name": "FISHING"},
-  {"id": 387, "name": "LA VITICULTURE"},
-  {"id": 388, "name": "PHOTO LAB"},
-  {"id": 389, "name": "LIQUEFACTION OF NATURAL GAS"},
-  {"id": 390, "name": "LIQUIDATOR & COURT MANDATE"},
-  {"id": 391, "name": "LOC EQUIPMENT & CONSTRUCTION MACHINERY"},
-  {"id": 392, "name": "LOC. HOTEL TOURIST CLASS"},
-  {"id": 393, "name": "LOC. CYCLES & MOTORCYCLES"},
-  {"id": 394, "name": "LOC. HOLIDAY ESSENTIALS"},
-  {"id": 395, "name": "RENTAL OF MOVABLE PROPERTY"},
-  {"id": 396, "name": "LEASING OF BUSINESS ASSETS"},
-  {"id": 397, "name": "CAR RENTAL"},
-  {"id": 398, "name": "REAL ESTATE RENTAL"},
-  {"id": 399, "name": "WEDDING DRESS RENTAL"},
-  {"id": 400, "name": "LAND DEVELOPER (FREE)"},
-  {"id": 401, "name": "RENTAL COMPANY"},
-  {"id": 402, "name": "MARBLE POLISHING & SHAPING"},
-  {"id": 403, "name": "WHOLESALE POLISHES"},
-  {"id": 404, "name": "MACON"},
-  {"id": 405, "name": "MAINT. APPARATUS. ELECT & ELECTRONICS"},
-  {"id": 406, "name": "INDUSTRIAL MAINTENANCE"},
-  {"id": 407, "name": "HOUSE OF TOLERANCE"},
-  {"id": 408, "name": "INFECTIOUS DISEASE"},
-  {"id": 409, "name": "RIDING SCHOOL AND LEISURE AREA"},
-  {"id": 410, "name": "HANDLING AND STORAGE"},
-  {"id": 411, "name": "STREET VENDOR"},
-  {"id": 412, "name": "MATTRESS & FOAM WHOLESALE"},
-  {"id": 413, "name": "GENERAL MECHANICS"},
-  {"id": 414, "name": "MEDICAL SPECIALIST"},
-  {"id": 415, "name": "GENERAL PRACTITIONER"},
-  {"id": 416, "name": "VETERINARIAN"},
-  {"id": 417, "name": "BANKING MEDIATOR"},
-  {"id": 418, "name": "MENUISERIE ALUMUNIUM"},
-  {"id": 419, "name": "JOINERY & METAL CLOSURE"},
-  {"id": 420, "name": "CARPENTER"},
-  {"id": 421, "name": "MEUNIER"},
-  {"id": 422, "name": "FLOUR MILLING"},
-  {"id": 423, "name": "BOTTLING BOISS. ALCOHOLIC"},
-  {"id": 424, "name": "WINE BOTTLING"},
-  {"id": 425, "name": "ASSEMBLY & ASSEMBLY. MAT. IT"},
-  {"id": 426, "name": "MONT & REP. GSM & DISH"},
-  {"id": 427, "name": "MONT. LIMMY SIGNS"},
-  {"id": 428, "name": "MOTEL"},
-  {"id": 429, "name": "MOUTURE GRAINS, EPICES & FRUIT SEC"},
-  {"id": 430, "name": "MUTUAL"},
-  {"id": 431, "name": "N.D. OF OILS & FATS"},
-  {"id": 432, "name": "NET PREMISES AND GARDEN"},
-  {"id": 433, "name": "CLEANING OF VARIOUS OBJECTS"},
-  {"id": 434, "name": "CLEANING & DISINFECTION. PREMISES"},
-  {"id": 435, "name": "NEUROLOGY"},
-  {"id": 436, "name": "NOTARY"},
-  {"id": 437, "name": "NUTRITION"},
-  {"id": 438, "name": "TELEPHONE OPERATOR"},
-  {"id": 439, "name": "OPHTHALMOLOGY"},
-  {"id": 440, "name": "OPTICIAN"},
-  {"id": 441, "name": "ORGANIS. EVENTS & SHOWS"},
-  {"id": 442, "name": "ORGANIZATION OF FAIRS & EXHIBITIONS"},
-  {"id": 443, "name": "ORGANIZATION OF SEMINARS"},
-  {"id": 444, "name": "INTERNATIONAL ORGANIZATION"},
-  {"id": 445, "name": "NATIONAL ORGANIZATION"},
-  {"id": 446, "name": "POLITICAL ORGANIZATION"},
-  {"id": 447, "name": "ORGANISATION OF TRIPS ABROAD FOR YOUNG PEOPLE"},
-  {"id": 448, "name": "ORTHO-DENTIST"},
-  {"id": 449, "name": "SPEECH THERAPIST"},
-  {"id": 450, "name": "OTORHINOLARYNGOLOGY"},
-  {"id": 451, "name": "POLITICAL PARTY"},
-  {"id": 452, "name": "PASTRY & ICE CREAM"},
-  {"id": 453, "name": "PASTRY & ICE CREAM WHOLESALE"},
-  {"id": 454, "name": "PEDIATRIC"},
-  {"id": 455, "name": "PAEDIATRICS"},
-  {"id": 456, "name": "PAINTING & DECORAT. ALL MEDIA"},
-  {"id": 457, "name": "BOARDING HOUSE"},
-  {"id": 458, "name": "BUSINESS INCUBATOR"},
-  {"id": 459, "name": "PHARMACY"},
-  {"id": 460, "name": "PHOTOCOPY AND LINE. TEXT"},
-  {"id": 461, "name": "PHOTOGRAPHER"},
-  {"id": 462, "name": "PIZZERIA, CREPERIE, SANDWICHERIE"},
-  {"id": 463, "name": "OUTSOURCING PLATFORM"},
-  {"id": 464, "name": "PLAY STATION"},
-  {"id": 465, "name": "PLUMBING"},
-  {"id": 466, "name": "DONUT PREPARATION"},
-  {"id": 467, "name": "FRUIT JUICE PREPARATION"},
-  {"id": 468, "name": "PREST. RELATING TO PRECIOUS METALS"},
-  {"id": 469, "name": "PARTICIPATION. IN ANOTHER STE"},
-  {"id": 470, "name": "SEED AND PLANT PRODUCTS"},
-  {"id": 471, "name": "PROD. & DIST. ELECT, GAS"},
-  {"id": 472, "name": "INSURANCE PRODUCER"},
-  {"id": 473, "name": "AUDIO-VISUAL PRODUCTION"},
-  {"id": 474, "name": "FILM PRODUCTION"},
-  {"id": 475, "name": "SALT PRODUCTION"},
-  {"id": 476, "name": "TOBACCO PRODUCTION"},
-  {"id": 477, "name": "MUSIC PRODUCTION AND SONG"},
-  {"id": 478, "name": "PRODUCTION THEATRALE"},
-  {"id": 479, "name": "PRODUCTION & DISTRIBUTION. EAUX"},
-  {"id": 480, "name": "REAL ESTATE DEVELOPER"},
-  {"id": 481, "name": "PROMOTION IMMOBILERE"},
-  {"id": 482, "name": "PROTECTION OF THE ELDERLY"},
-  {"id": 483, "name": "DENTAL TECHNICIAN"},
-  {"id": 484, "name": "PUBLINET"},
-  {"id": 485, "name": "IT Product"},
-  {"id": 486, "name": "RADIOLOGY, ULTRASOUND & CT"},
-  {"id": 487, "name": "PETROLEUM REFINING"},
-  {"id": 488, "name": "REWINDING"},
-  {"id": 489, "name": "RECYCLING OF NON-METALLIC MATERIALS"},
-  {"id": 490, "name": "MEDICAL REHABILITATION"},
-  {"id": 491, "name": "VEHICLE TOWING"},
-  {"id": 492, "name": "TEAM REP & MISCELLANEOUS OBJECTS"},
-  {"id": 493, "name": "SHOES & MINUTE KEYS"},
-  {"id": 494, "name": "REP. FISHING BOATS"},
-  {"id": 495, "name": "REP. EXHAUST & CARDON"},
-  {"id": 496, "name": "REP. PLASTIC BUMPER"},
-  {"id": 497, "name": "REPAR. COMPUTER EQUIPMENT"},
-  {"id": 498, "name": "BICYCLE AND MOTORCYCLE REPAIR"},
-  {"id": 499, "name": "REPAIR AND MAINTENANCE"},
-  {"id": 500, "name": "CLOCK REPAIR"},
-  {"id": 501, "name": "REPAIR PNEUS & PARALLELISM"},
-  {"id": 502, "name": "PUMP REPAIR"},
-  {"id": 503, "name": "RADIATOR REPAIR"},
-  {"id": 504, "name": "REPRESENTATIONS. AIRLINE COMPANY"},
-  {"id": 505, "name": "SALES REPRESENTATION"},
-  {"id": 506, "name": "COMPUTER RECORDING REPROD"},
-  {"id": 507, "name": "SOUND RECORDING REPRODUCTION"},
-  {"id": 508, "name": "VIDEO RECORDING REPROD"},
-  {"id": 509, "name": "TOURIST RESIDENCE"},
-  {"id": 510, "name": "RESTAURANT"},
-  {"id": 511, "name": "TOURIST CLASS RESTAURANT"},
-  {"id": 512, "name": "RHEUMATOLOGY"},
-  {"id": 513, "name": "MIDWIVES"},
-  {"id": 514, "name": "PARTY ROOM"},
-  {"id": 515, "name": "GAMES ROOM"},
-  {"id": 516, "name": "GYM AND/OR ENTREA. INDEP"},
-  {"id": 517, "name": "TEA ROOM"},
-  {"id": 518, "name": "SCES INTERMEDIATION HIGHER EDUCATION"},
-  {"id": 519, "name": "SCES/TELECOM, TELEMAT & AUDIOPHONICS (SPECIFICATIONS)"},
-  {"id": 520, "name": "COMPULSORY SOCIAL SECURITY"},
-  {"id": 521, "name": "SELECT & FOURNITURE DE PERSONNEL"},
-  {"id": 522, "name": "HYDROCARBON EXTRAS"},
-  {"id": 523, "name": "ADMINISTRATIVE SERVICES"},
-  {"id": 524, "name": "SERVICES ANCILLARY TO FISHING"},
-  {"id": 525, "name": "ANCILLARY SERVICES/GROUND TRANSPORTATION"},
-  {"id": 526, "name": "ITS AIR TRANSPORT ANNEXES"},
-  {"id": 527, "name": "ITS MARITIME TRANSPORT ANNEXES"},
-  {"id": 528, "name": "SICAF"},
-  {"id": 529, "name": "SICAR"},
-  {"id": 530, "name": "SICAV"},
-  {"id": 531, "name": "LEASING COMPANY"},
-  {"id": 532, "name": "COLLECTION COMPANY"},
-  {"id": 533, "name": "BEAUTY TREATMENTS"},
-  {"id": 534, "name": "PLASTERER"},
-  {"id": 535, "name": "SERVICE STATION"},
-  {"id": 536, "name": "STE CIVIL REAL ESTATE"},
-  {"id": 537, "name": "INTERNATIONAL TRADE COURSE"},
-  {"id": 538, "name": "STE DE FACTORING"},
-  {"id": 539, "name": "SUPER OR HYPERMARKET"},
-  {"id": 540, "name": "SUPERMARKET"},
-  {"id": 541, "name": "SYNDICATE OF CO-OWNERS"},
-  {"id": 542, "name": "PROFESSIONAL REAL ESTATE TRUSTEE"},
-  {"id": 543, "name": "TAILOR (MEN AND WOMEN)"},
-  {"id": 544, "name": "UPHOLSTERER"},
-  {"id": 545, "name": "TAXIPHONE"},
-  {"id": 546, "name": "TAXI DRIVER"},
-  {"id": 547, "name": "TECNOLOG. INFORMATIQ & INFORMATION"},
-  {"id": 548, "name": "DYEING AND DRY CLEANING"},
-  {"id": 549, "name": "SHEET METAL WORK AND PAINTING"},
-  {"id": 550, "name": "TORREFACTION DE CAFE"},
-  {"id": 551, "name": "TURNER"},
-  {"id": 552, "name": "PIPELINE, PIPELINE"},
-  {"id": 553, "name": "METAL PROCESSING & COATING"},
-  {"id": 554, "name": "TRANSF & CONSERV. SEA PRODUCTS"},
-  {"id": 555, "name": "TRANSF & CONSERV. FRUITS & LEGUMES"},
-  {"id": 556, "name": "TRANSF. SPICES & DRIED FRUITS"},
-  {"id": 557, "name": "CORK PROCESSING"},
-  {"id": 558, "name": "FREIGHT FORWARDER"},
-  {"id": 559, "name": "AIR TRANSPORT"},
-  {"id": 560, "name": "REFRIGERATED TRANSPORT"},
-  {"id": 561, "name": "TRANSPORT MARITIME"},
-  {"id": 562, "name": "TRANSPORT MEDICALISE"},
-  {"id": 563, "name": "TRANSPORT RURAL"},
-  {"id": 564, "name": "GROUND TRANSPORT OF M/DISES"},
-  {"id": 565, "name": "GROUND TRANSPORT FOR PEOPLE"},
-  {"id": 566, "name": "TRAV. CONSERV. EAUX & SOL"},
-  {"id": 567, "name": "WOODEN WORK & FAB. WOODEN ART."},
-  {"id": 568, "name": "TRAV. FORESTRY & AGRICULTURAL"},
-  {"id": 569, "name": "TRAV. HYDRO & EPURATION EAUX USEES"},
-  {"id": 570, "name": "TRAV. CARPENTRY (WOOD/OTHER MATERIALS)"},
-  {"id": 571, "name": "CONTRACT WORK (WOOD, IRON, GLASS)"},
-  {"id": 572, "name": "BUILDING ELECTRICAL WORK"},
-  {"id": 573, "name": "INSULATION WORK"},
-  {"id": 574, "name": "AIR CONDITIONING WORK"},
-  {"id": 575, "name": "PAINTING & GLAZING WORK"},
-  {"id": 576, "name": "PUBLIC WORKS"},
-  {"id": 577, "name": "TRX ALUMINIUM"},
-  {"id": 578, "name": "TVX HYDRAULICS"},
-  {"id": 579, "name": "TVX PAINTING"},
-  {"id": 580, "name": "TVX SUBCONTRACTED"},
-  {"id": 581, "name": "FREE UNIVERSITY"},
-  {"id": 582, "name": "UROLOGY"},
-  {"id": 583, "name": "V.GROS EQUIP. HEATING & CLIMATE."},
-  {"id": 584, "name": "V.GROS EQUIP. HOTEL, RESTO & CAFE"},
-  {"id": 585, "name": "V.WHOLESALE DISHES & 500S HOUSEHOLD"},
-  {"id": 586, "name": "GRAIN SALE"},
-  {"id": 587, "name": "WHOLESALE LIVESTOCK"},
-  {"id": 588, "name": "SALE OILS"},
-  {"id": 589, "name": "WHOLESALE OILS"},
-  {"id": 590, "name": "WOOL SALE"},
-  {"id": 591, "name": "SALE OF VEGETABLES AND FRUIT"},
-  {"id": 592, "name": "MARBLE SALE"},
-  {"id": 593, "name": "VIDEO-CLUB490: Others"},
-  {"id": 594, "name": "HOLIDAY VILLAGE"},
-  {"id": 595, "name": "SCREWS AND BOLONERY"},
-  {"id": 596, "name": "VT. GROS HUIL. ESSENC, AROME & INGRED"},
-  {"id": 597, "name": "VTE PTTS PHARMACEUTICALS"},
-  {"id": 598, "name": "VTE ELECTRONIC PARTS"},
-  {"id": 599, "name": "VTE PHONES & ACCESSORIES"},
-  {"id": 600, "name": "VTE CAR ACCESSORIES"},
-  {"id": 601, "name": "VTE LIVESTOCK FEED"},
-  {"id": 602, "name": "VTE PETS"},
-  {"id": 603, "name": "VTE ART SPORTS & CAMPING"},
-  {"id": 604, "name": "VTE ART & PHOTO ACCESSORIES"},
-  {"id": 605, "name": "VTE ART. PLASTIC"},
-  {"id": 606, "name": "VTE CRAFTS"},
-  {"id": 607, "name": "VTE ARTICLES IN PLASTER"},
-  {"id": 608, "name": "VTE SANITARY WARE"},
-  {"id": 609, "name": "VTE BETAIL"},
-  {"id": 610, "name": "VTE GAS CYLINDERS"},
-  {"id": 611, "name": "VTE FUEL"},
-  {"id": 612, "name": "VTE CASSETTES & CD"},
-  {"id": 613, "name": "VTE CONFECTIONERY, BISC & CHOCOLATE"},
-  {"id": 614, "name": "VTE CYCLES AND MOTORCYCLES"},
-  {"id": 615, "name": "FLOWER BOX"},
-  {"id": 616, "name": "VTE INCENSE & HERBAL EXTRACT"},
-  {"id": 617, "name": "VTE EQUIPMENT INDUSTRY & ACCESSORIES"},
-  {"id": 618, "name": "VTE EQUIP. HEATING & AIR CONDITIONING"},
-  {"id": 619, "name": "VTE EQUIP. HOTEL, RESTO & CAFE"},
-  {"id": 620, "name": "VTE EQUIP. TELECOM & ACCESSORIES"},
-  {"id": 621, "name": "VTE DRIED FRUITS"},
-  {"id": 622, "name": "VTE LARGE CONSTRUCTION MATERIALS"},
-  {"id": 623, "name": "VTE WHOLESALE ELECTRONIC PARTS"},
-  {"id": 624, "name": "VTE WHOLESALE FOR PHOTO & ACCESSORIES"},
-  {"id": 625, "name": "VTE GROS VIANDE ET DERIVATIVES"},
-  {"id": 626, "name": "VTE WHOLESALE CAR ACCESSORIES"},
-  {"id": 627, "name": "VTE WHOLESALE PLASTIC ART"},
-  {"id": 628, "name": "VTE GROS ART. LEATHER GOODS & LEATHER"},
-  {"id": 629, "name": "VTE WHOLESALE CRAFT ITEMS"},
-  {"id": 630, "name": "VTE WHOLESALE SANITARY WARE"},
-  {"id": 631, "name": "VTE GROS BOIS ET DÉRIVÉS"},
-  {"id": 632, "name": "VTE BIG CASSETTES & CD"},
-  {"id": 633, "name": "VTE BIG SHOES"},
-  {"id": 634, "name": "VTE WHOLESALE CONFECTIONERY, BISC & CHOCO"},
-  {"id": 635, "name": "VTE GROS CYCLES AND MOTORCYCLES"},
-  {"id": 636, "name": "VTE COARSE WATERS & CARBONATED DRINKS"},
-  {"id": 637, "name": "VTE LARGE AGRICULTURAL WORKS MACHINERY"},
-  {"id": 638, "name": "VTE COARSE SPICES AND CURED MEATS"},
-  {"id": 639, "name": "VTE WHOLESALE EQUIPMENT INDUSTRY & ACCESSORIES"},
-  {"id": 640, "name": "VTE GREAT TEAM. TELECOM & ACCESSORIES"},
-  {"id": 641, "name": "LARGE FRUITS AND VEGETABLES"},
-  {"id": 642, "name": "LARGE DRIED FRUITS"},
-  {"id": 643, "name": "VTE WHOLESALE CLOTHING & READY TO WEAR"},
-  {"id": 644, "name": "VTE WHOLESALE IND JEWELRY INPUTS"},
-  {"id": 645, "name": "VTE COARSE MILK & DERIVATIVES"},
-  {"id": 646, "name": "VTE WHOLESALE LUBRICANTS"},
-  {"id": 647, "name": "VTE GROS MAST IRRIGATION & ACCESSORIES"},
-  {"id": 648, "name": "VTE WHOLESALE MAT MEDICAL & SCIENTIFIC"},
-  {"id": 649, "name": "VTE GROS MAT & PROD NESSEC/AGRICULTURE"},
-  {"id": 650, "name": "VTE LARGE ELECTRICAL EQUIPMENT"},
-  {"id": 651, "name": "WHOLESALE HABERDASHERY & HOSIERY"},
-  {"id": 652, "name": "LARGE FURNITURE & FURNISHINGS"},
-  {"id": 653, "name": "VTE WHOLESALE MIRRORS & GLASS"},
-  {"id": 654, "name": "VTE WHOLESALE OPTICS MEDICAL OR NOT"},
-  {"id": 655, "name": "VTE GROS PDTS CHIMIQUES"},
-  {"id": 656, "name": "VTE GROS PDTS DIVERS"},
-  {"id": 657, "name": "VTE GROS PDTS PARAPHARMACEUTIQ"},
-  {"id": 658, "name": "VTE LARGE PRODUCTS HARDWARE"},
-  {"id": 659, "name": "VTE WHOLESALE PAINT CARS"},
-  {"id": 660, "name": "VTE LARGE AUTO & AGRICULTURAL PARTS"},
-  {"id": 661, "name": "VTE WHOLESALE PARTS CYCLES & MOTORCYCLES"},
-  {"id": 662, "name": "VTE LARGE TYRES"},
-  {"id": 663, "name": "BIG FISH, CRUSTACEANS & MOLLUSCS"},
-  {"id": 664, "name": "VTE WHOLESALE ELECT PUMP & ACCESSORIES"},
-  {"id": 665, "name": "VTE GROS PRDTS MÉTALLURGIQUES"},
-  {"id": 666, "name": "VTE WHOLESALE PTS PERFUMERIES & BEAUTY"},
-  {"id": 667, "name": "VTE LARGE SEEDS AND FERTILIZERS"},
-  {"id": 668, "name": "VTE GROS TEXTILES"},
-  {"id": 669, "name": "LARGE WINE, BEER, LIQUEUR & SPIRITS"},
-  {"id": 670, "name": "VTE GROS VITRE AUTOS"},
-  {"id": 671, "name": "POULTRY AND POULTRY PRODUCTS"},
-  {"id": 672, "name": "VTE ESSENC OIL, AROMA & INGREDIENT"},
-  {"id": 673, "name": "VTE NEWSPAPERS & MAGAZINES"},
-  {"id": 674, "name": "VTE MILK & DERIVATIVES"},
-  {"id": 675, "name": "VTE LUBRICANTS"},
-  {"id": 676, "name": "VTE MAST IRRIGATION & ACCESSORIES"},
-  {"id": 677, "name": "VTE MAT & PROD NECESS/AGRICULTURE"},
-  {"id": 678, "name": "VTE BUILDING MATERIALS"},
-  {"id": 679, "name": "VTE ELECTRICAL EQUIPMENT"},
-  {"id": 680, "name": "VTE FISHING EQUIPMENT"},
-  {"id": 681, "name": "VTE MIRRORS & GLASS"},
-  {"id": 682, "name": "VTE POTATOES HOSIERY & HABERDASHERY"},
-  {"id": 683, "name": "VTE PDTS CHEMICALS"},
-  {"id": 684, "name": "VTE PDTS OF QUARRIES"},
-  {"id": 685, "name": "VTE SPRDS DIVERS"},
-  {"id": 686, "name": "VTE PDTS PARAPHARMACEUTIQ"},
-  {"id": 687, "name": "VTE PDTS PERFUMERY & DE BEAUTE"},
-  {"id": 688, "name": "VTE PEINTURE AUTOS"},
-  {"id": 689, "name": "OIL & COAL"},
-  {"id": 690, "name": "VTE PIECE. SPARE/OTHER EQUIPMENT AND MATERIALS"},
-  {"id": 691, "name": "VTE PARTS CYCLE AND MOTORCYCLE"},
-  {"id": 692, "name": "VTE MEDICINAL PLANTS"},
-  {"id": 693, "name": "PNEUMATIC VTE"},
-  {"id": 694, "name": "FISH, CRUSTACEANS & MOLLUSCS"},
-  {"id": 695, "name": "VTE ELECTRIC PUMP & ACCESSORIES"},
-  {"id": 696, "name": "VTE METALLURGICAL PRODUCTS"},
-  {"id": 697, "name": "VTE SEEDS AND FERTILIZERS"},
-  {"id": 698, "name": "SEE VITRE CARS"},
-  {"id": 699, "name": "POULTRY AND POULTRY PRODUCTS"},
-  {"id": 700, "name": "VTE. EQUIPMENT/CRAFT SECTOR"},
-  {"id": 701, "name": "Banking activity"}
+  {
+    "code": "BA-001",
+    "label": "SLAUGHTERHOUSE"
+  },
+  {
+    "code": "BA-002",
+    "label": "ACT.DE MASSAGE & RELAXATION"
+  },
+  {
+    "code": "BA-003",
+    "label": "ACT. THRMALE & THALASSOTHERAPY"
+  },
+  {
+    "code": "BA-004",
+    "label": "ACTIV. TOURIST ENTERTAINMENT"
+  },
+  {
+    "code": "BA-005",
+    "label": "ACTIVE. PARAMEDICS"
+  },
+  {
+    "code": "BA-006",
+    "label": "ENTERTAINMENT ACTIVITY"
+  },
+  {
+    "code": "BA-007",
+    "label": "MISCELLANEOUS AGRICULTURAL ACTIVITIES"
+  },
+  {
+    "code": "BA-008",
+    "label": "MISCELLANEOUS AGRICULTURAL ACTIVITIES (Anc. Cod.)"
+  },
+  {
+    "code": "BA-009",
+    "label": "AGRICULTURAL AND FISHING ACTIVITIES"
+  },
+  {
+    "code": "BA-010",
+    "label": "CRAFT ACTIVITIES"
+  },
+  {
+    "code": "BA-011",
+    "label": "ENGINEERING ACTIVITIES"
+  },
+  {
+    "code": "BA-012",
+    "label": "INTERIM ACTIVITIES"
+  },
+  {
+    "code": "BA-013",
+    "label": "RADIO & TELEVISION ACTIVITIES"
+  },
+  {
+    "code": "BA-014",
+    "label": "RETAIL ACTIVITIES"
+  },
+  {
+    "code": "BA-015",
+    "label": "WHOLESALE ACTIVITIES"
+  },
+  {
+    "code": "BA-016",
+    "label": "PLACEMENT ACTIVITIES OUTSIDE CANADA"
+  },
+  {
+    "code": "BA-017",
+    "label": "POSTAL & COURIER ACTIVITIES"
+  },
+  {
+    "code": "BA-018",
+    "label": "SERVICE DELIVERY ACTIVITIES"
+  },
+  {
+    "code": "BA-019",
+    "label": "FORESTRY ACTIVITIES"
+  },
+  {
+    "code": "BA-020",
+    "label": "INDUSTRIAL ACTIVITIES"
+  },
+  {
+    "code": "BA-021",
+    "label": "IT ACTIVITIES"
+  },
+  {
+    "code": "BA-022",
+    "label": "NON-COMMERCIAL ACTIVITIES"
+  },
+  {
+    "code": "BA-023",
+    "label": "CONTRACT WINNER"
+  },
+  {
+    "code": "BA-024",
+    "label": "CENTRAL ADMINISTRATION"
+  },
+  {
+    "code": "BA-025",
+    "label": "ADMINISTRATION REGIONALE"
+  },
+  {
+    "code": "BA-026",
+    "label": "GENERAL GOVERNMENT AND RELATED BODIES"
+  },
+  {
+    "code": "BA-027",
+    "label": "N.LUCRATIVE IMMOB CASE"
+  },
+  {
+    "code": "BA-028",
+    "label": "ADVERTISING AGENCY"
+  },
+  {
+    "code": "BA-029",
+    "label": "TRAVEL AGENCY"
+  },
+  {
+    "code": "BA-030",
+    "label": "REAL ESTATE AGENCY"
+  },
+  {
+    "code": "BA-031",
+    "label": "INSURANCE AGENT"
+  },
+  {
+    "code": "BA-032",
+    "label": "PLAYER AGENT"
+  },
+  {
+    "code": "BA-033",
+    "label": "AGRICULTURE AND FISHERIES"
+  },
+  {
+    "code": "BA-034",
+    "label": "GENERAL POWER"
+  },
+  {
+    "code": "BA-035",
+    "label": "GENERAL FOOD WHOLESALE"
+  },
+  {
+    "code": "BA-036",
+    "label": "EMBASSY"
+  },
+  {
+    "code": "BA-037",
+    "label": "ANESTHESIA & ANESTH. RESUSCITATION"
+  },
+  {
+    "code": "BA-038",
+    "label": "TOURIST ENTERTAINMENT"
+  },
+  {
+    "code": "BA-039",
+    "label": "WHOLESALE HOUSEHOLD APPLIANCES"
+  },
+  {
+    "code": "BA-040",
+    "label": "APPART-HOTEL"
+  },
+  {
+    "code": "BA-041",
+    "label": "APPRET. LEATHER TANNEMENT"
+  },
+  {
+    "code": "BA-042",
+    "label": "ARCHITECT"
+  },
+  {
+    "code": "BA-043",
+    "label": "INTERIOR DESIGN AND DECORATION"
+  },
+  {
+    "code": "BA-044",
+    "label": "ART CRAFTS COPPER, ZINC & LEAD"
+  },
+  {
+    "code": "BA-045",
+    "label": "ART CRAFTS OF WROUGHT IRON"
+  },
+  {
+    "code": "BA-046",
+    "label": "ART IN THE GLASS TRADES"
+  },
+  {
+    "code": "BA-047",
+    "label": "ART OF FOOD TRADES"
+  },
+  {
+    "code": "BA-048",
+    "label": "CLAY & STONE PDS ART"
+  },
+  {
+    "code": "BA-049",
+    "label": "GRAPHIC ART"
+  },
+  {
+    "code": "BA-050",
+    "label": "ART PRINTING CRAFTS &1000."
+  },
+  {
+    "code": "BA-051",
+    "label": "ART M\u00c9TIERS DE PREST. SERVICES"
+  },
+  {
+    "code": "BA-052",
+    "label": "ART M\u00c9TIERS FIB. PLANTS"
+  },
+  {
+    "code": "BA-053",
+    "label": "CRAFTSMAN IN CLOTHING"
+  },
+  {
+    "code": "BA-054",
+    "label": "CRAFTSMAN OF THE PERFUMERY TRADES"
+  },
+  {
+    "code": "BA-055",
+    "label": "CRAFTSMAN OF WEAVING LOOMS"
+  },
+  {
+    "code": "BA-056",
+    "label": "CRAFTSMAN OF THE WOODWORKING TRADES"
+  },
+  {
+    "code": "BA-057",
+    "label": "SILVER CRAFTSMAN"
+  },
+  {
+    "code": "BA-058",
+    "label": "LEATHER & SHOE CRAFTSMAN"
+  },
+  {
+    "code": "BA-059",
+    "label": "GOLD ARTISAN"
+  },
+  {
+    "code": "BA-060",
+    "label": "PAINTER"
+  },
+  {
+    "code": "BA-061",
+    "label": "GRAPHIC ARTS"
+  },
+  {
+    "code": "BA-062",
+    "label": "ARTS, SPECTACLES & ACTIV. RECREATIVES"
+  },
+  {
+    "code": "BA-063",
+    "label": "SANITISS. ROADS & REMOVABLE. GARBAGE"
+  },
+  {
+    "code": "BA-064",
+    "label": "ASSOCIATION"
+  },
+  {
+    "code": "BA-065",
+    "label": "PLASTIC ARTS WORKSHOP"
+  },
+  {
+    "code": "BA-066",
+    "label": "SCHOOL CAR"
+  },
+  {
+    "code": "BA-067",
+    "label": "OTHER CCE IN DETAIL"
+  },
+  {
+    "code": "BA-068",
+    "label": "OTHER CCE IN DETAIL (Anc. Cod.)"
+  },
+  {
+    "code": "BA-069",
+    "label": "OTHER ACTIVITIES NON-COMMERCIAL"
+  },
+  {
+    "code": "BA-070",
+    "label": "OTHER ACTIVITIES NON-COMMERCIAL (Formerly Cod.)"
+  },
+  {
+    "code": "BA-071",
+    "label": "OTHER CRAFT ACTIVITIES"
+  },
+  {
+    "code": "BA-072",
+    "label": "OTHER CRAFT ACTIVITIES (Anc. Cod.)"
+  },
+  {
+    "code": "BA-073",
+    "label": "OTHER DELIVERY ACTIVITIES"
+  },
+  {
+    "code": "BA-074",
+    "label": "OTHER DELIVERY ACTIVITIES (formerly)"
+  },
+  {
+    "code": "BA-075",
+    "label": "OTHER TELECOMMUNICATIONS ACTIVITIES"
+  },
+  {
+    "code": "BA-076",
+    "label": "OTHER EMPLOYERS"
+  },
+  {
+    "code": "BA-077",
+    "label": "OTHER EMPLOYERS (formerly Cod.)"
+  },
+  {
+    "code": "BA-078",
+    "label": "OTHER MISCELLANEOUS INDUSTRIES"
+  },
+  {
+    "code": "BA-079",
+    "label": "OTHER MISCELLANEOUS INDUSTRY (Anc. Cod.)"
+  },
+  {
+    "code": "BA-080",
+    "label": "OTHER FINANCIAL INSTITUTIONS"
+  },
+  {
+    "code": "BA-081",
+    "label": "LAWYER"
+  },
+  {
+    "code": "BA-082",
+    "label": "BANKING"
+  },
+  {
+    "code": "BA-083",
+    "label": "BAKERY"
+  },
+  {
+    "code": "BA-084",
+    "label": "BROCANTE"
+  },
+  {
+    "code": "BA-085",
+    "label": "BUR ENCAD & ASSISTANCE FISCALE"
+  },
+  {
+    "code": "BA-086",
+    "label": "FOLLOW-UP & HELP RECOVERED DEBTS"
+  },
+  {
+    "code": "BA-087",
+    "label": "DESIGN OFFICE"
+  },
+  {
+    "code": "BA-088",
+    "label": "REFRESHMENT BAR"
+  },
+  {
+    "code": "BA-089",
+    "label": "Buildings"
+  },
+  {
+    "code": "BA-090",
+    "label": "CAF\u00c9 AND BAR"
+  },
+  {
+    "code": "BA-091",
+    "label": "CAFE lere CATEGORY"
+  },
+  {
+    "code": "BA-092",
+    "label": "CALLIGRAPHER"
+  },
+  {
+    "code": "BA-093",
+    "label": "CAMP"
+  },
+  {
+    "code": "BA-094",
+    "label": "CARDIOLOGY"
+  },
+  {
+    "code": "BA-095",
+    "label": "CASINO"
+  },
+  {
+    "code": "BA-096",
+    "label": "CC.GROS PCE REHANG/OTHER EQUIPMENT AND MATERIAL"
+  },
+  {
+    "code": "BA-097",
+    "label": "WATCHMAKING CCE"
+  },
+  {
+    "code": "BA-098",
+    "label": "CCE BIG SILVER SDP"
+  },
+  {
+    "code": "BA-099",
+    "label": "CCE HOUSEHOLD APPLIANCES"
+  },
+  {
+    "code": "BA-100",
+    "label": "CCE GIFT ITEMS"
+  },
+  {
+    "code": "BA-101",
+    "label": "TCE OF SPICES AND CURED MEATS"
+  },
+  {
+    "code": "BA-102",
+    "label": "CCE OF WOOD AND DERIVATIVES"
+  },
+  {
+    "code": "BA-103",
+    "label": "PLANT CCE"
+  },
+  {
+    "code": "BA-104",
+    "label": "PHONE CCE & ACCESSORIES"
+  },
+  {
+    "code": "BA-105",
+    "label": "USED VEHICLE CCE"
+  },
+  {
+    "code": "BA-106",
+    "label": "CCE AGRICULTURAL & WORKS EQUIPMENT"
+  },
+  {
+    "code": "BA-107",
+    "label": "THIS BIG SPORT AND CAMPING ART"
+  },
+  {
+    "code": "BA-108",
+    "label": "THIS BIG WHOLESALE GIFT ITEMS"
+  },
+  {
+    "code": "BA-109",
+    "label": "CCE GROS D'HORLOGERIE"
+  },
+  {
+    "code": "BA-110",
+    "label": "CCE LARGE MUSICAL INSTRUMENTS"
+  },
+  {
+    "code": "BA-111",
+    "label": "CCE WHOLESALE MAT.DE OFFICE & ACCESSORIES"
+  },
+  {
+    "code": "BA-112",
+    "label": "CCE GROS MAST. COMPUTER & ACCESSORIES"
+  },
+  {
+    "code": "BA-113",
+    "label": "CCE WHOLESALE STATIONERY AND BOOKSTORE"
+  },
+  {
+    "code": "BA-114",
+    "label": "CCE BIG GOLD PDTS"
+  },
+  {
+    "code": "BA-115",
+    "label": "THIS BIG USED PIECE & FERAIL"
+  },
+  {
+    "code": "BA-116",
+    "label": "CCE LARGE CLEANING PRODUCT"
+  },
+  {
+    "code": "BA-117",
+    "label": "THIS CLOTHING & READY-TO-WEAR"
+  },
+  {
+    "code": "BA-118",
+    "label": "CCE MUSICAL INSTRUMENTS"
+  },
+  {
+    "code": "BA-119",
+    "label": "CCE LUSTRERIE"
+  },
+  {
+    "code": "BA-120",
+    "label": "CCE LEATHER GOODS AND LEATHER"
+  },
+  {
+    "code": "BA-121",
+    "label": "OFFICE MAT & ACCESSORIES"
+  },
+  {
+    "code": "BA-122",
+    "label": "CCE COMPUTER EQUIPMENT & ACCESSORIES"
+  },
+  {
+    "code": "BA-123",
+    "label": "MEDICAL & SCIENTIFIC MAT."
+  },
+  {
+    "code": "BA-124",
+    "label": "CCE MATTRESS AND FOAM"
+  },
+  {
+    "code": "BA-125",
+    "label": "CCE FURNITURE AND FURNISHINGS"
+  },
+  {
+    "code": "BA-126",
+    "label": "CCE STATIONERY AND BOOKSHOP"
+  },
+  {
+    "code": "BA-127",
+    "label": "CCE HARDWARE PRODUCTS"
+  },
+  {
+    "code": "BA-128",
+    "label": "MEAT PRODUCTS AND MEAT PRODUCTS"
+  },
+  {
+    "code": "BA-129",
+    "label": "CCE AUTOS & AGRICULTURAL PARTS"
+  },
+  {
+    "code": "BA-130",
+    "label": "CCE CLEANING PRODUCTS"
+  },
+  {
+    "code": "BA-131",
+    "label": "CCE TABLEWARE & GLASSWARE THREATENED"
+  },
+  {
+    "code": "BA-132",
+    "label": "THIS WINE, BEER, LIQUEUR & SPIRITS"
+  },
+  {
+    "code": "BA-133",
+    "label": "CALL CENTER"
+  },
+  {
+    "code": "BA-134",
+    "label": "HEMODIALYSIS CENTER"
+  },
+  {
+    "code": "BA-135",
+    "label": "MILK COLLECTION CENTRE"
+  },
+  {
+    "code": "BA-136",
+    "label": "TRAINING CENTER"
+  },
+  {
+    "code": "BA-137",
+    "label": "VEHICLE TRAINING/DRIVING CENTRE"
+  },
+  {
+    "code": "BA-138",
+    "label": "INTEGRATED MANAGEMENT CENTER"
+  },
+  {
+    "code": "BA-139",
+    "label": "PRIVATE CENTER. STAGE & FORM. SPORTS"
+  },
+  {
+    "code": "BA-140",
+    "label": "BED & BREAKFAST"
+  },
+  {
+    "code": "BA-141",
+    "label": "SURGERY"
+  },
+  {
+    "code": "BA-142",
+    "label": "CARDIOVASCULAR SURGERY"
+  },
+  {
+    "code": "BA-143",
+    "label": "PLASTIC & RECONSTRUCTIVE SURGERY"
+  },
+  {
+    "code": "BA-144",
+    "label": "DENTAL SURGEON"
+  },
+  {
+    "code": "BA-145",
+    "label": "CHOCOLATE, BISCUITS & CONFECTIONERY"
+  },
+  {
+    "code": "BA-146",
+    "label": "CINEMA"
+  },
+  {
+    "code": "BA-147",
+    "label": "CLINIC, POLYCLINIC"
+  },
+  {
+    "code": "BA-148",
+    "label": "KIDS CLUB"
+  },
+  {
+    "code": "BA-149",
+    "label": "IT CLUB"
+  },
+  {
+    "code": "BA-150",
+    "label": "INSURANCE & REINSURANCE POLICY"
+  },
+  {
+    "code": "BA-151",
+    "label": "HAIRDRESSER FOR MEN"
+  },
+  {
+    "code": "BA-152",
+    "label": "WOMEN'S HAIRSTYLE"
+  },
+  {
+    "code": "BA-153",
+    "label": "MILK COLLECTION"
+  },
+  {
+    "code": "BA-154",
+    "label": "WASTE COLLECTION"
+  },
+  {
+    "code": "BA-155",
+    "label": "PLASTIC WASTE COLLECTION"
+  },
+  {
+    "code": "BA-156",
+    "label": "LOCAL AUTHORITY"
+  },
+  {
+    "code": "BA-157",
+    "label": "TRADE GOLD ITEM"
+  },
+  {
+    "code": "BA-158",
+    "label": "TRADE SILVER ARTICLE"
+  },
+  {
+    "code": "BA-159",
+    "label": "TRADE REAL ESTATE"
+  },
+  {
+    "code": "BA-160",
+    "label": "FOOTWEAR TRADE"
+  },
+  {
+    "code": "BA-161",
+    "label": "MISCELLANEOUS WHOLESALE TRADE"
+  },
+  {
+    "code": "BA-162",
+    "label": "MISCELLANEOUS WHOLESALE TRADE (Anc. Cod.)"
+  },
+  {
+    "code": "BA-163",
+    "label": "TRADE FRIPERIE"
+  },
+  {
+    "code": "BA-164",
+    "label": "TRADE IN TEXTILE PRODUCTS"
+  },
+  {
+    "code": "BA-165",
+    "label": "STATUTORY AUDITOR"
+  },
+  {
+    "code": "BA-166",
+    "label": "COMMISSION"
+  },
+  {
+    "code": "BA-167",
+    "label": "CUSTOMS BROKER"
+  },
+  {
+    "code": "BA-168",
+    "label": "ACCOUNTANT"
+  },
+  {
+    "code": "BA-169",
+    "label": "VEHICLE DEALERSHIP"
+  },
+  {
+    "code": "BA-170",
+    "label": "CONDIT & EMPACK. T/PRODUCTS"
+  },
+  {
+    "code": "BA-171",
+    "label": "BEER PACKAGING"
+  },
+  {
+    "code": "BA-172",
+    "label": "FRUIT & VEGETABLE PACKAGING"
+  },
+  {
+    "code": "BA-173",
+    "label": "EXPORT CONSULTING"
+  },
+  {
+    "code": "BA-174",
+    "label": "TAX ADVICE"
+  },
+  {
+    "code": "BA-175",
+    "label": "LEGAL ADVICE"
+  },
+  {
+    "code": "BA-176",
+    "label": "VESSEL CONSIGNMENT"
+  },
+  {
+    "code": "BA-177",
+    "label": "CONST FISHING BOATS"
+  },
+  {
+    "code": "BA-178",
+    "label": "CONST NETWORKS ELCTRIQ & TELECOM"
+  },
+  {
+    "code": "BA-179",
+    "label": "CONST VEHICLES AND CARS"
+  },
+  {
+    "code": "BA-180",
+    "label": "CONST. ROAD, BRIDGE, DAM & RAILWAY"
+  },
+  {
+    "code": "BA-181",
+    "label": "METAL CONSTRUCTION"
+  },
+  {
+    "code": "BA-182",
+    "label": "CONSULTANT"
+  },
+  {
+    "code": "BA-183",
+    "label": "VEHICLE TECHNICAL INSPECTION"
+  },
+  {
+    "code": "BA-184",
+    "label": "NETWORK CONSTRUCTION (WATER, GAS)"
+  },
+  {
+    "code": "BA-185",
+    "label": "INSURANCE BROKER"
+  },
+  {
+    "code": "BA-186",
+    "label": "BROKERS & BUSINESS AGENTS"
+  },
+  {
+    "code": "BA-187",
+    "label": "PACKAGING CREATION"
+  },
+  {
+    "code": "BA-188",
+    "label": "CR\u00c8CHE & CHILDREN'S GARDEN & DAYCARE"
+  },
+  {
+    "code": "BA-189",
+    "label": "Retail and wholesale"
+  },
+  {
+    "code": "BA-190",
+    "label": "IT consulting"
+  },
+  {
+    "code": "BA-191",
+    "label": "TOBACCO AND NEWSPAPER OUTLETS"
+  },
+  {
+    "code": "BA-192",
+    "label": "DECORATION"
+  },
+  {
+    "code": "BA-193",
+    "label": "MEDICAL DELEGATE"
+  },
+  {
+    "code": "BA-194",
+    "label": "MOVING"
+  },
+  {
+    "code": "BA-195",
+    "label": "DENTIST"
+  },
+  {
+    "code": "BA-196",
+    "label": "DERMATOLOGY"
+  },
+  {
+    "code": "BA-197",
+    "label": "DESIGN"
+  },
+  {
+    "code": "BA-198",
+    "label": "DRAUGHTSMAN, SURVEYOR & TOPOGRAPHER"
+  },
+  {
+    "code": "BA-199",
+    "label": "DIRECT. ETAB. TOURIST. (HEBERG.)"
+  },
+  {
+    "code": "BA-200",
+    "label": "DISCOTHEQUE"
+  },
+  {
+    "code": "BA-201",
+    "label": "FLOWER DISTILLATION"
+  },
+  {
+    "code": "BA-202",
+    "label": "DISTRIB. FILMS & VIDEOTHEQUE"
+  },
+  {
+    "code": "BA-203",
+    "label": "HYDROCARBON DISTRIBUTION"
+  },
+  {
+    "code": "BA-204",
+    "label": "GAS DISTRIBUTION"
+  },
+  {
+    "code": "BA-205",
+    "label": "VOCATIONAL TRAINING SCHOOL"
+  },
+  {
+    "code": "BA-206",
+    "label": "FREE SCHOOL OR HIGH SCHOOL"
+  },
+  {
+    "code": "BA-207",
+    "label": "PUBLIC WRITER"
+  },
+  {
+    "code": "BA-208",
+    "label": "WRITER (BOOK, CHAN, THEAT, CINEMA)"
+  },
+  {
+    "code": "BA-209",
+    "label": "NEWSPAPER & PERIODICAL PUBLISHING"
+  },
+  {
+    "code": "BA-210",
+    "label": "BOOK PUBLISHING"
+  },
+  {
+    "code": "BA-211",
+    "label": "EDUC. READAP. FORM. PROF. HANDICAP"
+  },
+  {
+    "code": "BA-212",
+    "label": "AUTO ELECTRICITY"
+  },
+  {
+    "code": "BA-213",
+    "label": "SNAIL FARMING"
+  },
+  {
+    "code": "BA-214",
+    "label": "RABBIT BREEDING"
+  },
+  {
+    "code": "BA-215",
+    "label": "ANIMAL BREEDING"
+  },
+  {
+    "code": "BA-216",
+    "label": "ISSUANCE OF RESTAURANT TICKETS & OTHERS"
+  },
+  {
+    "code": "BA-217",
+    "label": "INDIVIDUAL EMPLOYERS"
+  },
+  {
+    "code": "BA-218",
+    "label": "PRIVATE TEACHING"
+  },
+  {
+    "code": "BA-219",
+    "label": "COLD STORAGE"
+  },
+  {
+    "code": "BA-220",
+    "label": "CONSTRUCTION COMPANY"
+  },
+  {
+    "code": "BA-221",
+    "label": "EQUIP. SAFETY & FIRE"
+  },
+  {
+    "code": "BA-222",
+    "label": "ESP. LEISURE FOR CHILDREN AND YOUNG PEOPLE PRIVATE"
+  },
+  {
+    "code": "BA-223",
+    "label": "ETAB. PUBLIC CARACT NON ADMINIS"
+  },
+  {
+    "code": "BA-224",
+    "label": "ETAB. PUBLIC CARACTERE ADMINIS"
+  },
+  {
+    "code": "BA-225",
+    "label": "PRIVATE SCHOOL P/YOUTH"
+  },
+  {
+    "code": "BA-226",
+    "label": "MARKET RESEARCH AND SURVEY"
+  },
+  {
+    "code": "BA-227",
+    "label": "CHARTERED ACCOUNTANT"
+  },
+  {
+    "code": "BA-228",
+    "label": "EXPERT IN ALL SPECIALTIES"
+  },
+  {
+    "code": "BA-229",
+    "label": "EXPLOIT. MOORISH SHOWERS OR BATH"
+  },
+  {
+    "code": "BA-230",
+    "label": "OPERATOR LABO. ANALYSIS"
+  },
+  {
+    "code": "BA-231",
+    "label": "EXPLOITATION AUTOROUTE"
+  },
+  {
+    "code": "BA-232",
+    "label": "MUSEUM OPERATION"
+  },
+  {
+    "code": "BA-233",
+    "label": "EXPLOITATION PARKING"
+  },
+  {
+    "code": "BA-234",
+    "label": "METAL ORE MINING"
+  },
+  {
+    "code": "BA-235",
+    "label": "OIL EXTRACTION & NATURAL GAS"
+  },
+  {
+    "code": "BA-236",
+    "label": "MINERAL EXTRACTS & NATURAL FERTILIZERS"
+  },
+  {
+    "code": "BA-237",
+    "label": "STONE, SAND & CLAY EXTRACTION"
+  },
+  {
+    "code": "BA-238",
+    "label": "EXTRACT, MARBLE CUTTING"
+  },
+  {
+    "code": "BA-239",
+    "label": "FAB MILK AND DERIVATIVES"
+  },
+  {
+    "code": "BA-240",
+    "label": "FAB OFFICE MACHINES"
+  },
+  {
+    "code": "BA-241",
+    "label": "FAB .EQUIP. ELECTRICAL CARS"
+  },
+  {
+    "code": "BA-242",
+    "label": "FAB ACCUMULATOR & ELECTRIC BATTERY"
+  },
+  {
+    "code": "BA-243",
+    "label": "FAB ANIMAL FEED"
+  },
+  {
+    "code": "BA-244",
+    "label": "FAB PHONE DEVICES"
+  },
+  {
+    "code": "BA-245",
+    "label": "FAB FAUCET ITEMS"
+  },
+  {
+    "code": "BA-246",
+    "label": "FAB OTHER ELECTRICAL EQUIPMENT"
+  },
+  {
+    "code": "BA-247",
+    "label": "FAB CONCRETE READY TO EPMLOI"
+  },
+  {
+    "code": "BA-248",
+    "label": "FAB ALCOHOLIC BEVERAGES"
+  },
+  {
+    "code": "BA-249",
+    "label": "FAB CEMENT TILES"
+  },
+  {
+    "code": "BA-250",
+    "label": "FAB CEMENT, LIME AND PLASTER"
+  },
+  {
+    "code": "BA-251",
+    "label": "FAB ELECTRONIC COMPONENTS"
+  },
+  {
+    "code": "BA-252",
+    "label": "FAB OF BODYWORK & TRAILER"
+  },
+  {
+    "code": "BA-253",
+    "label": "GLUE AND GELATIN FAB"
+  },
+  {
+    "code": "BA-254",
+    "label": "INSULATED WIRE & CABLE FAB"
+  },
+  {
+    "code": "BA-255",
+    "label": "GLASS FAB AND GLASS ART"
+  },
+  {
+    "code": "BA-256",
+    "label": "FAB ICE SCALES"
+  },
+  {
+    "code": "BA-257",
+    "label": "FAB ELEMENT/CONST (BETON, PLATRE...)"
+  },
+  {
+    "code": "BA-258",
+    "label": "FAB ENDUIS, MASTIC & PDTS ETANCHITE"
+  },
+  {
+    "code": "BA-259",
+    "label": "FAB TEAM. INDUST REFRIGERATORS"
+  },
+  {
+    "code": "BA-260",
+    "label": "FAB MECHANICAL EQUIPMENT"
+  },
+  {
+    "code": "BA-261",
+    "label": "FAB GAZ A USAGE INDUST & MEDICAL"
+  },
+  {
+    "code": "BA-262",
+    "label": "FAB INSECT, PESTICIDE & HERBICIDE"
+  },
+  {
+    "code": "BA-263",
+    "label": "FAB LAMP & LIGHTING FIXTURE"
+  },
+  {
+    "code": "BA-264",
+    "label": "FAB MAT.DE DISTRIBUTION ELECT"
+  },
+  {
+    "code": "BA-265",
+    "label": "FAB MOTOR & TRANSFORMER ELECT"
+  },
+  {
+    "code": "BA-266",
+    "label": "FAB MOTORCYCLE AND BICYCLE"
+  },
+  {
+    "code": "BA-267",
+    "label": "FAB MISCELLANEOUS ARTICLES OF METAL"
+  },
+  {
+    "code": "BA-268",
+    "label": "FAB PASTA & COUSCOUS"
+  },
+  {
+    "code": "BA-269",
+    "label": "FAB PDTS CHEMICAL USE INDUST"
+  },
+  {
+    "code": "BA-270",
+    "label": "FAB AUTO PARTS & ACCESSORIES"
+  },
+  {
+    "code": "BA-271",
+    "label": "FAB PLATES AND STAMPS"
+  },
+  {
+    "code": "BA-272",
+    "label": "FAB ELECTRIC PUMPS"
+  },
+  {
+    "code": "BA-273",
+    "label": "FAB PRIMARY STEEL LOANS"
+  },
+  {
+    "code": "BA-274",
+    "label": "FAB RESERVOIR METAL & CHAUDIERE"
+  },
+  {
+    "code": "BA-275",
+    "label": "FAB TV, RADIO, RECEIVER & ACCESSORIES"
+  },
+  {
+    "code": "BA-276",
+    "label": "FAB BULK WINES"
+  },
+  {
+    "code": "BA-277",
+    "label": "FAB WINES & BOTTLING"
+  },
+  {
+    "code": "BA-278",
+    "label": "FAB. SOAP, DETERGENT & MAINTENANCE"
+  },
+  {
+    "code": "BA-279",
+    "label": "FAB. ART. JEWEL. FANTASY & ART. SIMILAR"
+  },
+  {
+    "code": "BA-280",
+    "label": "FAB. STATIONERY"
+  },
+  {
+    "code": "BA-281",
+    "label": "FAB. ARTICLES OF WIRE"
+  },
+  {
+    "code": "BA-282",
+    "label": "FAB. ARTICLES EN TEXTILE"
+  },
+  {
+    "code": "BA-283",
+    "label": "FAB. SANITARY WARE"
+  },
+  {
+    "code": "BA-284",
+    "label": "FAB. SHOES & ACCESSORIES"
+  },
+  {
+    "code": "BA-285",
+    "label": "FAB. AIR CONDITIONERS"
+  },
+  {
+    "code": "BA-286",
+    "label": "FAB. PAPER/CARDBOARD PACKAGING"
+  },
+  {
+    "code": "BA-287",
+    "label": "FAB. TEAM & INSTRU. MEDICAL"
+  },
+  {
+    "code": "BA-288",
+    "label": "FAB. DRUMS & METAL PACKAGING"
+  },
+  {
+    "code": "BA-289",
+    "label": "FAB. LINEN HOME, ART BEDDING & FURNITURE"
+  },
+  {
+    "code": "BA-290",
+    "label": "FAB. LUBRICANTS AND GREASES"
+  },
+  {
+    "code": "BA-291",
+    "label": "FAB. METAL TOOLS & HARDWARE"
+  },
+  {
+    "code": "BA-292",
+    "label": "FAB. PHOTOVOLT & SOLAR PANELS"
+  },
+  {
+    "code": "BA-293",
+    "label": "FAB. PAPER. SANITARY & DOMESTIC"
+  },
+  {
+    "code": "BA-294",
+    "label": "FAB. PULP, PAPER & CARDBOARD"
+  },
+  {
+    "code": "BA-295",
+    "label": "FAB. MEDICAL SDPS"
+  },
+  {
+    "code": "BA-296",
+    "label": "FAB. RELATED PAINT, VARNISH"
+  },
+  {
+    "code": "BA-297",
+    "label": "FAB. LOCKS & FITTINGS"
+  },
+  {
+    "code": "BA-298",
+    "label": "FAB. PENS & ART. SCHOOLS"
+  },
+  {
+    "code": "BA-299",
+    "label": "FABR ART TEXTILE"
+  },
+  {
+    "code": "BA-300",
+    "label": "MANUFACTURE OF AGRICULTURAL EQUIPMENT"
+  },
+  {
+    "code": "BA-301",
+    "label": "BEER PRODUCTION"
+  },
+  {
+    "code": "BA-302",
+    "label": "BITUMEN MANUFACTURING"
+  },
+  {
+    "code": "BA-303",
+    "label": "CHEESE MAKING"
+  },
+  {
+    "code": "BA-304",
+    "label": "MANUFACTURE OF GAMES AND TOYS"
+  },
+  {
+    "code": "BA-305",
+    "label": "SUGAR MANUFACTURING"
+  },
+  {
+    "code": "BA-306",
+    "label": "ICE CREAM AND SORBET PRODUCTION"
+  },
+  {
+    "code": "BA-307",
+    "label": "MATTRESS AND FOAM MANUFACTURING"
+  },
+  {
+    "code": "BA-308",
+    "label": "MANUFACTURE OF EXPLOSIVE PRODUCTS"
+  },
+  {
+    "code": "BA-309",
+    "label": "MANUFACTURE OF TILES AND BRICKS"
+  },
+  {
+    "code": "BA-310",
+    "label": "ALCOHOL FORDERING"
+  },
+  {
+    "code": "BA-311",
+    "label": "FAS ESSENTIAL OILS & AROMAS"
+  },
+  {
+    "code": "BA-312",
+    "label": "SCRAP METAL DEALER USED PARTS"
+  },
+  {
+    "code": "BA-313",
+    "label": "SPINNING AND WEAVING"
+  },
+  {
+    "code": "BA-314",
+    "label": "FOUNDRY"
+  },
+  {
+    "code": "BA-315",
+    "label": "MUTUAL FUNDS"
+  },
+  {
+    "code": "BA-316",
+    "label": "DRILLING OF WATER WELLS"
+  },
+  {
+    "code": "BA-317",
+    "label": "BLACKSMITH"
+  },
+  {
+    "code": "BA-318",
+    "label": "CONTINUING EDUCATION"
+  },
+  {
+    "code": "BA-319",
+    "label": "INTERNET SCES PROVIDER"
+  },
+  {
+    "code": "BA-320",
+    "label": "FOURNIT. PDTS. ALIM. CONSOM/PLACE"
+  },
+  {
+    "code": "BA-321",
+    "label": "PRIVATE UNIVERSITY HOSTEL"
+  },
+  {
+    "code": "BA-322",
+    "label": "THRIFT STORE WHOLESALE"
+  },
+  {
+    "code": "BA-323",
+    "label": "GARD, PROTECT. PERS & TRANSP. FONDS"
+  },
+  {
+    "code": "BA-324",
+    "label": "GASTRO-ENTEROLOGY"
+  },
+  {
+    "code": "BA-325",
+    "label": "STRP. PORTFEUIL. VAL. MOB. P/THIRD"
+  },
+  {
+    "code": "BA-326",
+    "label": "STRP. PORT Z.P/CRUISE"
+  },
+  {
+    "code": "BA-327",
+    "label": "HOTEL MANAGEMENT TOURIST CLASS"
+  },
+  {
+    "code": "BA-328",
+    "label": "MANAGEMENT OF HEALTH ESTABLISHMENTS"
+  },
+  {
+    "code": "BA-329",
+    "label": "RURAL COTTAGE"
+  },
+  {
+    "code": "BA-330",
+    "label": "GPMT SERV APPROV & COM PDT ARTIST"
+  },
+  {
+    "code": "BA-331",
+    "label": "CD BURNING"
+  },
+  {
+    "code": "BA-332",
+    "label": "TOUR GUIDE"
+  },
+  {
+    "code": "BA-333",
+    "label": "GYNECOLOGY OBSTETRICS"
+  },
+  {
+    "code": "BA-334",
+    "label": "HEBERG/VOCAT. NO. TOURISM"
+  },
+  {
+    "code": "BA-335",
+    "label": "HOSPITAL"
+  },
+  {
+    "code": "BA-336",
+    "label": "HOTEL DE CHARME"
+  },
+  {
+    "code": "BA-337",
+    "label": "HOTELS CLASSIFIED AS TOURIST"
+  },
+  {
+    "code": "BA-338",
+    "label": "NON-CLASSIFIED TOURIST HOTELS"
+  },
+  {
+    "code": "BA-339",
+    "label": "OYSTER FACTORIES AND BOTTLING"
+  },
+  {
+    "code": "BA-340",
+    "label": "BAILIFF"
+  },
+  {
+    "code": "BA-341",
+    "label": "PRINT"
+  },
+  {
+    "code": "BA-342",
+    "label": "PRINTING ON ALL MEDIA"
+  },
+  {
+    "code": "BA-343",
+    "label": "PRINTING"
+  },
+  {
+    "code": "BA-344",
+    "label": "IND PLASTIC MATERIAL TRANSFER"
+  },
+  {
+    "code": "BA-345",
+    "label": "IND & MOUNT HOME APPLIANCE"
+  },
+  {
+    "code": "BA-346",
+    "label": "IN. ANNEXE/IND. TEXTILES"
+  },
+  {
+    "code": "BA-347",
+    "label": "IND. WOOD AND FURNITURE"
+  },
+  {
+    "code": "BA-348",
+    "label": "IND. DIVERSES MAT. CONSTRUCTION"
+  },
+  {
+    "code": "BA-349",
+    "label": "IND. LEATHER GOODS AND LEATHER"
+  },
+  {
+    "code": "BA-350",
+    "label": "IND. PERFUMERY & COSMETICS"
+  },
+  {
+    "code": "BA-351",
+    "label": "INDUST. PASTRY"
+  },
+  {
+    "code": "BA-352",
+    "label": "INDUST. MISCELLANEOUS FOOD"
+  },
+  {
+    "code": "BA-353",
+    "label": "INDUST. MEAT, POULTRY & RABBIT"
+  },
+  {
+    "code": "BA-354",
+    "label": "SOFT DRINKS INDUSTRY"
+  },
+  {
+    "code": "BA-355",
+    "label": "ALUMINIUM INDUSTRY"
+  },
+  {
+    "code": "BA-356",
+    "label": "BAKERY INDUSTRY"
+  },
+  {
+    "code": "BA-357",
+    "label": "BASIC CHEMICAL INDUSTRY"
+  },
+  {
+    "code": "BA-358",
+    "label": "RUBBER INDUSTRY"
+  },
+  {
+    "code": "BA-359",
+    "label": "THRIFT INDUSTRY"
+  },
+  {
+    "code": "BA-360",
+    "label": "CLOTHING INDUSTRY"
+  },
+  {
+    "code": "BA-361",
+    "label": "CERAMICS INDUSTRY"
+  },
+  {
+    "code": "BA-362",
+    "label": "MINERAL WATER INDUSTRY"
+  },
+  {
+    "code": "BA-363",
+    "label": "PHARMACEUTICAL INDUSTRY"
+  },
+  {
+    "code": "BA-364",
+    "label": "INDUSTRIES PNEUMATQUES"
+  },
+  {
+    "code": "BA-365",
+    "label": "NURSE"
+  },
+  {
+    "code": "BA-366",
+    "label": "INFORM. & PROMOT. MEDIC & SCIENTIF"
+  },
+  {
+    "code": "BA-367",
+    "label": "CONSULTING ENGINEER"
+  },
+  {
+    "code": "BA-368",
+    "label": "INST. GAS MECHANISM FOR CARS"
+  },
+  {
+    "code": "BA-369",
+    "label": "INTERMEDIARY ON THE STOCK EXCHANGE"
+  },
+  {
+    "code": "BA-370",
+    "label": "INTERPRETER & TRANSLATOR"
+  },
+  {
+    "code": "BA-371",
+    "label": "GARDENING & SPACE PLANNING"
+  },
+  {
+    "code": "BA-372",
+    "label": "FREELANCE JOURNALIST"
+  },
+  {
+    "code": "BA-373",
+    "label": "PHYSIOTHERAPY"
+  },
+  {
+    "code": "BA-374",
+    "label": "KIOSK, FUEL RESALE"
+  },
+  {
+    "code": "BA-375",
+    "label": "CITRUS GROWING"
+  },
+  {
+    "code": "BA-376",
+    "label": "APICTURE"
+  },
+  {
+    "code": "BA-377",
+    "label": "AQUACULTURE"
+  },
+  {
+    "code": "BA-378",
+    "label": "ARBORICULTURE"
+  },
+  {
+    "code": "BA-379",
+    "label": "POULTRY FARMING"
+  },
+  {
+    "code": "BA-380",
+    "label": "LIVESTOCK FARMING (CATTLE AND SHEEP)"
+  },
+  {
+    "code": "BA-381",
+    "label": "HORTICULTURE"
+  },
+  {
+    "code": "BA-382",
+    "label": "OLEICULTURE"
+  },
+  {
+    "code": "BA-383",
+    "label": "OSTREICULTURE"
+  },
+  {
+    "code": "BA-384",
+    "label": "MARKET GARDENING"
+  },
+  {
+    "code": "BA-385",
+    "label": "LARGE-SCALE FARMING"
+  },
+  {
+    "code": "BA-386",
+    "label": "FISHING"
+  },
+  {
+    "code": "BA-387",
+    "label": "LA VITICULTURE"
+  },
+  {
+    "code": "BA-388",
+    "label": "PHOTO LAB"
+  },
+  {
+    "code": "BA-389",
+    "label": "LIQUEFACTION OF NATURAL GAS"
+  },
+  {
+    "code": "BA-390",
+    "label": "LIQUIDATOR & COURT MANDATE"
+  },
+  {
+    "code": "BA-391",
+    "label": "LOC EQUIPMENT & CONSTRUCTION MACHINERY"
+  },
+  {
+    "code": "BA-392",
+    "label": "LOC. HOTEL TOURIST CLASS"
+  },
+  {
+    "code": "BA-393",
+    "label": "LOC. CYCLES & MOTORCYCLES"
+  },
+  {
+    "code": "BA-394",
+    "label": "LOC. HOLIDAY ESSENTIALS"
+  },
+  {
+    "code": "BA-395",
+    "label": "RENTAL OF MOVABLE PROPERTY"
+  },
+  {
+    "code": "BA-396",
+    "label": "LEASING OF BUSINESS ASSETS"
+  },
+  {
+    "code": "BA-397",
+    "label": "CAR RENTAL"
+  },
+  {
+    "code": "BA-398",
+    "label": "REAL ESTATE RENTAL"
+  },
+  {
+    "code": "BA-399",
+    "label": "WEDDING DRESS RENTAL"
+  },
+  {
+    "code": "BA-400",
+    "label": "LAND DEVELOPER (FREE)"
+  },
+  {
+    "code": "BA-401",
+    "label": "RENTAL COMPANY"
+  },
+  {
+    "code": "BA-402",
+    "label": "MARBLE POLISHING & SHAPING"
+  },
+  {
+    "code": "BA-403",
+    "label": "WHOLESALE POLISHES"
+  },
+  {
+    "code": "BA-404",
+    "label": "MACON"
+  },
+  {
+    "code": "BA-405",
+    "label": "MAINT. APPARATUS. ELECT & ELECTRONICS"
+  },
+  {
+    "code": "BA-406",
+    "label": "INDUSTRIAL MAINTENANCE"
+  },
+  {
+    "code": "BA-407",
+    "label": "HOUSE OF TOLERANCE"
+  },
+  {
+    "code": "BA-408",
+    "label": "INFECTIOUS DISEASE"
+  },
+  {
+    "code": "BA-409",
+    "label": "RIDING SCHOOL AND LEISURE AREA"
+  },
+  {
+    "code": "BA-410",
+    "label": "HANDLING AND STORAGE"
+  },
+  {
+    "code": "BA-411",
+    "label": "STREET VENDOR"
+  },
+  {
+    "code": "BA-412",
+    "label": "MATTRESS & FOAM WHOLESALE"
+  },
+  {
+    "code": "BA-413",
+    "label": "GENERAL MECHANICS"
+  },
+  {
+    "code": "BA-414",
+    "label": "MEDICAL SPECIALIST"
+  },
+  {
+    "code": "BA-415",
+    "label": "GENERAL PRACTITIONER"
+  },
+  {
+    "code": "BA-416",
+    "label": "VETERINARIAN"
+  },
+  {
+    "code": "BA-417",
+    "label": "BANKING MEDIATOR"
+  },
+  {
+    "code": "BA-418",
+    "label": "MENUISERIE ALUMUNIUM"
+  },
+  {
+    "code": "BA-419",
+    "label": "JOINERY & METAL CLOSURE"
+  },
+  {
+    "code": "BA-420",
+    "label": "CARPENTER"
+  },
+  {
+    "code": "BA-421",
+    "label": "MEUNIER"
+  },
+  {
+    "code": "BA-422",
+    "label": "FLOUR MILLING"
+  },
+  {
+    "code": "BA-423",
+    "label": "BOTTLING BOISS. ALCOHOLIC"
+  },
+  {
+    "code": "BA-424",
+    "label": "WINE BOTTLING"
+  },
+  {
+    "code": "BA-425",
+    "label": "ASSEMBLY & ASSEMBLY. MAT. IT"
+  },
+  {
+    "code": "BA-426",
+    "label": "MONT & REP. GSM & DISH"
+  },
+  {
+    "code": "BA-427",
+    "label": "MONT. LIMMY SIGNS"
+  },
+  {
+    "code": "BA-428",
+    "label": "MOTEL"
+  },
+  {
+    "code": "BA-429",
+    "label": "MOUTURE GRAINS, EPICES & FRUIT SEC"
+  },
+  {
+    "code": "BA-430",
+    "label": "MUTUAL"
+  },
+  {
+    "code": "BA-431",
+    "label": "N.D. OF OILS & FATS"
+  },
+  {
+    "code": "BA-432",
+    "label": "NET PREMISES AND GARDEN"
+  },
+  {
+    "code": "BA-433",
+    "label": "CLEANING OF VARIOUS OBJECTS"
+  },
+  {
+    "code": "BA-434",
+    "label": "CLEANING & DISINFECTION. PREMISES"
+  },
+  {
+    "code": "BA-435",
+    "label": "NEUROLOGY"
+  },
+  {
+    "code": "BA-436",
+    "label": "NOTARY"
+  },
+  {
+    "code": "BA-437",
+    "label": "NUTRITION"
+  },
+  {
+    "code": "BA-438",
+    "label": "TELEPHONE OPERATOR"
+  },
+  {
+    "code": "BA-439",
+    "label": "OPHTHALMOLOGY"
+  },
+  {
+    "code": "BA-440",
+    "label": "OPTICIAN"
+  },
+  {
+    "code": "BA-441",
+    "label": "ORGANIS. EVENTS & SHOWS"
+  },
+  {
+    "code": "BA-442",
+    "label": "ORGANIZATION OF FAIRS & EXHIBITIONS"
+  },
+  {
+    "code": "BA-443",
+    "label": "ORGANIZATION OF SEMINARS"
+  },
+  {
+    "code": "BA-444",
+    "label": "INTERNATIONAL ORGANIZATION"
+  },
+  {
+    "code": "BA-445",
+    "label": "NATIONAL ORGANIZATION"
+  },
+  {
+    "code": "BA-446",
+    "label": "POLITICAL ORGANIZATION"
+  },
+  {
+    "code": "BA-447",
+    "label": "ORGANISATION OF TRIPS ABROAD FOR YOUNG PEOPLE"
+  },
+  {
+    "code": "BA-448",
+    "label": "ORTHO-DENTIST"
+  },
+  {
+    "code": "BA-449",
+    "label": "SPEECH THERAPIST"
+  },
+  {
+    "code": "BA-450",
+    "label": "OTORHINOLARYNGOLOGY"
+  },
+  {
+    "code": "BA-451",
+    "label": "POLITICAL PARTY"
+  },
+  {
+    "code": "BA-452",
+    "label": "PASTRY & ICE CREAM"
+  },
+  {
+    "code": "BA-453",
+    "label": "PASTRY & ICE CREAM WHOLESALE"
+  },
+  {
+    "code": "BA-454",
+    "label": "PEDIATRIC"
+  },
+  {
+    "code": "BA-455",
+    "label": "PAEDIATRICS"
+  },
+  {
+    "code": "BA-456",
+    "label": "PAINTING & DECORAT. ALL MEDIA"
+  },
+  {
+    "code": "BA-457",
+    "label": "BOARDING HOUSE"
+  },
+  {
+    "code": "BA-458",
+    "label": "BUSINESS INCUBATOR"
+  },
+  {
+    "code": "BA-459",
+    "label": "PHARMACY"
+  },
+  {
+    "code": "BA-460",
+    "label": "PHOTOCOPY AND LINE. TEXT"
+  },
+  {
+    "code": "BA-461",
+    "label": "PHOTOGRAPHER"
+  },
+  {
+    "code": "BA-462",
+    "label": "PIZZERIA, CREPERIE, SANDWICHERIE"
+  },
+  {
+    "code": "BA-463",
+    "label": "OUTSOURCING PLATFORM"
+  },
+  {
+    "code": "BA-464",
+    "label": "PLAY STATION"
+  },
+  {
+    "code": "BA-465",
+    "label": "PLUMBING"
+  },
+  {
+    "code": "BA-466",
+    "label": "DONUT PREPARATION"
+  },
+  {
+    "code": "BA-467",
+    "label": "FRUIT JUICE PREPARATION"
+  },
+  {
+    "code": "BA-468",
+    "label": "PREST. RELATING TO PRECIOUS METALS"
+  },
+  {
+    "code": "BA-469",
+    "label": "PARTICIPATION. IN ANOTHER STE"
+  },
+  {
+    "code": "BA-470",
+    "label": "SEED AND PLANT PRODUCTS"
+  },
+  {
+    "code": "BA-471",
+    "label": "PROD. & DIST. ELECT, GAS"
+  },
+  {
+    "code": "BA-472",
+    "label": "INSURANCE PRODUCER"
+  },
+  {
+    "code": "BA-473",
+    "label": "AUDIO-VISUAL PRODUCTION"
+  },
+  {
+    "code": "BA-474",
+    "label": "FILM PRODUCTION"
+  },
+  {
+    "code": "BA-475",
+    "label": "SALT PRODUCTION"
+  },
+  {
+    "code": "BA-476",
+    "label": "TOBACCO PRODUCTION"
+  },
+  {
+    "code": "BA-477",
+    "label": "MUSIC PRODUCTION AND SONG"
+  },
+  {
+    "code": "BA-478",
+    "label": "PRODUCTION THEATRALE"
+  },
+  {
+    "code": "BA-479",
+    "label": "PRODUCTION & DISTRIBUTION. EAUX"
+  },
+  {
+    "code": "BA-480",
+    "label": "REAL ESTATE DEVELOPER"
+  },
+  {
+    "code": "BA-481",
+    "label": "PROMOTION IMMOBILERE"
+  },
+  {
+    "code": "BA-482",
+    "label": "PROTECTION OF THE ELDERLY"
+  },
+  {
+    "code": "BA-483",
+    "label": "DENTAL TECHNICIAN"
+  },
+  {
+    "code": "BA-484",
+    "label": "PUBLINET"
+  },
+  {
+    "code": "BA-485",
+    "label": "IT Product"
+  },
+  {
+    "code": "BA-486",
+    "label": "RADIOLOGY, ULTRASOUND & CT"
+  },
+  {
+    "code": "BA-487",
+    "label": "PETROLEUM REFINING"
+  },
+  {
+    "code": "BA-488",
+    "label": "REWINDING"
+  },
+  {
+    "code": "BA-489",
+    "label": "RECYCLING OF NON-METALLIC MATERIALS"
+  },
+  {
+    "code": "BA-490",
+    "label": "MEDICAL REHABILITATION"
+  },
+  {
+    "code": "BA-491",
+    "label": "VEHICLE TOWING"
+  },
+  {
+    "code": "BA-492",
+    "label": "TEAM REP & MISCELLANEOUS OBJECTS"
+  },
+  {
+    "code": "BA-493",
+    "label": "SHOES & MINUTE KEYS"
+  },
+  {
+    "code": "BA-494",
+    "label": "REP. FISHING BOATS"
+  },
+  {
+    "code": "BA-495",
+    "label": "REP. EXHAUST & CARDON"
+  },
+  {
+    "code": "BA-496",
+    "label": "REP. PLASTIC BUMPER"
+  },
+  {
+    "code": "BA-497",
+    "label": "REPAR. COMPUTER EQUIPMENT"
+  },
+  {
+    "code": "BA-498",
+    "label": "BICYCLE AND MOTORCYCLE REPAIR"
+  },
+  {
+    "code": "BA-499",
+    "label": "REPAIR AND MAINTENANCE"
+  },
+  {
+    "code": "BA-500",
+    "label": "CLOCK REPAIR"
+  },
+  {
+    "code": "BA-501",
+    "label": "REPAIR PNEUS & PARALLELISM"
+  },
+  {
+    "code": "BA-502",
+    "label": "PUMP REPAIR"
+  },
+  {
+    "code": "BA-503",
+    "label": "RADIATOR REPAIR"
+  },
+  {
+    "code": "BA-504",
+    "label": "REPRESENTATIONS. AIRLINE COMPANY"
+  },
+  {
+    "code": "BA-505",
+    "label": "SALES REPRESENTATION"
+  },
+  {
+    "code": "BA-506",
+    "label": "COMPUTER RECORDING REPROD"
+  },
+  {
+    "code": "BA-507",
+    "label": "SOUND RECORDING REPRODUCTION"
+  },
+  {
+    "code": "BA-508",
+    "label": "VIDEO RECORDING REPROD"
+  },
+  {
+    "code": "BA-509",
+    "label": "TOURIST RESIDENCE"
+  },
+  {
+    "code": "BA-510",
+    "label": "RESTAURANT"
+  },
+  {
+    "code": "BA-511",
+    "label": "TOURIST CLASS RESTAURANT"
+  },
+  {
+    "code": "BA-512",
+    "label": "RHEUMATOLOGY"
+  },
+  {
+    "code": "BA-513",
+    "label": "MIDWIVES"
+  },
+  {
+    "code": "BA-514",
+    "label": "PARTY ROOM"
+  },
+  {
+    "code": "BA-515",
+    "label": "GAMES ROOM"
+  },
+  {
+    "code": "BA-516",
+    "label": "GYM AND/OR ENTREA. INDEP"
+  },
+  {
+    "code": "BA-517",
+    "label": "TEA ROOM"
+  },
+  {
+    "code": "BA-518",
+    "label": "SCES INTERMEDIATION HIGHER EDUCATION"
+  },
+  {
+    "code": "BA-519",
+    "label": "SCES/TELECOM, TELEMAT & AUDIOPHONICS (SPECIFICATIONS)"
+  },
+  {
+    "code": "BA-520",
+    "label": "COMPULSORY SOCIAL SECURITY"
+  },
+  {
+    "code": "BA-521",
+    "label": "SELECT & FOURNITURE DE PERSONNEL"
+  },
+  {
+    "code": "BA-522",
+    "label": "HYDROCARBON EXTRAS"
+  },
+  {
+    "code": "BA-523",
+    "label": "ADMINISTRATIVE SERVICES"
+  },
+  {
+    "code": "BA-524",
+    "label": "SERVICES ANCILLARY TO FISHING"
+  },
+  {
+    "code": "BA-525",
+    "label": "ANCILLARY SERVICES/GROUND TRANSPORTATION"
+  },
+  {
+    "code": "BA-526",
+    "label": "ITS AIR TRANSPORT ANNEXES"
+  },
+  {
+    "code": "BA-527",
+    "label": "ITS MARITIME TRANSPORT ANNEXES"
+  },
+  {
+    "code": "BA-528",
+    "label": "SICAF"
+  },
+  {
+    "code": "BA-529",
+    "label": "SICAR"
+  },
+  {
+    "code": "BA-530",
+    "label": "SICAV"
+  },
+  {
+    "code": "BA-531",
+    "label": "LEASING COMPANY"
+  },
+  {
+    "code": "BA-532",
+    "label": "COLLECTION COMPANY"
+  },
+  {
+    "code": "BA-533",
+    "label": "BEAUTY TREATMENTS"
+  },
+  {
+    "code": "BA-534",
+    "label": "PLASTERER"
+  },
+  {
+    "code": "BA-535",
+    "label": "SERVICE STATION"
+  },
+  {
+    "code": "BA-536",
+    "label": "STE CIVIL REAL ESTATE"
+  },
+  {
+    "code": "BA-537",
+    "label": "INTERNATIONAL TRADE COURSE"
+  },
+  {
+    "code": "BA-538",
+    "label": "STE DE FACTORING"
+  },
+  {
+    "code": "BA-539",
+    "label": "SUPER OR HYPERMARKET"
+  },
+  {
+    "code": "BA-540",
+    "label": "SUPERMARKET"
+  },
+  {
+    "code": "BA-541",
+    "label": "SYNDICATE OF CO-OWNERS"
+  },
+  {
+    "code": "BA-542",
+    "label": "PROFESSIONAL REAL ESTATE TRUSTEE"
+  },
+  {
+    "code": "BA-543",
+    "label": "TAILOR (MEN AND WOMEN)"
+  },
+  {
+    "code": "BA-544",
+    "label": "UPHOLSTERER"
+  },
+  {
+    "code": "BA-545",
+    "label": "TAXIPHONE"
+  },
+  {
+    "code": "BA-546",
+    "label": "TAXI DRIVER"
+  },
+  {
+    "code": "BA-547",
+    "label": "TECNOLOG. INFORMATIQ & INFORMATION"
+  },
+  {
+    "code": "BA-548",
+    "label": "DYEING AND DRY CLEANING"
+  },
+  {
+    "code": "BA-549",
+    "label": "SHEET METAL WORK AND PAINTING"
+  },
+  {
+    "code": "BA-550",
+    "label": "TORREFACTION DE CAFE"
+  },
+  {
+    "code": "BA-551",
+    "label": "TURNER"
+  },
+  {
+    "code": "BA-552",
+    "label": "PIPELINE, PIPELINE"
+  },
+  {
+    "code": "BA-553",
+    "label": "METAL PROCESSING & COATING"
+  },
+  {
+    "code": "BA-554",
+    "label": "TRANSF & CONSERV. SEA PRODUCTS"
+  },
+  {
+    "code": "BA-555",
+    "label": "TRANSF & CONSERV. FRUITS & LEGUMES"
+  },
+  {
+    "code": "BA-556",
+    "label": "TRANSF. SPICES & DRIED FRUITS"
+  },
+  {
+    "code": "BA-557",
+    "label": "CORK PROCESSING"
+  },
+  {
+    "code": "BA-558",
+    "label": "FREIGHT FORWARDER"
+  },
+  {
+    "code": "BA-559",
+    "label": "AIR TRANSPORT"
+  },
+  {
+    "code": "BA-560",
+    "label": "REFRIGERATED TRANSPORT"
+  },
+  {
+    "code": "BA-561",
+    "label": "TRANSPORT MARITIME"
+  },
+  {
+    "code": "BA-562",
+    "label": "TRANSPORT MEDICALISE"
+  },
+  {
+    "code": "BA-563",
+    "label": "TRANSPORT RURAL"
+  },
+  {
+    "code": "BA-564",
+    "label": "GROUND TRANSPORT OF M/DISES"
+  },
+  {
+    "code": "BA-565",
+    "label": "GROUND TRANSPORT FOR PEOPLE"
+  },
+  {
+    "code": "BA-566",
+    "label": "TRAV. CONSERV. EAUX & SOL"
+  },
+  {
+    "code": "BA-567",
+    "label": "WOODEN WORK & FAB. WOODEN ART."
+  },
+  {
+    "code": "BA-568",
+    "label": "TRAV. FORESTRY & AGRICULTURAL"
+  },
+  {
+    "code": "BA-569",
+    "label": "TRAV. HYDRO & EPURATION EAUX USEES"
+  },
+  {
+    "code": "BA-570",
+    "label": "TRAV. CARPENTRY (WOOD/OTHER MATERIALS)"
+  },
+  {
+    "code": "BA-571",
+    "label": "CONTRACT WORK (WOOD, IRON, GLASS)"
+  },
+  {
+    "code": "BA-572",
+    "label": "BUILDING ELECTRICAL WORK"
+  },
+  {
+    "code": "BA-573",
+    "label": "INSULATION WORK"
+  },
+  {
+    "code": "BA-574",
+    "label": "AIR CONDITIONING WORK"
+  },
+  {
+    "code": "BA-575",
+    "label": "PAINTING & GLAZING WORK"
+  },
+  {
+    "code": "BA-576",
+    "label": "PUBLIC WORKS"
+  },
+  {
+    "code": "BA-577",
+    "label": "TRX ALUMINIUM"
+  },
+  {
+    "code": "BA-578",
+    "label": "TVX HYDRAULICS"
+  },
+  {
+    "code": "BA-579",
+    "label": "TVX PAINTING"
+  },
+  {
+    "code": "BA-580",
+    "label": "TVX SUBCONTRACTED"
+  },
+  {
+    "code": "BA-581",
+    "label": "FREE UNIVERSITY"
+  },
+  {
+    "code": "BA-582",
+    "label": "UROLOGY"
+  },
+  {
+    "code": "BA-583",
+    "label": "V.GROS EQUIP. HEATING & CLIMATE."
+  },
+  {
+    "code": "BA-584",
+    "label": "V.GROS EQUIP. HOTEL, RESTO & CAFE"
+  },
+  {
+    "code": "BA-585",
+    "label": "V.WHOLESALE DISHES & 500S HOUSEHOLD"
+  },
+  {
+    "code": "BA-586",
+    "label": "GRAIN SALE"
+  },
+  {
+    "code": "BA-587",
+    "label": "WHOLESALE LIVESTOCK"
+  },
+  {
+    "code": "BA-588",
+    "label": "SALE OILS"
+  },
+  {
+    "code": "BA-589",
+    "label": "WHOLESALE OILS"
+  },
+  {
+    "code": "BA-590",
+    "label": "WOOL SALE"
+  },
+  {
+    "code": "BA-591",
+    "label": "SALE OF VEGETABLES AND FRUIT"
+  },
+  {
+    "code": "BA-592",
+    "label": "MARBLE SALE"
+  },
+  {
+    "code": "BA-593",
+    "label": "VIDEO-CLUB490: Others"
+  },
+  {
+    "code": "BA-594",
+    "label": "HOLIDAY VILLAGE"
+  },
+  {
+    "code": "BA-595",
+    "label": "SCREWS AND BOLONERY"
+  },
+  {
+    "code": "BA-596",
+    "label": "VT. GROS HUIL. ESSENC, AROME & INGRED"
+  },
+  {
+    "code": "BA-597",
+    "label": "VTE PTTS PHARMACEUTICALS"
+  },
+  {
+    "code": "BA-598",
+    "label": "VTE ELECTRONIC PARTS"
+  },
+  {
+    "code": "BA-599",
+    "label": "VTE PHONES & ACCESSORIES"
+  },
+  {
+    "code": "BA-600",
+    "label": "VTE CAR ACCESSORIES"
+  },
+  {
+    "code": "BA-601",
+    "label": "VTE LIVESTOCK FEED"
+  },
+  {
+    "code": "BA-602",
+    "label": "VTE PETS"
+  },
+  {
+    "code": "BA-603",
+    "label": "VTE ART SPORTS & CAMPING"
+  },
+  {
+    "code": "BA-604",
+    "label": "VTE ART & PHOTO ACCESSORIES"
+  },
+  {
+    "code": "BA-605",
+    "label": "VTE ART. PLASTIC"
+  },
+  {
+    "code": "BA-606",
+    "label": "VTE CRAFTS"
+  },
+  {
+    "code": "BA-607",
+    "label": "VTE ARTICLES IN PLASTER"
+  },
+  {
+    "code": "BA-608",
+    "label": "VTE SANITARY WARE"
+  },
+  {
+    "code": "BA-609",
+    "label": "VTE BETAIL"
+  },
+  {
+    "code": "BA-610",
+    "label": "VTE GAS CYLINDERS"
+  },
+  {
+    "code": "BA-611",
+    "label": "VTE FUEL"
+  },
+  {
+    "code": "BA-612",
+    "label": "VTE CASSETTES & CD"
+  },
+  {
+    "code": "BA-613",
+    "label": "VTE CONFECTIONERY, BISC & CHOCOLATE"
+  },
+  {
+    "code": "BA-614",
+    "label": "VTE CYCLES AND MOTORCYCLES"
+  },
+  {
+    "code": "BA-615",
+    "label": "FLOWER BOX"
+  },
+  {
+    "code": "BA-616",
+    "label": "VTE INCENSE & HERBAL EXTRACT"
+  },
+  {
+    "code": "BA-617",
+    "label": "VTE EQUIPMENT INDUSTRY & ACCESSORIES"
+  },
+  {
+    "code": "BA-618",
+    "label": "VTE EQUIP. HEATING & AIR CONDITIONING"
+  },
+  {
+    "code": "BA-619",
+    "label": "VTE EQUIP. HOTEL, RESTO & CAFE"
+  },
+  {
+    "code": "BA-620",
+    "label": "VTE EQUIP. TELECOM & ACCESSORIES"
+  },
+  {
+    "code": "BA-621",
+    "label": "VTE DRIED FRUITS"
+  },
+  {
+    "code": "BA-622",
+    "label": "VTE LARGE CONSTRUCTION MATERIALS"
+  },
+  {
+    "code": "BA-623",
+    "label": "VTE WHOLESALE ELECTRONIC PARTS"
+  },
+  {
+    "code": "BA-624",
+    "label": "VTE WHOLESALE FOR PHOTO & ACCESSORIES"
+  },
+  {
+    "code": "BA-625",
+    "label": "VTE GROS VIANDE ET DERIVATIVES"
+  },
+  {
+    "code": "BA-626",
+    "label": "VTE WHOLESALE CAR ACCESSORIES"
+  },
+  {
+    "code": "BA-627",
+    "label": "VTE WHOLESALE PLASTIC ART"
+  },
+  {
+    "code": "BA-628",
+    "label": "VTE GROS ART. LEATHER GOODS & LEATHER"
+  },
+  {
+    "code": "BA-629",
+    "label": "VTE WHOLESALE CRAFT ITEMS"
+  },
+  {
+    "code": "BA-630",
+    "label": "VTE WHOLESALE SANITARY WARE"
+  },
+  {
+    "code": "BA-631",
+    "label": "VTE GROS BOIS ET D\u00c9RIV\u00c9S"
+  },
+  {
+    "code": "BA-632",
+    "label": "VTE BIG CASSETTES & CD"
+  },
+  {
+    "code": "BA-633",
+    "label": "VTE BIG SHOES"
+  },
+  {
+    "code": "BA-634",
+    "label": "VTE WHOLESALE CONFECTIONERY, BISC & CHOCO"
+  },
+  {
+    "code": "BA-635",
+    "label": "VTE GROS CYCLES AND MOTORCYCLES"
+  },
+  {
+    "code": "BA-636",
+    "label": "VTE COARSE WATERS & CARBONATED DRINKS"
+  },
+  {
+    "code": "BA-637",
+    "label": "VTE LARGE AGRICULTURAL WORKS MACHINERY"
+  },
+  {
+    "code": "BA-638",
+    "label": "VTE COARSE SPICES AND CURED MEATS"
+  },
+  {
+    "code": "BA-639",
+    "label": "VTE WHOLESALE EQUIPMENT INDUSTRY & ACCESSORIES"
+  },
+  {
+    "code": "BA-640",
+    "label": "VTE GREAT TEAM. TELECOM & ACCESSORIES"
+  },
+  {
+    "code": "BA-641",
+    "label": "LARGE FRUITS AND VEGETABLES"
+  },
+  {
+    "code": "BA-642",
+    "label": "LARGE DRIED FRUITS"
+  },
+  {
+    "code": "BA-643",
+    "label": "VTE WHOLESALE CLOTHING & READY TO WEAR"
+  },
+  {
+    "code": "BA-644",
+    "label": "VTE WHOLESALE IND JEWELRY INPUTS"
+  },
+  {
+    "code": "BA-645",
+    "label": "VTE COARSE MILK & DERIVATIVES"
+  },
+  {
+    "code": "BA-646",
+    "label": "VTE WHOLESALE LUBRICANTS"
+  },
+  {
+    "code": "BA-647",
+    "label": "VTE GROS MAST IRRIGATION & ACCESSORIES"
+  },
+  {
+    "code": "BA-648",
+    "label": "VTE WHOLESALE MAT MEDICAL & SCIENTIFIC"
+  },
+  {
+    "code": "BA-649",
+    "label": "VTE GROS MAT & PROD NESSEC/AGRICULTURE"
+  },
+  {
+    "code": "BA-650",
+    "label": "VTE LARGE ELECTRICAL EQUIPMENT"
+  },
+  {
+    "code": "BA-651",
+    "label": "WHOLESALE HABERDASHERY & HOSIERY"
+  },
+  {
+    "code": "BA-652",
+    "label": "LARGE FURNITURE & FURNISHINGS"
+  },
+  {
+    "code": "BA-653",
+    "label": "VTE WHOLESALE MIRRORS & GLASS"
+  },
+  {
+    "code": "BA-654",
+    "label": "VTE WHOLESALE OPTICS MEDICAL OR NOT"
+  },
+  {
+    "code": "BA-655",
+    "label": "VTE GROS PDTS CHIMIQUES"
+  },
+  {
+    "code": "BA-656",
+    "label": "VTE GROS PDTS DIVERS"
+  },
+  {
+    "code": "BA-657",
+    "label": "VTE GROS PDTS PARAPHARMACEUTIQ"
+  },
+  {
+    "code": "BA-658",
+    "label": "VTE LARGE PRODUCTS HARDWARE"
+  },
+  {
+    "code": "BA-659",
+    "label": "VTE WHOLESALE PAINT CARS"
+  },
+  {
+    "code": "BA-660",
+    "label": "VTE LARGE AUTO & AGRICULTURAL PARTS"
+  },
+  {
+    "code": "BA-661",
+    "label": "VTE WHOLESALE PARTS CYCLES & MOTORCYCLES"
+  },
+  {
+    "code": "BA-662",
+    "label": "VTE LARGE TYRES"
+  },
+  {
+    "code": "BA-663",
+    "label": "BIG FISH, CRUSTACEANS & MOLLUSCS"
+  },
+  {
+    "code": "BA-664",
+    "label": "VTE WHOLESALE ELECT PUMP & ACCESSORIES"
+  },
+  {
+    "code": "BA-665",
+    "label": "VTE GROS PRDTS M\u00c9TALLURGIQUES"
+  },
+  {
+    "code": "BA-666",
+    "label": "VTE WHOLESALE PTS PERFUMERIES & BEAUTY"
+  },
+  {
+    "code": "BA-667",
+    "label": "VTE LARGE SEEDS AND FERTILIZERS"
+  },
+  {
+    "code": "BA-668",
+    "label": "VTE GROS TEXTILES"
+  },
+  {
+    "code": "BA-669",
+    "label": "LARGE WINE, BEER, LIQUEUR & SPIRITS"
+  },
+  {
+    "code": "BA-670",
+    "label": "VTE GROS VITRE AUTOS"
+  },
+  {
+    "code": "BA-671",
+    "label": "POULTRY AND POULTRY PRODUCTS"
+  },
+  {
+    "code": "BA-672",
+    "label": "VTE ESSENC OIL, AROMA & INGREDIENT"
+  },
+  {
+    "code": "BA-673",
+    "label": "VTE NEWSPAPERS & MAGAZINES"
+  },
+  {
+    "code": "BA-674",
+    "label": "VTE MILK & DERIVATIVES"
+  },
+  {
+    "code": "BA-675",
+    "label": "VTE LUBRICANTS"
+  },
+  {
+    "code": "BA-676",
+    "label": "VTE MAST IRRIGATION & ACCESSORIES"
+  },
+  {
+    "code": "BA-677",
+    "label": "VTE MAT & PROD NECESS/AGRICULTURE"
+  },
+  {
+    "code": "BA-678",
+    "label": "VTE BUILDING MATERIALS"
+  },
+  {
+    "code": "BA-679",
+    "label": "VTE ELECTRICAL EQUIPMENT"
+  },
+  {
+    "code": "BA-680",
+    "label": "VTE FISHING EQUIPMENT"
+  },
+  {
+    "code": "BA-681",
+    "label": "VTE MIRRORS & GLASS"
+  },
+  {
+    "code": "BA-682",
+    "label": "VTE POTATOES HOSIERY & HABERDASHERY"
+  },
+  {
+    "code": "BA-683",
+    "label": "VTE PDTS CHEMICALS"
+  },
+  {
+    "code": "BA-684",
+    "label": "VTE PDTS OF QUARRIES"
+  },
+  {
+    "code": "BA-685",
+    "label": "VTE SPRDS DIVERS"
+  },
+  {
+    "code": "BA-686",
+    "label": "VTE PDTS PARAPHARMACEUTIQ"
+  },
+  {
+    "code": "BA-687",
+    "label": "VTE PDTS PERFUMERY & DE BEAUTE"
+  },
+  {
+    "code": "BA-688",
+    "label": "VTE PEINTURE AUTOS"
+  },
+  {
+    "code": "BA-689",
+    "label": "OIL & COAL"
+  },
+  {
+    "code": "BA-690",
+    "label": "VTE PIECE. SPARE/OTHER EQUIPMENT AND MATERIALS"
+  },
+  {
+    "code": "BA-691",
+    "label": "VTE PARTS CYCLE AND MOTORCYCLE"
+  },
+  {
+    "code": "BA-692",
+    "label": "VTE MEDICINAL PLANTS"
+  },
+  {
+    "code": "BA-693",
+    "label": "PNEUMATIC VTE"
+  },
+  {
+    "code": "BA-694",
+    "label": "FISH, CRUSTACEANS & MOLLUSCS"
+  },
+  {
+    "code": "BA-695",
+    "label": "VTE ELECTRIC PUMP & ACCESSORIES"
+  },
+  {
+    "code": "BA-696",
+    "label": "VTE METALLURGICAL PRODUCTS"
+  },
+  {
+    "code": "BA-697",
+    "label": "VTE SEEDS AND FERTILIZERS"
+  },
+  {
+    "code": "BA-698",
+    "label": "SEE VITRE CARS"
+  },
+  {
+    "code": "BA-699",
+    "label": "POULTRY AND POULTRY PRODUCTS"
+  },
+  {
+    "code": "BA-700",
+    "label": "VTE. EQUIPMENT/CRAFT SECTOR"
+  },
+  {
+    "code": "BA-701",
+    "label": "Banking activity"
+  }
 ]

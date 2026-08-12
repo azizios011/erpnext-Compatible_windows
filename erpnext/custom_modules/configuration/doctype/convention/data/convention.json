@@ -1,57 +1,222 @@
 [
-  {"id": 1, "name_fr": "Agences de Voyages", "name_en": "Travel Agencies"},
-  {"id": 2, "name_fr": "Assurances", "name_en": "Insurance"},
-  {"id": 3, "name_fr": "Banques", "name_en": "Banks"},
-  {"id": 4, "name_fr": "Bâtiment et Travaux Publics", "name_en": "Building and Public Works"},
-  {"id": 5, "name_fr": "Boulangerie", "name_en": "Bakery"},
-  {"id": 6, "name_fr": "Cafés, Bars, Restaurants et Etablissements Similaires", "name_en": "Cafes, Bars, Restaurants and Similar Establishments"},
-  {"id": 7, "name_fr": "Cliniques Privées", "name_en": "Private Clinics"},
-  {"id": 8, "name_fr": "Commerce de Gros, Demi-Gros et Détail", "name_en": "Wholesale, Semi-Wholesale and Retail"},
-  {"id": 9, "name_fr": "Commerce des Matériaux de Construction, du Bois et des Produits Sidérurgiques", "name_en": "Trade in Building Materials, Wood and Steel Products"},
-  {"id": 10, "name_fr": "Commerce et distribution de pétrole et Dérivés", "name_en": "Petroleum and Derivatives Trading and Distribution"},
-  {"id": 11, "name_fr": "Concessionnaires de Matériel Agricole et de Génie Civil", "name_en": "Agricultural Equipment and Civil Engineering Dealers"},
-  {"id": 12, "name_fr": "Confiserie, Biscuiterie, Chocolaterie et Pâtisserie", "name_en": "Confectionery, Biscuits, Chocolate and Pastry"},
-  {"id": 13, "name_fr": "Constructeurs et Concessionnaires de Véhicules Automobiles", "name_en": "Motor Vehicle Manufacturers and Dealers"},
-  {"id": 14, "name_fr": "Construction Métallique", "name_en": "Metal Construction"},
-  {"id": 15, "name_fr": "Crèches, jardins d'enfants", "name_en": "Nurseries, kindergartens"},
-  {"id": 16, "name_fr": "Cuir et Peaux", "name_en": "Leather and Skins"},
-  {"id": 17, "name_fr": "Electricité et Electronique", "name_en": "Electricity and Electronics"},
-  {"id": 18, "name_fr": "Enseignement Privé", "name_en": "Private Education"},
-  {"id": 19, "name_fr": "Entreprises de Gardiennage, de Sécurité et de Transport de Fonds", "name_en": "Guarding, Security and Cash-in-transit companies"},
-  {"id": 20, "name_fr": "Entreprises de Presse Ecrite", "name_en": "Print Media Companies"},
-  {"id": 21, "name_fr": "Fabricants de Produits de Toilette et de Parfumerie", "name_en": "Manufacturers of Toiletries and Perfumery Products"},
-  {"id": 22, "name_fr": "Fabricants de Produits d'Entretien et d'Insecticides", "name_en": "Manufacturers of Cleaning Products and Insecticides"},
-  {"id": 23, "name_fr": "Fabrication de Peinture", "name_en": "Paint Manufacturing"},
-  {"id": 24, "name_fr": "Fonderie, Métallurgie et Construction Mécanique", "name_en": "Foundry, Metallurgy and Mechanical Engineering"},
-  {"id": 25, "name_fr": "Hôtels Classés Touristiques et Etablissements Similaires", "name_en": "Classified Tourist Hotels and Similar Establishments"},
-  {"id": 26, "name_fr": "Imprimerie, Reliure, Brochure, Transformation du Carton et du Papier et Photographie", "name_en": "Printing, Binding, Brochure, Cardboard & Paper Converting & Photography"},
-  {"id": 27, "name_fr": "Industrie de la Bonneterie et de la Confection", "name_en": "Hosiery and Clothing Industry"},
-  {"id": 28, "name_fr": "Industrie de la Chaussure et des Articles Chaussants", "name_en": "Footwear and Footwear Industry"},
-  {"id": 29, "name_fr": "Industrie de Transformation du Plastique", "name_en": "Plastics Processing Industry"},
-  {"id": 30, "name_fr": "Industrie des Matériaux de Construction", "name_en": "Building Materials Industry"},
-  {"id": 31, "name_fr": "Industrie du Bois, du Meuble et du Liège", "name_en": "Wood, Furniture and Cork Industry"},
-  {"id": 32, "name_fr": "Industrie et Commerce des Boissons Alcoolisées", "name_en": "Alcoholic Beverage Industry and Trade"},
-  {"id": 33, "name_fr": "Industrie Laitière", "name_en": "Dairy Industry"},
-  {"id": 34, "name_fr": "Industries des Conserves et Semi-Conserves Alimentaires et conditionnement d'huiles", "name_en": "Canned and Semi-Preserved Food Industries and Oil Packaging"},
-  {"id": 35, "name_fr": "Location de Véhicules", "name_en": "Car Rental"},
-  {"id": 36, "name_fr": "Mécanique Générale et Stations de Vente de Carburants", "name_en": "General Mechanics and Fuel Sales Stations"},
-  {"id": 37, "name_fr": "Minoteries", "name_en": "Flour Mills"},
-  {"id": 38, "name_fr": "Pâtes Alimentaires et Couscous", "name_en": "Pasta and Couscous"},
-  {"id": 39, "name_fr": "Pharmacies d'Officine", "name_en": "Pharmacies"},
-  {"id": 40, "name_fr": "Déchargements et manutentions aux ports Tunisien Ex Ports et Docks", "name_en": "Unloading and handling at Tunisian ports Ex Ports and Docks"},
-  {"id": 41, "name_fr": "Distributeurs de Médicaments en Gros et Demi-Gros", "name_en": "Wholesale and Semi-Wholesale Drug Distributors"},
-  {"id": 42, "name_fr": "Salines de Tunisie", "name_en": "Tunisian Saltworks"},
-  {"id": 43, "name_fr": "Salles de Projection Cinématographiques", "name_en": "Cinema Screening Rooms"},
-  {"id": 44, "name_fr": "Savonneries, Raffineries et Usines d'Extraction d'Huile de Grignons", "name_en": "Soap Factories, Refineries and Pomace Oil Extraction Plants"},
-  {"id": 45, "name_fr": "Secteur des Explosifs", "name_en": "Explosives Sector"},
-  {"id": 46, "name_fr": "Teintureries et Blanchisseries", "name_en": "Dyeing and Laundries"},
-  {"id": 47, "name_fr": "Textile", "name_en": "Textile"},
-  {"id": 48, "name_fr": "Torréfaction", "name_en": "Roasting"},
-  {"id": 49, "name_fr": "Transformation du Verre et de la Miroiterie", "name_en": "Glass and Mirror Processing"},
-  {"id": 50, "name_fr": "Transport Routier de Marchandises", "name_en": "Road Freight Transport"},
-  {"id": 51, "name_fr": "Usines de Boissons Gazeuses Non Alcoolisées, Sirops et Eaux Minérales", "name_en": "Carbonated Soft Drinks, Syrups and Mineral Water Plants"},
-  {"id": 52, "name_fr": "Traitement des déchets liquides et solides", "name_en": "Treatment of liquid and solid waste"},
-  {"id": 53, "name_fr": "CONVENTION COLLECTIVE CADRE", "name_en": "Master Collective Agreement"},
-  {"id": 54, "name_fr": "AUTRE", "name_en": "Other"},
-  {"id": 55, "name_fr": "ASSOCIATION", "name_en": "Association"}
+  {
+    "code": "CONV-01",
+    "label": "Agences de Voyages"
+  },
+  {
+    "code": "CONV-02",
+    "label": "Assurances"
+  },
+  {
+    "code": "CONV-03",
+    "label": "Banques"
+  },
+  {
+    "code": "CONV-04",
+    "label": "B\u00e2timent et Travaux Publics"
+  },
+  {
+    "code": "CONV-05",
+    "label": "Boulangerie"
+  },
+  {
+    "code": "CONV-06",
+    "label": "Caf\u00e9s, Bars, Restaurants et Etablissements Similaires"
+  },
+  {
+    "code": "CONV-07",
+    "label": "Cliniques Priv\u00e9es"
+  },
+  {
+    "code": "CONV-08",
+    "label": "Commerce de Gros, Demi-Gros et D\u00e9tail"
+  },
+  {
+    "code": "CONV-09",
+    "label": "Commerce des Mat\u00e9riaux de Construction, du Bois et des Produits Sid\u00e9rurgiques"
+  },
+  {
+    "code": "CONV-10",
+    "label": "Commerce et distribution de p\u00e9trole et D\u00e9riv\u00e9s"
+  },
+  {
+    "code": "CONV-11",
+    "label": "Concessionnaires de Mat\u00e9riel Agricole et de G\u00e9nie Civil"
+  },
+  {
+    "code": "CONV-12",
+    "label": "Confiserie, Biscuiterie, Chocolaterie et P\u00e2tisserie"
+  },
+  {
+    "code": "CONV-13",
+    "label": "Constructeurs et Concessionnaires de V\u00e9hicules Automobiles"
+  },
+  {
+    "code": "CONV-14",
+    "label": "Construction M\u00e9tallique"
+  },
+  {
+    "code": "CONV-15",
+    "label": "Cr\u00e8ches, jardins d'enfants"
+  },
+  {
+    "code": "CONV-16",
+    "label": "Cuir et Peaux"
+  },
+  {
+    "code": "CONV-17",
+    "label": "Electricit\u00e9 et Electronique"
+  },
+  {
+    "code": "CONV-18",
+    "label": "Enseignement Priv\u00e9"
+  },
+  {
+    "code": "CONV-19",
+    "label": "Entreprises de Gardiennage, de S\u00e9curit\u00e9 et de Transport de Fonds"
+  },
+  {
+    "code": "CONV-20",
+    "label": "Entreprises de Presse Ecrite"
+  },
+  {
+    "code": "CONV-21",
+    "label": "Fabricants de Produits de Toilette et de Parfumerie"
+  },
+  {
+    "code": "CONV-22",
+    "label": "Fabricants de Produits d'Entretien et d'Insecticides"
+  },
+  {
+    "code": "CONV-23",
+    "label": "Fabrication de Peinture"
+  },
+  {
+    "code": "CONV-24",
+    "label": "Fonderie, M\u00e9tallurgie et Construction M\u00e9canique"
+  },
+  {
+    "code": "CONV-25",
+    "label": "H\u00f4tels Class\u00e9s Touristiques et Etablissements Similaires"
+  },
+  {
+    "code": "CONV-26",
+    "label": "Imprimerie, Reliure, Brochure, Transformation du Carton et du Papier et Photographie"
+  },
+  {
+    "code": "CONV-27",
+    "label": "Industrie de la Bonneterie et de la Confection"
+  },
+  {
+    "code": "CONV-28",
+    "label": "Industrie de la Chaussure et des Articles Chaussants"
+  },
+  {
+    "code": "CONV-29",
+    "label": "Industrie de Transformation du Plastique"
+  },
+  {
+    "code": "CONV-30",
+    "label": "Industrie des Mat\u00e9riaux de Construction"
+  },
+  {
+    "code": "CONV-31",
+    "label": "Industrie du Bois, du Meuble et du Li\u00e8ge"
+  },
+  {
+    "code": "CONV-32",
+    "label": "Industrie et Commerce des Boissons Alcoolis\u00e9es"
+  },
+  {
+    "code": "CONV-33",
+    "label": "Industrie Laiti\u00e8re"
+  },
+  {
+    "code": "CONV-34",
+    "label": "Industries des Conserves et Semi-Conserves Alimentaires et conditionnement d'huiles"
+  },
+  {
+    "code": "CONV-35",
+    "label": "Location de V\u00e9hicules"
+  },
+  {
+    "code": "CONV-36",
+    "label": "M\u00e9canique G\u00e9n\u00e9rale et Stations de Vente de Carburants"
+  },
+  {
+    "code": "CONV-37",
+    "label": "Minoteries"
+  },
+  {
+    "code": "CONV-38",
+    "label": "P\u00e2tes Alimentaires et Couscous"
+  },
+  {
+    "code": "CONV-39",
+    "label": "Pharmacies d'Officine"
+  },
+  {
+    "code": "CONV-40",
+    "label": "D\u00e9chargements et manutentions aux ports Tunisien Ex Ports et Docks"
+  },
+  {
+    "code": "CONV-41",
+    "label": "Distributeurs de M\u00e9dicaments en Gros et Demi-Gros"
+  },
+  {
+    "code": "CONV-42",
+    "label": "Salines de Tunisie"
+  },
+  {
+    "code": "CONV-43",
+    "label": "Salles de Projection Cin\u00e9matographiques"
+  },
+  {
+    "code": "CONV-44",
+    "label": "Savonneries, Raffineries et Usines d'Extraction d'Huile de Grignons"
+  },
+  {
+    "code": "CONV-45",
+    "label": "Secteur des Explosifs"
+  },
+  {
+    "code": "CONV-46",
+    "label": "Teintureries et Blanchisseries"
+  },
+  {
+    "code": "CONV-47",
+    "label": "Textile"
+  },
+  {
+    "code": "CONV-48",
+    "label": "Torr\u00e9faction"
+  },
+  {
+    "code": "CONV-49",
+    "label": "Transformation du Verre et de la Miroiterie"
+  },
+  {
+    "code": "CONV-50",
+    "label": "Transport Routier de Marchandises"
+  },
+  {
+    "code": "CONV-51",
+    "label": "Usines de Boissons Gazeuses Non Alcoolis\u00e9es, Sirops et Eaux Min\u00e9rales"
+  },
+  {
+    "code": "CONV-52",
+    "label": "Traitement des d\u00e9chets liquides et solides"
+  },
+  {
+    "code": "CONV-53",
+    "label": "CONVENTION COLLECTIVE CADRE"
+  },
+  {
+    "code": "CONV-54",
+    "label": "AUTRE"
+  },
+  {
+    "code": "CONV-55",
+    "label": "ASSOCIATION"
+  }
 ]
