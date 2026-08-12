@@ -1,0 +1,183 @@
+{
+ "actions": [],
+ "autoname": "field:company_name",
+ "creation": "2026-08-12 00:00:00.000000",
+ "default_view": "List",
+ "doctype": "DocType",
+ "document_type": "Document",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "general_info_tab",
+  "company_name",
+  "abbr",
+  "tax_id",
+  "date_of_establishment",
+  "country",
+  "status",
+  "activity",
+  "legal_form",
+  "natural_person",
+  "code_exploitation",
+  "code_exploitation_karama",
+  "convention",
+  "rne_number",
+  "file_number",
+  "street_number",
+  "street",
+  "postal_code",
+  "city",
+  "address_country"
+ ],
+ "fields": [
+  {
+   "fieldname": "general_info_tab",
+   "fieldtype": "Tab Break",
+   "label": "General Info"
+  },
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Reason Social",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "abbr",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Code",
+   "reqd": 1
+  },
+  {
+   "fieldname": "tax_id",
+   "fieldtype": "Data",
+   "label": "Identification Number Tax"
+  },
+  {
+   "fieldname": "date_of_establishment",
+   "fieldtype": "Date",
+   "label": "Date of Creation"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "label": "Country",
+   "options": "Country"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nDraft\nCreated\nTerminated"
+  },
+  {
+   "fieldname": "activity",
+   "fieldtype": "Link",
+   "label": "Activity",
+   "options": "Business Activity"
+  },
+  {
+   "fieldname": "legal_form",
+   "fieldtype": "Link",
+   "label": "Legal Form",
+   "options": "Legal Form"
+  },
+  {
+   "default": "0",
+   "fieldname": "natural_person",
+   "fieldtype": "Check",
+   "label": "Natural Person"
+  },
+  {
+   "fieldname": "code_exploitation",
+   "fieldtype": "Data",
+   "label": "Code Exploitation"
+  },
+  {
+   "fieldname": "code_exploitation_karama",
+   "fieldtype": "Data",
+   "label": "Code Exploitation Karama"
+  },
+  {
+   "fieldname": "convention",
+   "fieldtype": "Link",
+   "label": "Convention",
+   "options": "Convention"
+  },
+  {
+   "fieldname": "rne_number",
+   "fieldtype": "Data",
+   "label": "RNE Number"
+  },
+  {
+   "fieldname": "file_number",
+   "fieldtype": "Data",
+   "label": "File Number"
+  },
+  {
+   "fieldname": "street_number",
+   "fieldtype": "Data",
+   "label": "Number"
+  },
+  {
+   "fieldname": "street",
+   "fieldtype": "Data",
+   "label": "Street"
+  },
+  {
+   "fieldname": "postal_code",
+   "fieldtype": "Data",
+   "label": "Postal Code"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "label": "City"
+  },
+  {
+   "fieldname": "address_country",
+   "fieldtype": "Link",
+   "label": "Address Country",
+   "options": "Country"
+  }
+ ],
+ "links": [],
+ "modified": "2026-08-12 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Configuration",
+ "name": "Companies",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "company_name",
+ "track_changes": 1
+}
