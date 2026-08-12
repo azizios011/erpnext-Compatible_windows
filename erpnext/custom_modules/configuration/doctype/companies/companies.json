@@ -32,7 +32,9 @@
   "postal_code",
   "city",
   "address_country",
-  "additional_info_tab"
+  "additional_info_tab",
+  "additional_info_sb",
+  "additional_info_html"
  ],
  "fields": [
   {
@@ -167,6 +169,15 @@
    "fieldname": "additional_info_tab",
    "fieldtype": "Tab Break",
    "label": "Additional Info"
+  },
+  {
+   "fieldname": "additional_info_sb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "additional_info_html",
+   "fieldtype": "HTML",
+   "options": "<div class=\"text-muted\">Additional information will appear here.</div>"
   }
  ],
  "links": [],
