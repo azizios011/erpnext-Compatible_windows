@@ -111,11 +111,177 @@ def import_pct_chart_of_accounts():
 			doc.insert(ignore_permissions=True)
 
 
+def install_company_custom_fields():
+	from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
+
+	custom_fields = {
+		"Company": [
+			{
+				"fieldname": "general_info_tab",
+				"fieldtype": "Tab Break",
+				"label": "General Information",
+				"insert_after": "column_break_gthb",
+			},
+			{
+				"fieldname": "status",
+				"fieldtype": "Select",
+				"label": "Status",
+				"options": "\nDraft\nCreated\nTerminated",
+				"insert_after": "general_info_tab",
+			},
+			{
+				"fieldname": "activity",
+				"fieldtype": "Link",
+				"label": "Activity",
+				"options": "Business Activity",
+				"insert_after": "status",
+			},
+			{
+				"fieldname": "legal_form",
+				"fieldtype": "Link",
+				"label": "Legal Form",
+				"options": "Legal Form",
+				"insert_after": "activity",
+			},
+			{
+				"fieldname": "natural_person",
+				"fieldtype": "Check",
+				"label": "Natural Person",
+				"insert_after": "legal_form",
+			},
+			{
+				"fieldname": "general_info_cb1",
+				"fieldtype": "Column Break",
+				"insert_after": "natural_person",
+			},
+			{
+				"fieldname": "code_exploitation",
+				"fieldtype": "Data",
+				"label": "Code Exploitation",
+				"insert_after": "general_info_cb1",
+			},
+			{
+				"fieldname": "code_exploitation_karama",
+				"fieldtype": "Data",
+				"label": "Code Exploitation Karama",
+				"insert_after": "code_exploitation",
+			},
+			{
+				"fieldname": "convention",
+				"fieldtype": "Link",
+				"label": "Convention",
+				"options": "Convention",
+				"insert_after": "code_exploitation_karama",
+			},
+			{
+				"fieldname": "general_info_identifiers_sb",
+				"fieldtype": "Section Break",
+				"label": "Identifiers",
+				"insert_after": "convention",
+			},
+			{
+				"fieldname": "rne_number",
+				"fieldtype": "Data",
+				"label": "RNE Number",
+				"insert_after": "general_info_identifiers_sb",
+			},
+			{
+				"fieldname": "general_info_cb2",
+				"fieldtype": "Column Break",
+				"insert_after": "rne_number",
+			},
+			{
+				"fieldname": "file_number",
+				"fieldtype": "Data",
+				"label": "File Number",
+				"insert_after": "general_info_cb2",
+			},
+			{
+				"fieldname": "general_info_address_sb",
+				"fieldtype": "Section Break",
+				"label": "Address",
+				"insert_after": "file_number",
+			},
+			{
+				"fieldname": "street_number",
+				"fieldtype": "Data",
+				"label": "Number",
+				"insert_after": "general_info_address_sb",
+			},
+			{
+				"fieldname": "street",
+				"fieldtype": "Data",
+				"label": "Street",
+				"insert_after": "street_number",
+			},
+			{
+				"fieldname": "general_info_cb3",
+				"fieldtype": "Column Break",
+				"insert_after": "street",
+			},
+			{
+				"fieldname": "postal_code",
+				"fieldtype": "Data",
+				"label": "Postal Code",
+				"insert_after": "general_info_cb3",
+			},
+			{
+				"fieldname": "city",
+				"fieldtype": "Data",
+				"label": "City",
+				"insert_after": "postal_code",
+			},
+			{
+				"fieldname": "address_country",
+				"fieldtype": "Link",
+				"label": "Country",
+				"options": "Country",
+				"insert_after": "city",
+			},
+		]
+	}
+	create_custom_fields(custom_fields, ignore_validate=True, update=True)
+
+
+def import_reference_data(doctype_name, json_filename, module_folder):
+	json_path = os.path.join(
+		os.path.dirname(os.path.abspath(__file__)),
+		"configuration",
+		"doctype",
+		module_folder,
+		"data",
+		json_filename,
+	)
+	if not os.path.exists(json_path):
+		return
+
+	with open(json_path, "r", encoding="utf-8") as f:
+		records = frappe.parse_json(f.read())
+
+	for row in records:
+		code_val = row.get("code")
+		if not code_val:
+			continue
+		if not frappe.db.exists(doctype_name, code_val):
+			doc = frappe.get_doc(
+				{
+					"doctype": doctype_name,
+					"code": code_val,
+					"label": row.get("label", ""),
+				}
+			)
+			doc.insert(ignore_permissions=True)
+
+
 def after_install():
 	force_reload_custom_workspaces()
 	fix_workspace_hierarchy()
 	dedupe_home_links()
 	import_pct_chart_of_accounts()
+	install_company_custom_fields()
+	import_reference_data("Legal Form", "legal_form.json", "legal_form")
+	import_reference_data("Business Activity", "business_activity.json", "business_activity")
+	import_reference_data("Convention", "convention.json", "convention")
 
 
 def after_migrate():
@@ -123,4 +289,9 @@ def after_migrate():
 	fix_workspace_hierarchy()
 	dedupe_home_links()
 	import_pct_chart_of_accounts()
+	install_company_custom_fields()
+	import_reference_data("Legal Form", "legal_form.json", "legal_form")
+	import_reference_data("Business Activity", "business_activity.json", "business_activity")
+	import_reference_data("Convention", "convention.json", "convention")
+
 
