@@ -31,7 +31,8 @@
   "street",
   "postal_code",
   "city",
-  "address_country"
+  "address_country",
+  "additional_info_tab"
  ],
  "fields": [
   {
@@ -161,6 +162,11 @@
    "fieldtype": "Link",
    "label": "Address Country",
    "options": "Country"
+  },
+  {
+   "fieldname": "additional_info_tab",
+   "fieldtype": "Tab Break",
+   "label": "Additional Info"
   }
  ],
  "links": [],
