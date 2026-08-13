@@ -1,0 +1,36 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2026-08-14 00:00:00.000000",
+ "doctype": "DocType",
+ "document_type": "Document",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "customer",
+  "check_number",
+  "check_date",
+  "drawee_bank",
+  "amount"
+ ],
+ "fields": [
+  {"fieldname": "customer", "fieldtype": "Link", "options": "Customer", "reqd": 1, "in_list_view": 1, "label": "Customer"},
+  {"fieldname": "check_number", "fieldtype": "Data", "reqd": 1, "in_list_view": 1, "label": "Check Number"},
+  {"fieldname": "check_date", "fieldtype": "Date", "in_list_view": 1, "label": "Check Date"},
+  {"fieldname": "drawee_bank", "fieldtype": "Data", "in_list_view": 1, "label": "Drawee Bank"},
+  {"fieldname": "amount", "fieldtype": "Currency", "reqd": 1, "in_list_view": 1, "label": "Amount"}
+ ],
+ "links": [],
+ "modified": "2026-08-14 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Facturation",
+ "name": "Remise de Cheque Detail",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "istable": 1,
+ "quick_entry": 0
+}
