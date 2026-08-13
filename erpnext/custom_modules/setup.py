@@ -59,6 +59,19 @@ def dedupe_home_links():
 		doc.save(ignore_permissions=True)
 
 
+def clear_module_map_cache():
+	"""`frappe.local.app_modules` (the list of modules a migrate will sync) is loaded from a
+	Redis-cached `app_modules` key at `frappe.init()` time -- *before* migrate's own
+	`frappe.clear_cache()` runs. That means a migrate which adds a brand-new
+	custom_modules/<folder> can silently run against a stale cached module list and skip
+	syncing that folder's doctypes/workspaces/pages entirely, with no error surfaced.
+	Clearing the cache key here (at the end of install/migrate) guarantees the *next*
+	migrate run starts with a fresh disk scan, so a newly added custom module is picked up
+	after one extra `bench migrate` instead of requiring a full site reinstall."""
+	frappe.cache.delete_value("app_modules")
+	frappe.cache.delete_value("installed_app_modules")
+
+
 def force_reload_custom_workspaces():
 	"""Force-reload each custom module's own workspace fixture from disk on every
 	install/migrate, bypassing the modified-timestamp check that can otherwise cause
@@ -80,9 +93,11 @@ def after_install():
 	force_reload_custom_workspaces()
 	fix_workspace_hierarchy()
 	dedupe_home_links()
+	clear_module_map_cache()
 
 
 def after_migrate():
 	force_reload_custom_workspaces()
 	fix_workspace_hierarchy()
 	dedupe_home_links()
+	clear_module_map_cache()
