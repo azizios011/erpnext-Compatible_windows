@@ -26,6 +26,20 @@
  "roles": [],
  "sequence_id": 50.0,
  "shortcuts": [],
- "sidebar_items": [],
+ "sidebar_items": [
+  {"type": "Link", "label": "Home", "link_type": "Workspace", "link_to": "Facturation", "icon": "house", "child": 0, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Section Break", "label": "Payable", "icon": "truck", "child": 0, "indent": 1, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "Suppliers", "link_type": "DocType", "link_to": "Supplier", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "Facture Achat", "link_type": "DocType", "link_to": "Facture Achat", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "RS Achat", "link_type": "DocType", "link_to": "RS Achat", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "Relevé Achat", "link_type": "DocType", "link_to": "Relevé Achat", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "Extrait Achat", "link_type": "DocType", "link_to": "Extrait Achat", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Section Break", "label": "Receivable", "icon": "users", "child": 0, "indent": 1, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "Clients", "link_type": "DocType", "link_to": "Customer", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "Facture Vente", "link_type": "DocType", "link_to": "Facture Vente", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "RS Vente", "link_type": "DocType", "link_to": "RS Vente", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "Relevé Vente", "link_type": "DocType", "link_to": "Relevé Vente", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "Extrait Vente", "link_type": "DocType", "link_to": "Extrait Vente", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0}
+ ],
  "title": "Facturation"
 }
