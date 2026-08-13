@@ -39,7 +39,11 @@
   {"type": "Link", "label": "Facture Vente", "link_type": "DocType", "link_to": "Facture Vente", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
   {"type": "Link", "label": "RS Vente", "link_type": "DocType", "link_to": "RS Vente", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
   {"type": "Link", "label": "Relevé Vente", "link_type": "DocType", "link_to": "Releve Vente", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
-  {"type": "Link", "label": "Extrait Vente", "link_type": "DocType", "link_to": "Extrait Vente", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0}
+  {"type": "Link", "label": "Extrait Vente", "link_type": "DocType", "link_to": "Extrait Vente", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Section Break", "label": "Treasury", "icon": "piggy-bank", "child": 0, "indent": 1, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "Relevé Bancaire", "link_type": "DocType", "link_to": "Releve Bancaire", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "Extrait Bancaire", "link_type": "DocType", "link_to": "Extrait Bancaire", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "Remise de Chèque", "link_type": "DocType", "link_to": "Remise de Cheque", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0}
  ],
  "title": "Facturation"
 }
