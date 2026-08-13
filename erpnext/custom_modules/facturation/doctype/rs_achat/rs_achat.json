@@ -1,0 +1,51 @@
+{
+ "actions": [],
+ "autoname": "RSA-.YYYY.-.#####",
+ "creation": "2026-08-13 00:00:00.000000",
+ "default_view": "List",
+ "doctype": "DocType",
+ "document_type": "Document",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "supplier",
+  "posting_date",
+  "reference_number",
+  "attachment",
+  "status",
+  "related_invoice",
+  "taxable_base",
+  "withholding_rate",
+  "amount_withheld",
+  "certificate_number"
+ ],
+ "fields": [
+  {"fieldname": "company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1, "label": "Company"},
+  {"fieldname": "supplier", "fieldtype": "Link", "options": "Supplier", "reqd": 1, "in_list_view": 1, "label": "Supplier"},
+  {"fieldname": "posting_date", "fieldtype": "Date", "reqd": 1, "in_list_view": 1, "default": "Today", "label": "Posting Date"},
+  {"fieldname": "reference_number", "fieldtype": "Data", "in_list_view": 1, "label": "Reference Number"},
+  {"fieldname": "attachment", "fieldtype": "Attach", "label": "Attachment"},
+  {"fieldname": "status", "fieldtype": "Select", "options": "Pending\nProcessed\nRejected", "default": "Pending", "in_list_view": 1, "label": "Status"},
+  {"fieldname": "related_invoice", "fieldtype": "Link", "options": "Facture Achat", "label": "Related Invoice"},
+  {"fieldname": "taxable_base", "fieldtype": "Currency", "label": "Taxable Base"},
+  {"fieldname": "withholding_rate", "fieldtype": "Percent", "label": "Withholding Rate"},
+  {"fieldname": "amount_withheld", "fieldtype": "Currency", "label": "Amount Withheld"},
+  {"fieldname": "certificate_number", "fieldtype": "Data", "label": "Certificate Number"}
+ ],
+ "links": [],
+ "modified": "2026-08-13 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Facturation",
+ "name": "RS Achat",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Accounts User", "share": 1, "write": 1},
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Accounts Manager", "share": 1, "write": 1}
+ ],
+ "sort_field": "posting_date",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "reference_number",
+ "track_changes": 1
+}
