@@ -1,12 +1,13 @@
 {
  "actions": [],
- "autoname": "hash",
- "creation": "2026-08-18 00:00:00.000000",
+ "autoname": "RVD-.YYYY.-.#####",
+ "creation": "2026-08-14 00:00:00.000000",
  "doctype": "DocType",
  "document_type": "Document",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "releve_vente",
   "client_code",
   "client_name",
   "operation",
@@ -20,17 +21,18 @@
   "montant_tva"
  ],
  "fields": [
-  {"fieldname": "client_code", "fieldtype": "Data", "reqd": 1, "in_list_view": 1, "label": "Client Code"},
-  {"fieldname": "client_name", "fieldtype": "Data", "in_list_view": 1, "label": "Client Name"},
-  {"fieldname": "operation", "fieldtype": "Data", "in_list_view": 1, "label": "Operation"},
-  {"fieldname": "reference", "fieldtype": "Data", "in_list_view": 1, "label": "Reference"},
-  {"fieldname": "date", "fieldtype": "Date", "in_list_view": 1, "label": "Date"},
-  {"fieldname": "ttc", "fieldtype": "Currency", "in_list_view": 1, "label": "TTC"},
-  {"fieldname": "ht", "fieldtype": "Currency", "in_list_view": 1, "label": "HT"},
-  {"fieldname": "remise", "fieldtype": "Currency", "in_list_view": 1, "label": "Remise"},
-  {"fieldname": "tot_net_ht", "fieldtype": "Currency", "in_list_view": 1, "label": "Tot. Net. HT"},
-  {"fieldname": "tva_percent", "fieldtype": "Percent", "in_list_view": 1, "label": "TVA %"},
-  {"fieldname": "montant_tva", "fieldtype": "Currency", "in_list_view": 1, "label": "Montant TVA"}
+  {"fieldname": "releve_vente", "fieldtype": "Link", "options": "Releve Vente", "reqd": 1, "read_only": 1, "in_list_view": 1, "search_index": 1, "label": "Releve Vente"},
+  {"fieldname": "client_code", "fieldtype": "Data", "reqd": 1, "in_list_view": 1, "allow_in_quick_entry": 1, "label": "Client Code"},
+  {"fieldname": "client_name", "fieldtype": "Data", "in_list_view": 1, "allow_in_quick_entry": 1, "label": "Client Name"},
+  {"fieldname": "operation", "fieldtype": "Data", "in_list_view": 1, "allow_in_quick_entry": 1, "label": "Operation"},
+  {"fieldname": "reference", "fieldtype": "Data", "in_list_view": 1, "allow_in_quick_entry": 1, "label": "Reference"},
+  {"fieldname": "date", "fieldtype": "Date", "in_list_view": 1, "allow_in_quick_entry": 1, "label": "Date"},
+  {"fieldname": "ttc", "fieldtype": "Currency", "in_list_view": 1, "allow_in_quick_entry": 1, "label": "TTC"},
+  {"fieldname": "ht", "fieldtype": "Currency", "in_list_view": 1, "allow_in_quick_entry": 1, "label": "HT"},
+  {"fieldname": "remise", "fieldtype": "Currency", "in_list_view": 1, "allow_in_quick_entry": 1, "label": "Remise"},
+  {"fieldname": "tot_net_ht", "fieldtype": "Currency", "in_list_view": 1, "allow_in_quick_entry": 1, "label": "Tot. Net. HT"},
+  {"fieldname": "tva_percent", "fieldtype": "Percent", "in_list_view": 1, "allow_in_quick_entry": 1, "label": "TVA %"},
+  {"fieldname": "montant_tva", "fieldtype": "Currency", "in_list_view": 1, "allow_in_quick_entry": 1, "label": "Montant TVA"}
  ],
  "links": [],
  "modified": "2026-08-18 00:00:00.000000",
@@ -38,11 +40,13 @@
  "module": "Facturation",
  "name": "Releve Vente Detail",
  "owner": "Administrator",
- "permissions": [],
- "sort_field": "creation",
+ "permissions": [
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Accounts User", "share": 1, "write": 1},
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Accounts Manager", "share": 1, "write": 1}
+ ],
+ "sort_field": "date",
  "sort_order": "DESC",
  "states": [],
- "track_changes": 1,
- "istable": 1,
- "quick_entry": 0
+ "title_field": "client_name",
+ "track_changes": 1
 }
