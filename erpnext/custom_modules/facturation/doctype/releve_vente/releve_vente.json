@@ -10,14 +10,16 @@
  "field_order": [
   "company",
   "posting_date",
-  "entries",
+  "entries_section",
+  "entries_html",
   "attachment",
   "status"
  ],
  "fields": [
   {"fieldname": "company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1, "label": "Company"},
   {"fieldname": "posting_date", "fieldtype": "Date", "reqd": 1, "in_list_view": 1, "default": "Today", "label": "Posting Date"},
-  {"fieldname": "entries", "fieldtype": "Table", "options": "Releve Vente Detail", "label": "Entries"},
+  {"fieldname": "entries_section", "fieldtype": "Section Break", "label": "Entries"},
+  {"fieldname": "entries_html", "fieldtype": "HTML", "label": "Entries"},
   {"fieldname": "attachment", "fieldtype": "Attach", "label": "Attachment"},
   {"fieldname": "status", "fieldtype": "Select", "options": "Pending\nProcessed\nRejected", "default": "Pending", "in_list_view": 1, "label": "Status"}
  ],
