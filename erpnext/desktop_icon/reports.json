@@ -1,0 +1,22 @@
+{
+ "app": "erpnext",
+ "bg_color": "blue",
+ "creation": "2026-08-31 00:00:00",
+ "docstatus": 0,
+ "doctype": "Desktop Icon",
+ "hidden": 0,
+ "icon": "chart-column",
+ "icon_type": "Link",
+ "idx": 0,
+ "label": "Reports",
+ "link_to": "Reports",
+ "link_type": "Workspace Sidebar",
+ "modified": "2026-08-31 00:00:00",
+ "modified_by": "Administrator",
+ "name": "Reports",
+ "owner": "Administrator",
+ "parent_icon": "",
+ "restrict_removal": 0,
+ "roles": [],
+ "standard": 1
+}
