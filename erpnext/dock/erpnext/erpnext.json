@@ -172,9 +172,49 @@
    "link_to": "EDI",
    "link_type": "Sidebar",
    "title": "EDI"
+  },
+  {
+   "added": 0,
+   "hidden": 0,
+   "icon": "wallet",
+   "link_to": "Facturation",
+   "link_type": "Sidebar",
+   "title": "Facturation"
+  },
+  {
+   "added": 0,
+   "hidden": 0,
+   "icon": "banknote",
+   "link_to": "Bank Reconciliation",
+   "link_type": "Sidebar",
+   "title": "Bank Reconciliation"
+  },
+  {
+   "added": 0,
+   "hidden": 0,
+   "icon": "notebook-pen",
+   "link_to": "Entries",
+   "link_type": "Sidebar",
+   "title": "Entries"
+  },
+  {
+   "added": 0,
+   "hidden": 0,
+   "icon": "building",
+   "link_to": "Organization",
+   "link_type": "Sidebar",
+   "title": "Organization"
+  },
+  {
+   "added": 0,
+   "hidden": 0,
+   "icon": "chart-column",
+   "link_to": "Reports",
+   "link_type": "Sidebar",
+   "title": "Reports"
   }
  ],
- "modified": "2026-08-28 12:00:00.000000",
+ "modified": "2026-09-01 00:00:00.000000",
  "modified_by": "Administrator",
  "name": "erpnext",
  "owner": "Administrator",
