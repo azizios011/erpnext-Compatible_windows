@@ -7,7 +7,7 @@
  "items": [
   {
    "added": 0,
-   "hidden": 0,
+   "hidden": 1,
    "icon": "sliders-soft",
    "link_to": "Setup",
    "link_type": "Sidebar",
@@ -15,7 +15,7 @@
   },
   {
    "added": 0,
-   "hidden": 0,
+   "hidden": 1,
    "icon": "calculator-soft",
    "link_to": "Accounts",
    "link_type": "Sidebar",
@@ -23,7 +23,7 @@
   },
   {
    "added": 0,
-   "hidden": 0,
+   "hidden": 1,
    "icon": "storefront-soft",
    "link_to": "Selling",
    "link_type": "Sidebar",
@@ -31,7 +31,7 @@
   },
   {
    "added": 0,
-   "hidden": 0,
+   "hidden": 1,
    "icon": "shopping-cart-soft",
    "link_to": "Buying",
    "link_type": "Sidebar",
@@ -39,7 +39,7 @@
   },
   {
    "added": 0,
-   "hidden": 0,
+   "hidden": 1,
    "icon": "shelf-rack-soft",
    "link_to": "Stock",
    "link_type": "Sidebar",
@@ -47,7 +47,7 @@
   },
   {
    "added": 0,
-   "hidden": 0,
+   "hidden": 1,
    "icon": "factory-soft",
    "link_to": "Manufacturing",
    "link_type": "Sidebar",
@@ -55,7 +55,7 @@
   },
   {
    "added": 0,
-   "hidden": 0,
+   "hidden": 1,
    "icon": "gantt-chart-soft",
    "link_to": "Projects",
    "link_type": "Sidebar",
@@ -63,7 +63,7 @@
   },
   {
    "added": 0,
-   "hidden": 0,
+   "hidden": 1,
    "icon": "asset-hand-soft",
    "link_to": "Assets",
    "link_type": "Sidebar",
@@ -71,7 +71,7 @@
   },
   {
    "added": 0,
-   "hidden": 0,
+   "hidden": 1,
    "icon": "quality-seal-soft",
    "link_to": "Quality",
    "link_type": "Sidebar",
@@ -95,7 +95,7 @@
   },
   {
    "added": 0,
-   "hidden": 0,
+   "hidden": 1,
    "icon": "portal-user-soft",
    "link_to": "Portal",
    "link_type": "Sidebar",
@@ -142,7 +142,7 @@
    "title": "Reports"
   }
  ],
- "modified": "2026-10-15 12:00:00.000000",
+ "modified": "2026-10-15 12:05:00.000000",
  "modified_by": "Administrator",
  "name": "erpnext",
  "owner": "Administrator",
