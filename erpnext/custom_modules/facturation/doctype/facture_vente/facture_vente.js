@@ -9,6 +9,9 @@ frappe.ui.form.on("Facture Vente", {
 	},
 	attachment(frm) {
 		render_attachment_preview(frm);
+		if (frm.doc.attachment) {
+			extract_invoice_data(frm);
+		}
 	}
 });
 
@@ -98,4 +101,86 @@ function bind_print_icon_override(frm) {
 				frm.print_doc();
 			});
 	}, 300);
+}
+
+function extract_invoice_data(frm) {
+	frappe.dom.freeze(__("Reading invoice data from the attached file..."));
+
+	frappe.call({
+		method:
+			"erpnext.custom_modules.facturation.doctype.facture_vente.facture_vente.extract_invoice_data",
+		args: {
+			attachment: frm.doc.attachment,
+		},
+		callback: function (r) {
+			frappe.dom.unfreeze();
+
+			if (!r.message || !r.message.success) {
+				const error_message = (r.message && r.message.error) || __("Unknown error.");
+				frappe.msgprint({
+					title: __("Extraction Failed"),
+					message: error_message,
+					indicator: "red",
+				});
+				return;
+			}
+
+			apply_extracted_data(frm, r.message.data);
+		},
+		error: function () {
+			frappe.dom.unfreeze();
+			frappe.msgprint({
+				title: __("Extraction Failed"),
+				message: __("Something went wrong while contacting the extraction service."),
+				indicator: "red",
+			});
+		},
+	});
+}
+
+function apply_extracted_data(frm, data) {
+	if (!data) {
+		return;
+	}
+
+	if (data.customer_name) {
+		frm.set_value("customer_name", data.customer_name);
+	}
+	if (data.tax_id) {
+		frm.set_value("tax_id", data.tax_id);
+	}
+	if (data.posting_date) {
+		frm.set_value("posting_date", data.posting_date);
+	}
+	if (data.reference_number) {
+		frm.set_value("reference_number", data.reference_number);
+	}
+
+	frm.clear_table("items");
+	(data.items || []).forEach((item) => {
+		const row = frm.add_child("items");
+		row.description = item.description || "";
+		row.qty = flt(item.qty) || 1;
+		row.uom = item.uom || "";
+		row.rate = flt(item.rate) || 0;
+		row.amount = flt(row.qty) * flt(row.rate);
+	});
+	frm.refresh_field("items");
+
+	frm.clear_table("taxes");
+	(data.taxes || []).forEach((tax) => {
+		const row = frm.add_child("taxes");
+		row.charge_type = tax.charge_type || "Autre";
+		row.rate = flt(tax.rate) || 0;
+		row.base_amount = flt(tax.base_amount) || 0;
+		row.tax_amount = flt(tax.tax_amount) || 0;
+	});
+	frm.refresh_field("taxes");
+
+	calculate_totals(frm);
+
+	frappe.show_alert({
+		message: __("Invoice data extracted. Please review before saving."),
+		indicator: "green",
+	});
 }
