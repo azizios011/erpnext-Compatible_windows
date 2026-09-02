@@ -1,0 +1,29 @@
+{
+ "actions": [],
+ "creation": "2026-09-02 00:00:00.000000",
+ "doctype": "DocType",
+ "document_type": "Document",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "istable": 1,
+ "field_order": ["item", "description", "qty", "uom", "rate", "amount"],
+ "fields": [
+  {"fieldname": "item", "fieldtype": "Link", "options": "Item", "in_list_view": 1, "label": "Item"},
+  {"fieldname": "description", "fieldtype": "Data", "reqd": 1, "in_list_view": 1, "allow_in_quick_entry": 1, "label": "Description"},
+  {"fieldname": "qty", "fieldtype": "Float", "reqd": 1, "default": "1", "in_list_view": 1, "allow_in_quick_entry": 1, "label": "Qty"},
+  {"fieldname": "uom", "fieldtype": "Link", "options": "UOM", "in_list_view": 1, "allow_in_quick_entry": 1, "label": "UOM"},
+  {"fieldname": "rate", "fieldtype": "Currency", "reqd": 1, "in_list_view": 1, "allow_in_quick_entry": 1, "label": "Rate (HT)"},
+  {"fieldname": "amount", "fieldtype": "Currency", "read_only": 1, "in_list_view": 1, "label": "Amount (HT)"}
+ ],
+ "links": [],
+ "modified": "2026-09-02 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Facturation",
+ "name": "Facture Vente Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
