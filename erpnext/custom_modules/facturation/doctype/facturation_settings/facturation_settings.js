@@ -53,9 +53,17 @@ frappe.ui.form.on("Facturation Settings", {
 					indicator: "green",
 				});
 			},
-			error: function () {
+			error: function (r) {
 				frappe.dom.unfreeze();
-				frappe.msgprint(__("Failed to fetch models from the provider."));
+				const detail =
+					(r && r._server_messages && JSON.parse(r._server_messages)[0]) ||
+					(r && r.exc) ||
+					__("Unknown error.");
+				frappe.msgprint({
+					title: __("Failed to Fetch Models"),
+					message: detail,
+					indicator: "red",
+				});
 			},
 		});
 	},
