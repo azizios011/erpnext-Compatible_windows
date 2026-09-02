@@ -11,7 +11,7 @@ class FacturationSettings(Document):
 
 
 @frappe.whitelist()
-def get_available_models(provider, api_key):
+def get_available_models(provider: str, api_key: str) -> list:
 	if not api_key:
 		frappe.throw("Please enter an API key first.")
 
