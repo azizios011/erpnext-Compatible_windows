@@ -1,0 +1,26 @@
+{
+ "actions": [],
+ "creation": "2026-09-02 00:00:00.000000",
+ "doctype": "DocType",
+ "document_type": "Document",
+ "engine": "InnoDB",
+ "issingle": 1,
+ "field_order": ["anthropic_api_key", "anthropic_model"],
+ "fields": [
+  {"fieldname": "anthropic_api_key", "fieldtype": "Password", "label": "Anthropic API Key"},
+  {"fieldname": "anthropic_model", "fieldtype": "Data", "label": "Anthropic Model", "default": "claude-sonnet-4-5", "description": "Model used for PDF/invoice data extraction. Update if Anthropic releases a newer model."}
+ ],
+ "links": [],
+ "modified": "2026-09-02 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Facturation",
+ "name": "Facturation Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "email": 1, "print": 1, "read": 1, "role": "Accounts Manager", "share": 1, "write": 1}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}
