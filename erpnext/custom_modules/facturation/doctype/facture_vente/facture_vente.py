@@ -59,81 +59,149 @@ Rules:
 - Do not compute or include any total fields - only items and taxes."""
 
 
+def _get_settings():
+	settings = frappe.get_single("Facturation Settings")
+	api_key = settings.get_password("api_key")
+	if not api_key:
+		frappe.throw("No API key configured. Set one in Facturation Settings.")
+	if not settings.model:
+		frappe.throw("No model selected in Facturation Settings. Click 'Refresh Models List' and choose one.")
+	return settings.provider, api_key, settings.model
+
+
+def _load_file_bytes(attachment):
+	file_doc = frappe.get_doc("File", {"file_url": attachment})
+	file_path = file_doc.get_full_path()
+	with open(file_path, "rb") as f:
+		content = f.read()
+	ext = file_path.lower().rsplit(".", 1)[-1]
+	return content, ext
+
+
+def _pdf_first_page_to_png(pdf_bytes):
+	import fitz  # PyMuPDF
+
+	doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+	page = doc.load_page(0)
+	pix = page.get_pixmap(dpi=200)
+	return pix.tobytes("png")
+
+
+def _call_anthropic(api_key, model, content, ext):
+	if ext == "pdf":
+		media_type, block_type = "application/pdf", "document"
+	elif ext in ("jpg", "jpeg"):
+		media_type, block_type = "image/jpeg", "image"
+	elif ext == "png":
+		media_type, block_type = "image/png", "image"
+	else:
+		frappe.throw(f"Unsupported attachment type: .{ext}")
+
+	encoded = base64.b64encode(content).decode("utf-8")
+	response = requests.post(
+		"https://api.anthropic.com/v1/messages",
+		headers={
+			"x-api-key": api_key,
+			"anthropic-version": "2023-06-01",
+			"content-type": "application/json",
+		},
+		json={
+			"model": model,
+			"max_tokens": 2000,
+			"messages": [
+				{
+					"role": "user",
+					"content": [
+						{
+							"type": block_type,
+							"source": {"type": "base64", "media_type": media_type, "data": encoded},
+						},
+						{"type": "text", "text": EXTRACTION_PROMPT},
+					],
+				}
+			],
+		},
+		timeout=60,
+	)
+	response.raise_for_status()
+	result = response.json()
+	return "".join(
+		block.get("text", "") for block in result.get("content", []) if block.get("type") == "text"
+	)
+
+
+def _call_openrouter(api_key, model, content, ext):
+	if ext == "pdf":
+		content = _pdf_first_page_to_png(content)
+		media_type = "image/png"
+	elif ext in ("jpg", "jpeg"):
+		media_type = "image/jpeg"
+	elif ext == "png":
+		media_type = "image/png"
+	else:
+		frappe.throw(f"Unsupported attachment type: .{ext}")
+
+	encoded = base64.b64encode(content).decode("utf-8")
+	response = requests.post(
+		"https://openrouter.ai/api/v1/chat/completions",
+		headers={
+			"Authorization": f"Bearer {api_key}",
+			"content-type": "application/json",
+		},
+		json={
+			"model": model,
+			"max_tokens": 2000,
+			"messages": [
+				{
+					"role": "user",
+					"content": [
+						{"type": "text", "text": EXTRACTION_PROMPT},
+						{
+							"type": "image_url",
+							"image_url": {"url": f"data:{media_type};base64,{encoded}"},
+						},
+					],
+				}
+			],
+		},
+		timeout=60,
+	)
+	response.raise_for_status()
+	result = response.json()
+	choices = result.get("choices", [])
+	if not choices:
+		frappe.throw("No response from OpenRouter.")
+	return choices[0]["message"]["content"]
+
+
 @frappe.whitelist()
 def extract_invoice_data(attachment):
 	if not attachment:
 		return {"success": False, "error": "No attachment provided."}
 
-	settings = frappe.get_single("Facturation Settings")
-	api_key = settings.get_password("anthropic_api_key")
-	if not api_key:
-		return {
-			"success": False,
-			"error": "No Anthropic API key configured. Set one in Facturation Settings.",
-		}
-
-	model = settings.anthropic_model or "claude-sonnet-4-5"
+	try:
+		provider, api_key, model = _get_settings()
+	except Exception as e:
+		return {"success": False, "error": str(e)}
 
 	try:
-		file_doc = frappe.get_doc("File", {"file_url": attachment})
-		file_path = file_doc.get_full_path()
-	except Exception:
-		return {"success": False, "error": "Could not locate the attached file."}
-
-	ext = file_path.lower().rsplit(".", 1)[-1]
-	if ext == "pdf":
-		media_type = "application/pdf"
-		block_type = "document"
-	elif ext in ("jpg", "jpeg"):
-		media_type = "image/jpeg"
-		block_type = "image"
-	elif ext == "png":
-		media_type = "image/png"
-		block_type = "image"
-	else:
-		return {"success": False, "error": f"Unsupported attachment type: .{ext}"}
-
-	try:
-		with open(file_path, "rb") as f:
-			encoded = base64.b64encode(f.read()).decode("utf-8")
+		content, ext = _load_file_bytes(attachment)
 	except Exception as e:
 		return {"success": False, "error": f"Could not read the attached file: {e}"}
 
 	try:
-		response = requests.post(
-			"https://api.anthropic.com/v1/messages",
-			headers={
-				"x-api-key": api_key,
-				"anthropic-version": "2023-06-01",
-				"content-type": "application/json",
-			},
-			json={
-				"model": model,
-				"max_tokens": 2000,
-				"messages": [
-					{
-						"role": "user",
-						"content": [
-							{
-								"type": block_type,
-								"source": {"type": "base64", "media_type": media_type, "data": encoded},
-							},
-							{"type": "text", "text": EXTRACTION_PROMPT},
-						],
-					}
-				],
-			},
-			timeout=60,
-		)
-		response.raise_for_status()
+		if provider == "Anthropic":
+			text = _call_anthropic(api_key, model, content, ext)
+		elif provider == "OpenRouter":
+			text = _call_openrouter(api_key, model, content, ext)
+		else:
+			return {"success": False, "error": f"Unknown provider: {provider}"}
 	except requests.exceptions.RequestException as e:
-		return {"success": False, "error": f"Anthropic API request failed: {e}"}
+		return {"success": False, "error": f"API request failed: {e}"}
+	except Exception as e:
+		return {"success": False, "error": str(e)}
 
 	try:
-		result = response.json()
-		text = "".join(
-			block.get("text", "") for block in result.get("content", []) if block.get("type") == "text"
-		)
 		cleaned = text.strip()
 		if cleaned.startswith("```"):
 			cleaned = cleaned.strip("`")
