@@ -71,7 +71,7 @@ function render_attachment_preview(frm) {
 	const file_url = frm.doc.attachment;
 	const is_pdf = file_url.toLowerCase().endsWith(".pdf");
 	const html = is_pdf
-		? `<iframe src="${file_url}" style="width:100%; height:600px; border:1px solid var(--border-color); border-radius:4px;"></iframe>`
+		? `<iframe src="${file_url}#toolbar=0&navpanes=0&scrollbar=0" style="width:100%; height:600px; border:1px solid var(--border-color); border-radius:4px;"></iframe>`
 		: `<img src="${file_url}" style="max-width:100%; max-height:600px; display:block; border-radius:4px;">`;
 
 	frm.set_df_property("attachment_preview", "options", html);
