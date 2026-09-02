@@ -10,7 +10,7 @@
   {"fieldname": "provider", "fieldtype": "Select", "options": "Anthropic\nOpenRouter", "reqd": 1, "default": "Anthropic", "label": "Provider"},
   {"fieldname": "api_key", "fieldtype": "Password", "label": "API Key"},
   {"fieldname": "refresh_models", "fieldtype": "Button", "label": "Refresh Models List"},
-  {"fieldname": "model", "fieldtype": "Select", "options": "", "label": "Model", "description": "Model used for PDF/invoice data extraction. Click 'Refresh Models List' after entering your API key to populate this list."}
+  {"fieldname": "model", "fieldtype": "Autocomplete", "options": "", "label": "Model", "description": "Model used for PDF/invoice data extraction. Click 'Refresh Models List' after entering your API key to populate this list."}
  ],
  "links": [],
  "modified": "2026-09-02 00:00:00.000000",
