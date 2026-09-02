@@ -11,13 +11,9 @@ class FacturationSettings(Document):
 
 
 @frappe.whitelist()
-def get_available_models(provider=None, api_key=None):
-	if not api_key or set(api_key) == {"*"}:
-		settings = frappe.get_single("Facturation Settings")
-		api_key = settings.get_password("api_key")
-
+def get_available_models(provider, api_key):
 	if not api_key:
-		frappe.throw("Please enter a valid API key first.")
+		frappe.throw("Please enter an API key first.")
 
 	try:
 		if provider == "Anthropic":
@@ -26,22 +22,22 @@ def get_available_models(provider=None, api_key=None):
 				headers={"x-api-key": api_key, "anthropic-version": "2023-06-01"},
 				timeout=15,
 			)
-			response.raise_for_status()
-			data = response.json()
-			return [m["id"] for m in data.get("data", [])]
-
-		if provider == "OpenRouter":
+		elif provider == "OpenRouter":
 			response = requests.get(
 				"https://openrouter.ai/api/v1/models",
 				headers={"Authorization": f"Bearer {api_key}"},
 				timeout=15,
 			)
-			response.raise_for_status()
-			data = response.json()
-			return [m["id"] for m in data.get("data", [])]
+		else:
+			frappe.throw(f"Unknown provider: {provider}")
 
-		frappe.throw(f"Unknown provider: {provider}")
-	except requests.exceptions.HTTPError as e:
-		frappe.throw(f"Authentication/Request failed with {provider}: {e.response.text}")
-	except Exception as e:
-		frappe.throw(f"Failed to fetch models from {provider}: {e}")
+		if not response.ok:
+			frappe.throw(
+				f"Provider returned HTTP {response.status_code}: {response.text[:300]}"
+			)
+
+		data = response.json()
+		return [m["id"] for m in data.get("data", [])]
+
+	except requests.exceptions.RequestException as e:
+		frappe.throw(f"Network error while contacting {provider}: {e}")
