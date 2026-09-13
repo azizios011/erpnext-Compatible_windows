@@ -6,6 +6,7 @@ app_icon = "fa fa-th"
 app_color = "#e74c3c"
 app_email = "hello@frappe.io"
 app_license = "GNU General Public License (v3)"
+required_apps = ["print_designer"]
 source_link = "https://github.com/frappe/erpnext"
 app_logo_url = "/assets/erpnext/images/erpnext-logo.svg"
 app_home = "/desk/home"
