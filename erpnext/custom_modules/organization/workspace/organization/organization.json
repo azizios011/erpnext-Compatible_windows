@@ -14,7 +14,7 @@
  "is_hidden": 0,
  "label": "Organization",
  "links": [],
- "modified": "2026-08-13 00:00:00.000000",
+ "modified": "2026-11-02 20:30:00.000000",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Organization",
@@ -27,9 +27,39 @@
  "sequence_id": 50.0,
  "shortcuts": [],
  "sidebar_items": [
-  {"type": "Link", "label": "Companies", "link_type": "DocType", "link_to": "Societe", "icon": "building-2", "child": 0, "indent": 0, "collapsible": 1, "keep_closed": 0},
-  {"type": "Link", "label": "Clients", "link_type": "DocType", "link_to": "Client", "icon": "users", "child": 0, "indent": 0, "collapsible": 1, "keep_closed": 0},
-  {"type": "Link", "label": "Suppliers", "link_type": "DocType", "link_to": "Fournisseur", "icon": "truck", "child": 0, "indent": 0, "collapsible": 1, "keep_closed": 0}
+  {
+   "type": "Link",
+   "label": "Companies",
+   "link_type": "DocType",
+   "link_to": "Societe",
+   "icon": "building-2",
+   "child": 0,
+   "indent": 0,
+   "collapsible": 1,
+   "keep_closed": 0
+  },
+  {
+   "type": "Link",
+   "label": "Clients",
+   "link_type": "DocType",
+   "link_to": "Client",
+   "icon": "users",
+   "child": 0,
+   "indent": 0,
+   "collapsible": 1,
+   "keep_closed": 0
+  },
+  {
+   "type": "Link",
+   "label": "Suppliers",
+   "link_type": "DocType",
+   "link_to": "Fournisseur",
+   "icon": "truck",
+   "child": 0,
+   "indent": 0,
+   "collapsible": 1,
+   "keep_closed": 0
+  }
  ],
  "title": "Organization"
 }
