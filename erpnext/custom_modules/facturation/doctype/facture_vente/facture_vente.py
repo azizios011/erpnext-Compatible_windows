@@ -60,12 +60,12 @@ Rules:
 
 
 def _get_settings():
-	settings = frappe.get_single("Facturation Settings")
+	settings = frappe.get_single("AI Settings")
 	api_key = settings.get_password("api_key")
 	if not api_key:
-		frappe.throw("No API key configured. Set one in Facturation Settings.")
+		frappe.throw("No API key configured. Set one in AI Settings.")
 	if not settings.model:
-		frappe.throw("No model selected in Facturation Settings. Click 'Refresh Models List' and choose one.")
+		frappe.throw("No model selected in AI Settings. Click 'Refresh Models List' and choose one.")
 	return settings.provider, api_key, settings.model
 
 
