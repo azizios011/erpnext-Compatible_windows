@@ -26,6 +26,10 @@
  "roles": [],
  "sequence_id": 50.0,
  "shortcuts": [],
- "sidebar_items": [],
+ "sidebar_items": [
+  {"type": "Link", "label": "Companies", "link_type": "DocType", "link_to": "Societe", "icon": "building-2", "child": 0, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "Clients", "link_type": "DocType", "link_to": "Client", "icon": "users", "child": 0, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "Suppliers", "link_type": "DocType", "link_to": "Fournisseur", "icon": "truck", "child": 0, "indent": 0, "collapsible": 1, "keep_closed": 0}
+ ],
  "title": "Organization"
 }
