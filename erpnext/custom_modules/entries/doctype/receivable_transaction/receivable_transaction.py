@@ -4,5 +4,5 @@
 from frappe.model.document import Document
 
 
-class EcritureBancaire(Document):
+class ReceivableTransaction(Document):
 	pass
