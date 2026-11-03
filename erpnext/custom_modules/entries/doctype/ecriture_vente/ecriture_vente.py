@@ -4,5 +4,5 @@
 from frappe.model.document import Document
 
 
-class ExtraitVente(Document):
+class EcritureVente(Document):
 	pass

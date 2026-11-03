@@ -579,3 +579,5 @@ erpnext.patches.v16_0.round_open_job_card_required_qty
 erpnext.patches.v16_0.restrict_company_address_flag
 
 erpnext.custom_modules.facturation.patches.migrate_facturation_settings_to_ai_settings
+erpnext.custom_modules.organization.patches.delete_empty_societe
+erpnext.custom_modules.facturation.patches.delete_empty_extrait_doctypes

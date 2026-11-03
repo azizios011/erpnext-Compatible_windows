@@ -4,5 +4,5 @@
 from frappe.model.document import Document
 
 
-class Societe(Document):
+class EcritureAchat(Document):
 	pass
