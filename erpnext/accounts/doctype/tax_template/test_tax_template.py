@@ -13,13 +13,13 @@ from erpnext.tests.permission_test_utils import (
 )
 from erpnext.tests.utils import ERPNextTestSuite
 
-TEMPLATE_DOCTYPE = "Sales Taxes and Charges Template"
+TEMPLATE_DOCTYPE = "Tax Template"
 
 
-class TestSalesTaxesandChargesTemplate(ERPNextTestSuite):
+class TestTaxTemplate(ERPNextTestSuite):
 	def get_template(self):
 		return frappe.db.get_value(
-			TEMPLATE_DOCTYPE, {"title": "_Test Sales Taxes and Charges Template", "company": "_Test Company"}
+			TEMPLATE_DOCTYPE, {"title": "_Test Tax Template", "company": "_Test Company"}
 		)
 
 	def test_get_taxes_and_charges_checks_the_template(self):

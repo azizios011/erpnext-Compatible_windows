@@ -965,7 +965,7 @@ class Company(NestedSet):
 		frappe.db.delete("Transaction Deletion Record", {"company": self.name})
 
 		# delete tax templates
-		frappe.db.delete("Sales Taxes and Charges Template", {"company": self.name})
+		frappe.db.delete("Tax Template", {"company": self.name})
 		frappe.db.delete("Purchase Taxes and Charges Template", {"company": self.name})
 		frappe.db.delete("Item Tax Template", {"company": self.name})
 

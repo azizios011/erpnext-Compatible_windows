@@ -249,14 +249,14 @@ frappe.help.help_links["Form/Customer"] = [
 	},
 ];
 
-frappe.help.help_links["List/Sales Taxes and Charges Template"] = [
+frappe.help.help_links["List/Tax Template"] = [
 	{
 		label: "Setting Up Taxes",
 		url: docsUrl + "user/manual/en/setting-up-taxes",
 	},
 ];
 
-frappe.help.help_links["Form/Sales Taxes and Charges Template"] = [
+frappe.help.help_links["Form/Tax Template"] = [
 	{
 		label: "Setting Up Taxes",
 		url: docsUrl + "user/manual/en/setting-up-taxes",

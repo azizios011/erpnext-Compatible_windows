@@ -609,8 +609,8 @@
    "depends_on": "eval: doc.party_type == 'Customer'",
    "fieldname": "sales_taxes_and_charges_template",
    "fieldtype": "Link",
-   "label": "Sales Taxes and Charges Template",
-   "options": "Sales Taxes and Charges Template"
+   "label": "Tax Template",
+   "options": "Tax Template"
   },
   {
    "depends_on": "eval: doc.party_type == 'Supplier' || doc.party_type == 'Customer'",

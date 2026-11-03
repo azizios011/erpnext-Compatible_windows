@@ -183,7 +183,7 @@ class TaxService:
 
 
 # the only doctypes a `taxes_and_charges` Link points at; `master_doctype` is caller-supplied and reaches get_doc()
-TAX_MASTER_DOCTYPES = ("Sales Taxes and Charges Template", "Purchase Taxes and Charges Template")
+TAX_MASTER_DOCTYPES = ("Tax Template", "Purchase Taxes and Charges Template")
 
 
 def validate_tax_master(master_doctype: str, master_name: str | None = None) -> None:

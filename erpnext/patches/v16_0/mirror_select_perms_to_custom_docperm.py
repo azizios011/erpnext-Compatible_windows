@@ -343,7 +343,7 @@ GRANTS = {
 		"Maintenance User",
 		"Stock Manager",
 	],
-	"Sales Taxes and Charges Template": [
+	"Tax Template": [
 		"Delivery Manager",
 		"Delivery User",
 		"Maintenance Manager",

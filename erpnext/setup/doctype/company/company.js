@@ -153,11 +153,11 @@ frappe.ui.form.on("Company", {
 				);
 			}
 
-			if (frappe.perm.has_perm("Sales Taxes and Charges Template", 0, "read")) {
+			if (frappe.perm.has_perm("Tax Template", 0, "read")) {
 				frm.add_custom_button(
 					__("Sales Tax Template"),
 					function () {
-						frappe.set_route("List", "Sales Taxes and Charges Template", {
+						frappe.set_route("List", "Tax Template", {
 							company: frm.doc.name,
 						});
 					},

@@ -1382,7 +1382,7 @@ class TestSalesInvoice(ERPNextTestSuite):
 		profile.update_stock = 1
 		profile.apply_discount_on = "Grand Total"
 		profile.tc_name = terms
-		profile.taxes_and_charges = "_Test Sales Taxes and Charges Template - _TC"
+		profile.taxes_and_charges = "_Test Tax Template - _TC"
 		profile.save()
 
 		si = create_sales_invoice(do_not_save=True)
@@ -1397,7 +1397,7 @@ class TestSalesInvoice(ERPNextTestSuite):
 		self.assertEqual(si.tax_category, "_Test Tax Category 1")
 		self.assertEqual(si.ignore_pricing_rule, 1)
 		self.assertEqual(si.account_for_change_amount, "Cash - _TC")
-		self.assertEqual(si.taxes_and_charges, "_Test Sales Taxes and Charges Template - _TC")
+		self.assertEqual(si.taxes_and_charges, "_Test Tax Template - _TC")
 		self.assertEqual(si.apply_discount_on, "Grand Total")
 		self.assertEqual(si.update_stock, 1)
 		self.assertEqual(si.terms, "POS terms and conditions")

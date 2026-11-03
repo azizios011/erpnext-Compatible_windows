@@ -5,7 +5,7 @@
 import frappe
 from frappe.model.document import Document
 
-from erpnext.accounts.doctype.sales_taxes_and_charges_template.sales_taxes_and_charges_template import (
+from erpnext.accounts.doctype.tax_template.tax_template import (
 	valdiate_taxes_and_charges_template,
 )
 

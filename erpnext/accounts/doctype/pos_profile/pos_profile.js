@@ -37,8 +37,8 @@ frappe.ui.form.on("POS Profile", {
 		frm.set_query("taxes_and_charges", function () {
 			return {
 				filters: [
-					["Sales Taxes and Charges Template", "company", "=", frm.doc.company],
-					["Sales Taxes and Charges Template", "docstatus", "!=", 2],
+					["Tax Template", "company", "=", frm.doc.company],
+					["Tax Template", "docstatus", "!=", 2],
 				],
 			};
 		});

@@ -106,7 +106,7 @@ def from_detailed_data(company_name, data):
 
 	if sales_tax_templates:
 		for template in sales_tax_templates:
-			make_taxes_and_charges_template(company_name, "Sales Taxes and Charges Template", template)
+			make_taxes_and_charges_template(company_name, "Tax Template", template)
 
 	if purchase_tax_templates:
 		for template in purchase_tax_templates:

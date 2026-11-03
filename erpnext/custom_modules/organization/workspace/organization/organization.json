@@ -62,9 +62,9 @@
   },
   {
    "type": "Link",
-   "label": "Sales Taxes and Charges Template",
+   "label": "Tax Template",
    "link_type": "DocType",
-   "link_to": "Sales Taxes and Charges Template",
+   "link_to": "Tax Template",
    "icon": "percent",
    "child": 0,
    "indent": 0,

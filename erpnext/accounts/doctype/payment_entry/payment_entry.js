@@ -1450,7 +1450,7 @@ frappe.ui.form.on("Payment Entry", {
 			master_doctype = "Purchase Taxes and Charges Template";
 			taxes_and_charges = frm.doc.purchase_taxes_and_charges_template;
 		} else if (frm.doc.party_type == "Customer") {
-			master_doctype = "Sales Taxes and Charges Template";
+			master_doctype = "Tax Template";
 			taxes_and_charges = frm.doc.sales_taxes_and_charges_template;
 		}
 

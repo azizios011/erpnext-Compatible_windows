@@ -846,9 +846,9 @@ class TestAccountsController(ERPNextTestSuite):
 		{"add_taxes_from_taxes_and_charges_template": 1, "add_taxes_from_item_tax_template": 0},
 	)
 	def test_18_fetch_taxes_based_on_taxes_and_charges_template(self):
-		# Create a Sales Taxes and Charges Template
-		if not frappe.db.exists("Sales Taxes and Charges Template", "_Test Tax - _TC"):
-			doc = frappe.new_doc("Sales Taxes and Charges Template")
+		# Create a Tax Template
+		if not frappe.db.exists("Tax Template", "_Test Tax - _TC"):
+			doc = frappe.new_doc("Tax Template")
 			doc.company = self.company
 			doc.title = "_Test Tax"
 			doc.append(

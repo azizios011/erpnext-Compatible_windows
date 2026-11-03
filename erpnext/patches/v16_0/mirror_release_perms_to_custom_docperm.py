@@ -32,7 +32,7 @@ GRANTS = {
 		"Accounts Manager": ("select",),
 		"System Manager": ("select",),
 	},
-	"Sales Taxes and Charges Template": {
+	"Tax Template": {
 		"Accounts User": ("select",),
 		"Sales Manager": ("select",),
 		"Stock User": ("select",),

@@ -455,7 +455,7 @@ def make_inter_company_transaction(doctype: str, source_name: str, target_doc=No
 		if target.doctype == "Purchase Receipt":
 			master_doctype = "Purchase Taxes and Charges Template"
 		else:
-			master_doctype = "Sales Taxes and Charges Template"
+			master_doctype = "Tax Template"
 
 		if not target.get("taxes") and target.get("taxes_and_charges"):
 			for tax in _get_taxes_and_charges(master_doctype, target.get("taxes_and_charges")):

@@ -288,7 +288,7 @@
    "label": "Taxes and Charges",
    "oldfieldname": "charge",
    "oldfieldtype": "Link",
-   "options": "Sales Taxes and Charges Template"
+   "options": "Tax Template"
   },
   {
    "default": "Grand Total",

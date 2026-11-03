@@ -24,7 +24,7 @@
  "fields": [
   {"fieldname": "taxes_section", "fieldtype": "Section Break", "hide_border": 1, "label": "Taxes and Charges"},
   {"fieldname": "tax_category", "fieldtype": "Link", "options": "Tax Category", "print_hide": 1, "label": "Tax Category"},
-  {"fieldname": "taxes_and_charges", "fieldtype": "Link", "options": "Sales Taxes and Charges Template", "print_hide": 1, "label": "Sales Taxes and Charges Template"},
+  {"fieldname": "taxes_and_charges", "fieldtype": "Link", "options": "Tax Template", "print_hide": 1, "label": "Tax Template"},
   {"fieldname": "column_break_tax_a", "fieldtype": "Column Break"},
   {"fieldname": "shipping_rule", "fieldtype": "Link", "options": "Shipping Rule", "print_hide": 1, "label": "Shipping Rule"},
   {"fieldname": "column_break_tax_b", "fieldtype": "Column Break"},

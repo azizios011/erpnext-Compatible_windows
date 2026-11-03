@@ -483,7 +483,7 @@ def unset_existing_data(company):
 	# remove accounts data from various doctypes
 	for doctype in [
 		"Account",
-		"Sales Taxes and Charges Template",
+		"Tax Template",
 		"Purchase Taxes and Charges Template",
 		"Party Account",
 		"Mode of Payment Account",
