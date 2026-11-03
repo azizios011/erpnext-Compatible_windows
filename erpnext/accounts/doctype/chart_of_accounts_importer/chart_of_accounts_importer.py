@@ -487,7 +487,7 @@ def unset_existing_data(company):
 	frappe.db.set_value("Company", company, dict.fromkeys(fieldnames, ""))
 
 	# import_coa authorizes company replacement; Accounts Manager cannot delete purchase templates.
-	for doctype in ("Sales Taxes and Charges Template", "Purchase Taxes and Charges Template"):
+	for doctype in ("Tax Template", "Purchase Taxes and Charges Template"):
 		for name in frappe.get_all(doctype, filters={"company": company}, pluck="name"):
 			frappe.delete_doc(doctype, name, ignore_permissions=True)
 

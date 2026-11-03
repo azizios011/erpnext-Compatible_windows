@@ -212,7 +212,7 @@ class SellingController(StockController):
 			)
 
 		if self.get("taxes_and_charges") and not self.get("taxes") and not for_validate:
-			taxes = _get_taxes_and_charges("Sales Taxes and Charges Template", self.taxes_and_charges)
+			taxes = _get_taxes_and_charges("Tax Template", self.taxes_and_charges)
 			for tax in taxes:
 				self.append("taxes", tax)
 

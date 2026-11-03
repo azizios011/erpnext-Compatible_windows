@@ -15,7 +15,7 @@ from erpnext.controllers.accounts_controller import (
 )
 
 
-class SalesTaxesandChargesTemplate(Document):
+class TaxTemplate(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 

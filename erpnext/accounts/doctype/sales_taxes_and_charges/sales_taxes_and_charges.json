@@ -192,7 +192,7 @@
   },
   {
    "default": "0",
-   "depends_on": "eval:['Sales Taxes and Charges Template', 'Payment Entry'].includes(parent.doctype)",
+   "depends_on": "eval:['Tax Template', 'Payment Entry'].includes(parent.doctype)",
    "description": "If checked, the tax amount will be considered as already included in the Paid Amount in Payment Entry",
    "fieldname": "included_in_paid_amount",
    "fieldtype": "Check",

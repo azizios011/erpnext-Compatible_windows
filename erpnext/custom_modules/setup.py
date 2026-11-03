@@ -89,11 +89,28 @@ def force_reload_custom_workspaces():
 	frappe.db.commit()
 
 
+
+def rename_sales_taxes_template():
+	"""Sites installed before the Tax Template rename still carry the old DocType.
+	This migrate's sync has already created the renamed doctype from its JSON, so
+	merge the old one into it: rows move across and every stored Link reference
+	is pointed at the new name in one step, matching erpnext's own rename patches."""
+	old, new = "Sales Taxes and Charges Template", "Tax Template"
+	if not frappe.db.table_exists(old):
+		return
+	if not frappe.db.exists("DocType", new):
+		frappe.rename_doc("DocType", old, new, ignore_permissions=True, force=True)
+	else:
+		frappe.rename_doc("DocType", old, new, ignore_permissions=True, merge=True, force=True)
+	frappe.reload_doctype(new, force=True)
+
+
 def after_install():
 	force_reload_custom_workspaces()
 	fix_workspace_hierarchy()
 	dedupe_home_links()
 	clear_module_map_cache()
+	rename_sales_taxes_template()
 
 
 def after_migrate():
@@ -101,3 +118,4 @@ def after_migrate():
 	fix_workspace_hierarchy()
 	dedupe_home_links()
 	clear_module_map_cache()
+	rename_sales_taxes_template()

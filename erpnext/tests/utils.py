@@ -2298,7 +2298,7 @@ class BootStrapTestData:
 		records = [
 			{
 				"company": "_Test Company",
-				"doctype": "Sales Taxes and Charges Template",
+				"doctype": "Tax Template",
 				"taxes": [
 					{
 						"account_head": "_Test Account VAT - _TC",
@@ -2319,11 +2319,11 @@ class BootStrapTestData:
 						"rate": 6.36,
 					},
 				],
-				"title": "_Test Sales Taxes and Charges Template",
+				"title": "_Test Tax Template",
 			},
 			{
 				"company": "_Test Company",
-				"doctype": "Sales Taxes and Charges Template",
+				"doctype": "Tax Template",
 				"taxes": [
 					{
 						"account_head": "_Test Account Shipping Charges - _TC",
@@ -2406,7 +2406,7 @@ class BootStrapTestData:
 			},
 			{
 				"company": "_Test Company",
-				"doctype": "Sales Taxes and Charges Template",
+				"doctype": "Tax Template",
 				"taxes": [
 					{
 						"account_head": "_Test Account VAT - _TC",
@@ -2427,11 +2427,11 @@ class BootStrapTestData:
 						"rate": 4,
 					},
 				],
-				"title": "_Test Sales Taxes and Charges Template - Rest of the World",
+				"title": "_Test Tax Template - Rest of the World",
 			},
 			{
 				"company": "_Test Company",
-				"doctype": "Sales Taxes and Charges Template",
+				"doctype": "Tax Template",
 				"taxes": [
 					{
 						"account_head": "_Test Account VAT - _TC",
@@ -2452,11 +2452,11 @@ class BootStrapTestData:
 						"rate": 4,
 					},
 				],
-				"title": "_Test Sales Taxes and Charges Template 1",
+				"title": "_Test Tax Template 1",
 			},
 			{
 				"company": "_Test Company",
-				"doctype": "Sales Taxes and Charges Template",
+				"doctype": "Tax Template",
 				"taxes": [
 					{
 						"account_head": "_Test Account VAT - _TC",
@@ -2477,10 +2477,10 @@ class BootStrapTestData:
 						"rate": 4,
 					},
 				],
-				"title": "_Test Sales Taxes and Charges Template 2",
+				"title": "_Test Tax Template 2",
 			},
 			{
-				"doctype": "Sales Taxes and Charges Template",
+				"doctype": "Tax Template",
 				"title": "_Test Tax 1",
 				"company": "_Test Company",
 				"taxes": [
@@ -2494,7 +2494,7 @@ class BootStrapTestData:
 				],
 			},
 			{
-				"doctype": "Sales Taxes and Charges Template",
+				"doctype": "Tax Template",
 				"title": "_Test Tax 2",
 				"company": "_Test Company",
 				"taxes": [

@@ -1188,7 +1188,7 @@ def get_doctypes_to_be_ignored():
 		"Budget",
 		"Party Account",
 		"Employee",
-		"Sales Taxes and Charges Template",
+		"Tax Template",
 		"Purchase Taxes and Charges Template",
 		"POS Profile",
 		"BOM",

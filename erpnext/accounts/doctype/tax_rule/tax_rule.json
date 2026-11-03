@@ -68,7 +68,7 @@
    "fieldname": "sales_tax_template",
    "fieldtype": "Link",
    "label": "Sales Tax Template",
-   "options": "Sales Taxes and Charges Template"
+   "options": "Tax Template"
   },
   {
    "depends_on": "eval:doc.tax_type==\"Purchase\"",

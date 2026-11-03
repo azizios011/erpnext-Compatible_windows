@@ -31,7 +31,7 @@ def make_quotation(source_name: str, target_doc: str | dict | Document | None = 
 		quotation.conversion_rate = exchange_rate
 
 		# get default taxes
-		taxes = _get_default_taxes_and_charges("Sales Taxes and Charges Template", company=quotation.company)
+		taxes = _get_default_taxes_and_charges("Tax Template", company=quotation.company)
 		if taxes.get("taxes"):
 			quotation.update(taxes)
 

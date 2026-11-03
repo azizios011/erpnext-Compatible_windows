@@ -49,7 +49,7 @@ def update_regional_tax_settings(country=None, company=None):
 			"doctype": "Tax Rule",
 			"tax_type": "Sales",
 			"sales_tax_template": frappe.db.get_value(
-				"Sales Taxes and Charges Template",
+				"Tax Template",
 				{"title": "AU Sales - GST", "company": company},
 			),
 			"use_for_shopping_cart": "1",
@@ -61,7 +61,7 @@ def update_regional_tax_settings(country=None, company=None):
 			"doctype": "Tax Rule",
 			"tax_type": "Sales",
 			"sales_tax_template": frappe.db.get_value(
-				"Sales Taxes and Charges Template",
+				"Tax Template",
 				{"title": "Export Sales - GST Free", "company": company},
 			),
 			"use_for_shopping_cart": "1",
@@ -73,7 +73,7 @@ def update_regional_tax_settings(country=None, company=None):
 			"doctype": "Tax Rule",
 			"tax_type": "Sales",
 			"sales_tax_template": frappe.db.get_value(
-				"Sales Taxes and Charges Template",
+				"Tax Template",
 				{"title": "AU Sales - GST Free", "company": company},
 			),
 			"use_for_shopping_cart": "1",

@@ -145,7 +145,7 @@ class TestOpeningInvoiceCreationTool(ERPNextTestSuite):
 		company = "_Test Opening Invoice Company"
 		template = frappe.get_doc(
 			{
-				"doctype": "Sales Taxes and Charges Template",
+				"doctype": "Tax Template",
 				"company": company,
 				"title": "_Test Opening Invoice Tax",
 				"taxes": [

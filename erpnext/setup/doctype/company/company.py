@@ -1034,7 +1034,7 @@ class Company(NestedSet):
 
 		# Delete template details and item links with their parent templates.
 		for template, child in (
-			("Sales Taxes and Charges Template", "Sales Taxes and Charges"),
+			("Tax Template", "Sales Taxes and Charges"),
 			("Purchase Taxes and Charges Template", "Purchase Taxes and Charges"),
 			("Item Tax Template", "Item Tax Template Detail"),
 		):

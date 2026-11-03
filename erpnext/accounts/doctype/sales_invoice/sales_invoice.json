@@ -955,10 +955,10 @@
    "fieldtype": "Link",
    "hide_days": 1,
    "hide_seconds": 1,
-   "label": "Sales Taxes and Charges Template",
+   "label": "Tax Template",
    "oldfieldname": "charge",
    "oldfieldtype": "Link",
-   "options": "Sales Taxes and Charges Template",
+   "options": "Tax Template",
    "print_hide": 1
   },
   {
