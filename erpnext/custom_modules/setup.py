@@ -99,9 +99,9 @@ def rename_sales_taxes_template():
 	if not frappe.db.table_exists(old):
 		return
 	if not frappe.db.exists("DocType", new):
-		frappe.rename_doc("DocType", old, new, ignore_permissions=True, force=True)
+		frappe.rename_doc("DocType", old, new, force=True)
 	else:
-		frappe.rename_doc("DocType", old, new, ignore_permissions=True, merge=True, force=True)
+		frappe.rename_doc("DocType", old, new, merge=True, force=True)
 	frappe.reload_doctype(new, force=True)
 
 
