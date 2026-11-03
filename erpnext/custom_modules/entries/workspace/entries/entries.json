@@ -14,7 +14,7 @@
  "is_hidden": 0,
  "label": "Entries",
  "links": [],
- "modified": "2026-08-13 00:00:00.000000",
+ "modified": "2026-11-03 14:03:23.000000",
  "modified_by": "Administrator",
  "module": "Entries",
  "name": "Entries",
@@ -26,6 +26,14 @@
  "roles": [],
  "sequence_id": 50.0,
  "shortcuts": [],
- "sidebar_items": [],
+ "sidebar_items": [
+  {"type": "Link", "label": "Home", "link_type": "Workspace", "link_to": "Entries", "icon": "house", "child": 0, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Section Break", "label": "Payable", "icon": "arrow-down-to-line", "child": 0, "indent": 1, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "Ecriture Achat", "link_type": "DocType", "link_to": "Ecriture Achat", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Section Break", "label": "Receivable", "icon": "arrow-up-from-line", "child": 0, "indent": 1, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "Ecriture Vente", "link_type": "DocType", "link_to": "Ecriture Vente", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Section Break", "label": "Treasury", "icon": "landmark", "child": 0, "indent": 1, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "Ecriture Bancaire", "link_type": "DocType", "link_to": "Ecriture Bancaire", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0}
+ ],
  "title": "Entries"
 }
