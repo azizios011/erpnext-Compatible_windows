@@ -96,7 +96,7 @@ def rename_sales_taxes_template():
 	merge the old one into it: rows move across and every stored Link reference
 	is pointed at the new name in one step, matching erpnext's own rename patches."""
 	old, new = "Sales Taxes and Charges Template", "Tax Template"
-	if not frappe.db.table_exists(old):
+	if not frappe.db.exists("DocType", old):
 		return
 	if not frappe.db.exists("DocType", new):
 		frappe.rename_doc("DocType", old, new, force=True)
