@@ -14,7 +14,7 @@
  "is_hidden": 0,
  "label": "Entries",
  "links": [],
- "modified": "2026-11-03 16:10:00.000000",
+ "modified": "2026-11-03 16:45:00.000000",
  "modified_by": "Administrator",
  "module": "Entries",
  "name": "Entries",
@@ -28,12 +28,9 @@
  "shortcuts": [],
  "sidebar_items": [
   {"type": "Link", "label": "Home", "link_type": "Workspace", "link_to": "Entries", "icon": "house", "child": 0, "indent": 0, "collapsible": 1, "keep_closed": 0},
-  {"type": "Section Break", "label": "Payable", "icon": "arrow-down-to-line", "child": 0, "indent": 1, "collapsible": 1, "keep_closed": 0},
-  {"type": "Link", "label": "Payable Transaction", "link_type": "DocType", "link_to": "Payable Transaction", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
-  {"type": "Section Break", "label": "Receivable", "icon": "arrow-up-from-line", "child": 0, "indent": 1, "collapsible": 1, "keep_closed": 0},
-  {"type": "Link", "label": "Receivable Transaction", "link_type": "DocType", "link_to": "Receivable Transaction", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0},
-  {"type": "Section Break", "label": "Treasury", "icon": "landmark", "child": 0, "indent": 1, "collapsible": 1, "keep_closed": 0},
-  {"type": "Link", "label": "Treasury Transaction", "link_type": "DocType", "link_to": "Treasury Transaction", "child": 1, "indent": 0, "collapsible": 1, "keep_closed": 0}
+  {"type": "Link", "label": "Payable Transaction", "link_type": "DocType", "link_to": "Payable Transaction", "icon": "arrow-down-to-line", "child": 0, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "Receivable Transaction", "link_type": "DocType", "link_to": "Receivable Transaction", "icon": "arrow-up-from-line", "child": 0, "indent": 0, "collapsible": 1, "keep_closed": 0},
+  {"type": "Link", "label": "Treasury Transaction", "link_type": "DocType", "link_to": "Treasury Transaction", "icon": "landmark", "child": 0, "indent": 0, "collapsible": 1, "keep_closed": 0}
  ],
  "title": "Entries"
 }
