@@ -14,7 +14,7 @@
  "is_hidden": 0,
  "label": "Organization",
  "links": [],
- "modified": "2026-11-02 20:30:00.000000",
+ "modified": "2026-11-03 14:01:00.000000",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Organization",
@@ -27,6 +27,17 @@
  "sequence_id": 50.0,
  "shortcuts": [],
  "sidebar_items": [
+  {
+   "type": "Link",
+   "label": "Entreprises",
+   "link_type": "DocType",
+   "link_to": "Entreprise",
+   "icon": "building",
+   "child": 0,
+   "indent": 0,
+   "collapsible": 1,
+   "keep_closed": 0
+  },
   {
    "type": "Link",
    "label": "Companies",
@@ -56,6 +67,45 @@
    "link_to": "Fournisseur",
    "icon": "truck",
    "child": 0,
+   "indent": 0,
+   "collapsible": 1,
+   "keep_closed": 0
+  },
+  {
+   "type": "Section Break",
+   "label": "Master data",
+   "icon": "library",
+   "child": 0,
+   "indent": 1,
+   "collapsible": 1,
+   "keep_closed": 0
+  },
+  {
+   "type": "Link",
+   "label": "Forme Juridique",
+   "link_type": "DocType",
+   "link_to": "Forme Juridique",
+   "child": 1,
+   "indent": 0,
+   "collapsible": 1,
+   "keep_closed": 0
+  },
+  {
+   "type": "Link",
+   "label": "Convention Collective",
+   "link_type": "DocType",
+   "link_to": "Convention Collective",
+   "child": 1,
+   "indent": 0,
+   "collapsible": 1,
+   "keep_closed": 0
+  },
+  {
+   "type": "Link",
+   "label": "Activite",
+   "link_type": "DocType",
+   "link_to": "Activite",
+   "child": 1,
    "indent": 0,
    "collapsible": 1,
    "keep_closed": 0
