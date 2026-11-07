@@ -13,8 +13,39 @@
  "indicator_color": "blue",
  "is_hidden": 0,
  "label": "Facturation",
- "links": [],
- "modified": "2026-11-03 18:05:00.000000",
+ "links": [
+  {
+   "type": "Card Break",
+   "label": "Treasury",
+   "icon": "landmark",
+   "hidden": 0,
+   "link_type": "DocType",
+   "link_to": ""
+  },
+  {
+   "type": "Link",
+   "label": "Virement Espece",
+   "link_type": "DocType",
+   "link_to": "Virement Espece",
+   "hidden": 0
+  },
+  {
+   "type": "Card Break",
+   "label": "Declaration",
+   "icon": "file-text",
+   "hidden": 0,
+   "link_type": "DocType",
+   "link_to": ""
+  },
+  {
+   "type": "Link",
+   "label": "Mensuelle",
+   "link_type": "DocType",
+   "link_to": "Mensuelle",
+   "hidden": 0
+  }
+ ],
+ "modified": "2026-11-07 21:00:00.000000",
  "modified_by": "Administrator",
  "module": "Facturation",
  "name": "Facturation",

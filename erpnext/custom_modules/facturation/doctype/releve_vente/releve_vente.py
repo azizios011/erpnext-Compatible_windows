@@ -2,9 +2,12 @@
 # For license information, please see license.txt
 
 import frappe
-from frappe.model.document import Document
+
+from erpnext.custom_modules.facturation.facturation_base import FacturationDocument
 
 
-class ReleveVente(Document):
+class ReleveVente(FacturationDocument):
+	journal_code = "VT"
+
 	def on_trash(self):
 		frappe.db.delete("Releve Vente Detail", {"releve_vente": self.name})
