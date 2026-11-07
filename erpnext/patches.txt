@@ -551,3 +551,4 @@ execute:frappe.db.set_value("Report", "Negative Batch Report", "prepared_report"
 erpnext.custom_modules.facturation.patches.migrate_facturation_settings_to_ai_settings
 erpnext.custom_modules.organization.patches.delete_empty_societe
 erpnext.custom_modules.facturation.patches.delete_empty_extrait_doctypes
+erpnext.custom_modules.entries.patches.seed_journals
