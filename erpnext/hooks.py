@@ -48,7 +48,7 @@ code_only_modules = {
 
 develop_version = "17.x.x-develop"
 
-app_include_js = ["erpnext.bundle.js", "facturation_entry.js"]
+app_include_js = ["erpnext.bundle.js", "facturation_entry.js", "entry_form.js"]
 app_include_css = "erpnext.bundle.css"
 web_include_css = "erpnext-web.bundle.css"
 email_css = "email_erpnext.bundle.css"
