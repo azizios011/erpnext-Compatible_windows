@@ -179,8 +179,8 @@
    "indent": 0,
    "is_default_module": 0,
    "keep_closed": 0,
-   "label": "Virement Espece",
-   "link_to": "Virement Espece",
+   "label": "Versement Espece",
+   "link_to": "Versement Espece",
    "link_type": "DocType",
    "open_in_new_tab": 0,
    "show_arrow": 0,
@@ -217,7 +217,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-11-07 21:00:00.000000",
+ "modified": "2026-11-08 10:00:00.000000",
  "modified_by": "Administrator",
  "module": "Facturation",
  "name": "Facturation",

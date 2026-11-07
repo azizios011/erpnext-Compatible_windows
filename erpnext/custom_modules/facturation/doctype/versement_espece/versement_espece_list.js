@@ -1,6 +1,6 @@
-// List view for Virement Espece: entry-status indicator + per-row pen button
+// List view for Versement Espece: entry-status indicator + per-row pen button
 // (opens the stage-2 Entries form; see facturation_entry.js)
-frappe.listview_settings["Virement Espece"] = {
+frappe.listview_settings["Versement Espece"] = {
 	add_fields: ["entry_status", "entry", "entry_doctype", "mvt"],
 	get_indicator(doc) {
 		if (doc.entry_status === "Comptabilisee") {
