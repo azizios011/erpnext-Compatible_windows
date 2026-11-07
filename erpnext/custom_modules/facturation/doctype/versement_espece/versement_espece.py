@@ -4,5 +4,5 @@
 from erpnext.custom_modules.facturation.facturation_base import FacturationDocument
 
 
-class VirementEspece(FacturationDocument):
+class VersementEspece(FacturationDocument):
 	journal_code = "BQ"

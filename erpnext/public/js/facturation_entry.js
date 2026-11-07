@@ -45,7 +45,7 @@
 		"Releve Vente",
 		"Releve Bancaire",
 		"Remise de Cheque",
-		"Virement Espece",
+		"Versement Espece",
 		"Mensuelle",
 	];
 

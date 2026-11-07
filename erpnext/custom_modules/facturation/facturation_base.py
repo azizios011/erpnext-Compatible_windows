@@ -17,7 +17,7 @@ JOURNAL_BY_DOCTYPE = {
 	"RS Vente": "RS",
 	"Releve Bancaire": "BQ",
 	"Remise de Cheque": "BQ",
-	"Virement Espece": "BQ",
+	"Versement Espece": "BQ",
 	"Mensuelle": "DC",
 }
 
@@ -33,7 +33,7 @@ ENTRY_DOCTYPE_BY_DOCTYPE = {
 	"Releve Vente": "Receivable Transaction",
 	"Releve Bancaire": "Treasury Transaction",
 	"Remise de Cheque": "Treasury Transaction",
-	"Virement Espece": "Treasury Transaction",
+	"Versement Espece": "Treasury Transaction",
 	"Mensuelle": "Declaration Transaction",
 }
 
