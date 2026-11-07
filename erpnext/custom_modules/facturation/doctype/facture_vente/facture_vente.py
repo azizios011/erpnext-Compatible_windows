@@ -6,32 +6,12 @@ import json
 
 import frappe
 import requests
-from frappe.model.document import Document
-from frappe.utils import flt
-from frappe.utils import money_in_words
+
+from erpnext.custom_modules.facturation.facturation_base import FacturationDocument
 
 
-class FactureVente(Document):
-	def validate(self):
-		self.calculate_totals()
-
-	def calculate_totals(self):
-		total_ht = 0.0
-		for row in self.items:
-			row.amount = flt(row.qty) * flt(row.rate)
-			total_ht += flt(row.amount)
-
-		total_taxes = 0.0
-		for tax in self.taxes:
-			total_taxes += flt(tax.tax_amount)
-
-		self.total_ht = total_ht
-		self.total_taxes_and_charges = total_taxes
-		self.grand_total = total_ht + total_taxes
-
-		if self.grand_total and self.company:
-			company_currency = frappe.get_cached_value("Company", self.company, "default_currency")
-			self.in_words = money_in_words(self.grand_total, company_currency)
+class FactureVente(FacturationDocument):
+	journal_code = "VT"
 
 
 EXTRACTION_PROMPT = """You are extracting structured data from a Tunisian sales invoice (facture de vente).
@@ -39,24 +19,15 @@ Return ONLY a single JSON object, with no markdown formatting, no code fences, a
 
 The JSON object must exactly match this shape:
 {
-  "customer_name": "string or null",
-  "tax_id": "string or null (matricule fiscal of the client, exactly as printed)",
   "posting_date": "string or null (invoice date, formatted as YYYY-MM-DD)",
-  "reference_number": "string or null (the invoice number as printed, e.g. Facture N)",
-  "items": [
-    {"description": "string", "qty": number, "uom": "string or null", "rate": number}
-  ],
-  "taxes": [
-    {"charge_type": "TVA" or "Fodec" or "Timbre Fiscal" or "Autre", "rate": number or null, "base_amount": number or null, "tax_amount": number}
-  ]
+  "reference_number": "string or null (the invoice number as printed, e.g. Facture N)"
 }
 
 Rules:
-- qty and rate are the quantity and unit price (HT) of each line item.
-- Include one taxes row per distinct TVA rate present, plus a row for Fodec if present, plus a row for Timbre Fiscal if present.
-- Use numbers (not strings) for qty, rate, base_amount, tax_amount, and rate percentages.
+- The form only carries these two fields plus the attachment; the customer is
+  picked manually on the Link field, so no party data is extracted.
 - If a value is not present on the invoice, use null.
-- Do not compute or include any total fields - only items and taxes."""
+- Do not compute or include any other fields."""
 
 
 def _get_settings():
@@ -175,7 +146,7 @@ def _call_openrouter(api_key, model, content, ext):
 
 
 @frappe.whitelist()
-def extract_invoice_data(attachment):
+def extract_invoice_data(attachment: str) -> dict:
 	if not attachment:
 		return {"success": False, "error": "No attachment provided."}
 
@@ -211,5 +182,11 @@ def extract_invoice_data(attachment):
 		extracted = json.loads(cleaned)
 	except Exception as e:
 		return {"success": False, "error": f"Could not parse the extraction response: {e}"}
+
+	# the upload form carries only the base fields: drop anything else the
+	# model may have produced instead of failing
+	extracted = {
+		key: extracted[key] for key in ("posting_date", "reference_number") if key in extracted
+	}
 
 	return {"success": True, "data": extracted}

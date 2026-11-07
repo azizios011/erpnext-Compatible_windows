@@ -1,8 +1,8 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-from frappe.model.document import Document
+from erpnext.custom_modules.facturation.facturation_base import FacturationDocument
 
 
-class ReleveAchat(Document):
-	pass
+class ReleveAchat(FacturationDocument):
+	journal_code = "AC"
