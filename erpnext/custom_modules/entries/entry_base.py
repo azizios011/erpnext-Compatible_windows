@@ -144,6 +144,7 @@ class EntryDocument(Document):
 
 	def post_to_ledger(self):
 		frappe.db.delete(LEDGER_DOCTYPE, {"source_entry_doctype": self.doctype, "source_entry": self.name})
+		period = getdate(self.date_operation) if self.date_operation else None
 		for line in self.lines:
 			frappe.get_doc(
 				{
@@ -155,6 +156,13 @@ class EntryDocument(Document):
 					"libelle": line.libelle,
 					"debit": line.debit,
 					"credit": line.credit,
+					"company": self.company,
+					"devise": self.devise,
+					"ref_doc": self.ref_doc or "",
+					"tresorerie": line.tresorerie or "",
+					"lettrage": "",
+					"mois": period.month if period else None,
+					"annee": period.year if period else None,
 					"source_entry_doctype": self.doctype,
 					"source_entry": self.name,
 					"source_doctype": self.source_doctype or "",
