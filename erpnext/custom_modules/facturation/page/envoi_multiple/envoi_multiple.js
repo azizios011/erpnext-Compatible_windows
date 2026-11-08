@@ -282,6 +282,10 @@ frappe.pages["envoi-multiple"].on_page_load = function (wrapper) {
 		args: {},
 		callback(r) {
 			const groups = (r.message && r.message.groups) || [];
+			if (!groups.length) {
+				$type.html('<option value="">' + __("Aucun type disponible") + "</option>");
+				return;
+			}
 			groups.forEach((group) => {
 				const $group = $("<optgroup>").attr("label", group.group);
 				group.doctypes.forEach((dt) => {
@@ -289,6 +293,9 @@ frappe.pages["envoi-multiple"].on_page_load = function (wrapper) {
 				});
 				$type.append($group);
 			});
+		},
+		error(r) {
+			$type.html('<option value="">' + __("Erreur de chargement") + "</option>");
 		},
 	});
 

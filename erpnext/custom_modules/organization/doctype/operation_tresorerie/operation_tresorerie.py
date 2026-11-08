@@ -33,13 +33,14 @@ class OperationTresorerie(Document):
 def get_categorie_counts(type_plan: str = "Societe") -> dict:
 	"""Live per-categorie counts for the list-view pill tabs."""
 	_check_read()
-	rows = frappe.get_all(
+	categories = frappe.get_all(
 		"Operation Tresorerie",
 		filters={"type_plan": type_plan},
-		fields=["categorie", "count(name) as total"],
-		group_by="categorie",
+		pluck="categorie",
 	)
-	counts = {row.categorie: row.total for row in rows}
+	counts: dict = {}
+	for categorie in categories:
+		counts[categorie] = counts.get(categorie, 0) + 1
 	return {
 		"Exploitation": counts.get("Exploitation", 0),
 		"Investissement": counts.get("Investissement", 0),

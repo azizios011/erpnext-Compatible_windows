@@ -71,16 +71,18 @@ def get_accounts(
 	_check_read()
 	rows = frappe.get_all(
 		LEDGER,
-		fields=[
-			"account",
-			"sum(debit) as total_debit",
-			"sum(credit) as total_credit",
-			"sum(case when lettrage_status = 'Non lettre' then 1 else 0 end) as a_lettrer",
-		],
+		fields=["account", "debit", "credit", "lettrage_status"],
 		filters=[["company", "=", company]] if company else [],
-		group_by="account",
 	)
-	by_account = {row.account: row for row in rows}
+	by_account: dict[str, Any] = {}
+	for row in rows:
+		agg = by_account.setdefault(
+			row.account, {"total_debit": 0.0, "total_credit": 0.0, "a_lettrer": 0}
+		)
+		agg["total_debit"] += flt(row.debit)
+		agg["total_credit"] += flt(row.credit)
+		if row.lettrage_status == "Non lettre":
+			agg["a_lettrer"] += 1
 
 	accounts = []
 	for account in frappe.get_all(

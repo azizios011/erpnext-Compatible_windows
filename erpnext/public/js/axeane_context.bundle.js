@@ -153,6 +153,9 @@
 				select("entreprise", row.name);
 			},
 		}));
+		if (!entreprise_rows.length) {
+			entreprise_rows.push({ label: __("Aucune entreprise"), disabled: true });
+		}
 		const exercice_rows = (ctx.exercices || []).map((row) => ({
 			label: `${esc(row.label)}${row.status === "Cloture" ? " (" + __("Cloture") + ")" : ""}`,
 			icon: row.name === ctx.exercice ? "check" : "",
@@ -224,10 +227,13 @@
 	}
 
 	function inject_submenu_search(menu) {
-		// the newest open panel: the submenu just opened by the hover
+		// only our dropdown's submenu panels, and only when they carry enough
+		// rows for a search to be useful
+		if (this !== dropdown) return;
 		const $panels = $("body").find(".es-menu");
 		const $panel = $panels.last();
 		if (!$panel.length || $panel.find(".axeane-submenu-search").length) return;
+		if ($panel.find(".es-menu__item").length < 6) return;
 		const $input = $(
 			`<input type="text" class="form-control form-control-sm axeane-submenu-search"
 				placeholder="${__("Rechercher...")}" style="margin: 6px 8px; width: calc(100% - 16px);">`
@@ -273,7 +279,17 @@
 			const original_open = Dropdown.prototype.open;
 			dropdown.open = function () {
 				const result = original_open.apply(this, arguments);
-				setTimeout(() => inject_submenu_search(this.menu), 0);
+				if (this.menu) {
+					// only the nested side panels get a search input; the root
+					// panel keeps its two rows tight
+					const observer = new MutationObserver(() => {
+						if ($("body").find(".es-menu").length > 1) {
+							inject_submenu_search.call(dropdown, this.menu);
+						}
+					});
+					observer.observe(document.body, { childList: true, subtree: true });
+					setTimeout(() => observer.disconnect(), 5000);
+				}
 				return result;
 			};
 		}

@@ -204,12 +204,14 @@ def get_list_totaux(doctype: str, filters: str = "", or_filters: str = "") -> di
 		doctype,
 		filters=parsed,
 		or_filters=parsed_or,
-		fields=["count(name) as lines_count", "sum(total_debit) as total_debit", "sum(total_credit) as total_credit"],
+		fields=["name", "total_debit", "total_credit"],
+		limit=0,
 	)
-	row = rows[0] if rows else {}
+	total_debit = flt(sum(flt(row.get("total_debit")) for row in rows), 3)
+	total_credit = flt(sum(flt(row.get("total_credit")) for row in rows), 3)
 	return {
-		"count": flt(row.get("lines_count") or 0),
-		"total_debit": flt(row.get("total_debit") or 0, 3),
-		"total_credit": flt(row.get("total_credit") or 0, 3),
-		"solde": flt(flt(row.get("total_debit") or 0, 3) - flt(row.get("total_credit") or 0, 3), 3),
+		"count": len(rows),
+		"total_debit": total_debit,
+		"total_credit": total_credit,
+		"solde": flt(total_debit - total_credit, 3),
 	}

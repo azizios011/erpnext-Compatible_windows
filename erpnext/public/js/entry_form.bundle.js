@@ -73,7 +73,12 @@ Object.assign(erpnext.entries, {
 	/** The list view's Totaux bar: aggregates over the currently filtered
 	 * rows (server-side, through get_list_totaux). */
 	list_totaux(listview) {
-		const args = listview.get_args ? listview.get_args() : {};
+		let args = {};
+		try {
+			args = listview.get_args ? listview.get_args() : {};
+		} catch (error) {
+			console.warn("entry-form: get_args failed", error);
+		}
 		frappe.call({
 			method: "erpnext.custom_modules.entries.api.get_list_totaux",
 			args: {
@@ -126,13 +131,22 @@ Object.assign(erpnext.entries, {
 	},
 
 	setup_tresorerie_query(frm) {
-		// the Tresorerie dropdown only offers treasury accounts (Bank / Cash)
+		// the Tresorerie dropdown lists the visible operations for the
+		// context's plan type (Societe when no context is set)
+		const type_plan = (frappe.boot.axeane_context && frappe.boot.axeane_context.type_plan) || "Societe";
 		frm.set_query("tresorerie", "lines", () => ({
-			filters: { account_type: ["in", ["Bank", "Cash"]] },
+			filters: { visible: 1, type_plan: type_plan },
 		}));
 		frm.set_query("account", "lines", () => ({
 			filters: { disabled: 0 },
 		}));
+		// the column only shows when the Entreprise autorise le flux de tresorerie
+		const autorise = cint(frappe.boot.axeane_context && frappe.boot.axeane_context.flux_tresorerie_autorise);
+		const grid = frm.fields_dict.lines && frm.fields_dict.lines.grid;
+		if (grid) {
+			grid.update_docfield_property("tresorerie", "hidden", autorise ? 0 : 1);
+			grid.refresh();
+		}
 	},
 
 	preview_source_attachment(frm) {

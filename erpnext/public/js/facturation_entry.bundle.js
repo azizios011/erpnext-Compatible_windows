@@ -116,20 +116,35 @@ erpnext.facturation.setup_list = function (listview) {
 			listview.sort_selector.wrapper.addClass("hidden");
 		}
 	});
-	erpnext.facturation.setup_contenu_args(listview);
-	erpnext.facturation.setup_row_delegation(listview);
-	listview.page.add_inner_button(__("Filtres Axeane"), function () {
-		erpnext.facturation.filter_panel(listview);
+	safe(function () {
+		erpnext.facturation.setup_contenu_args(listview);
+	});
+	safe(function () {
+		erpnext.facturation.setup_row_delegation(listview);
+	});
+	safe(function () {
+		listview.page.add_inner_button(__("Filtres Axeane"), function () {
+			safe(function () {
+				erpnext.facturation.filter_panel(listview);
+			});
+		});
 	});
 };
 
 /** Called after every render (settings.refresh). setup_list is idempotent
  * and runs here too, so the top bar and button are in place even if the
- * onload hook never fired. */
+ * onload hook never fired. Every step is guarded: our code can never blank
+ * the rendered table. */
 erpnext.facturation.on_list_refresh = function (listview) {
-	erpnext.facturation.setup_list(listview);
-	erpnext.facturation.inject_row_buttons(listview);
-	erpnext.facturation.inject_extra_columns(listview);
+	safe(function () {
+		erpnext.facturation.setup_list(listview);
+	});
+	safe(function () {
+		erpnext.facturation.inject_row_buttons(listview);
+	});
+	safe(function () {
+		erpnext.facturation.inject_extra_columns(listview);
+	});
 };
 
 /** The pen button lives in the row's activity cluster (time · comments ·
