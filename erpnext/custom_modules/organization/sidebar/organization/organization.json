@@ -155,7 +155,7 @@
    "indent": 0,
    "is_default_module": 0,
    "keep_closed": 0,
-   "label": "Activite",
+   "label": "Activités",
    "link_to": "Activite",
    "link_type": "DocType",
    "open_in_new_tab": 0,
@@ -208,7 +208,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-11-08 17:30:00.000000",
+ "modified": "2026-11-08 18:30:00.000000",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Organization",
