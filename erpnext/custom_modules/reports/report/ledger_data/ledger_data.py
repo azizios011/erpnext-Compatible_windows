@@ -3,28 +3,26 @@
 
 """Ledger Data — Axeane's "Grand Livre" over the Ecriture Comptable ledger.
 
-The standard report table is the list view; get_pdf_view / get_pdf_view_all
-render the "Rapport PDF" style pages (HTML paper — the real PDF/export comes
-later through the Print Designer path).
+Two views: the flat list (filters on top) and the Grille (rows grouped per
+account with opening balances and running totals, styled client-side via
+row_type). PDF export will later be a backend service; nothing PDF-like
+lives here.
 """
 
-import json
-import os
 from datetime import date, timedelta
-from math import ceil
 from typing import Any
 
 import frappe
 from frappe import _
-from frappe.utils import flt, fmt_money, getdate, nowdate
+from frappe.utils import flt, getdate, nowdate
 
 # auxiliary ledgers are the client / supplier account-number prefixes
 AUX_CLIENT_PREFIX = "411"
 AUX_FOURNISSEUR_PREFIX = "401"
 
-ROWS_PER_PAGE = 45
 REPORT_CURRENCY = "TND"
 LEDGER_DOCTYPE = "Ecriture Comptable"
+BALANCE_TOLERANCE = 0.0005
 
 MONTHS_FR = {
 	"Janvier": 1,
@@ -48,6 +46,11 @@ def execute(filters=None) -> tuple:
 	"""Standard Script Report entry point: columns, rows, no chart,
 	report summary over ALL filtered rows."""
 	filters = filters or {}
+	if filters.get("view") == "Grille":
+		columns = _get_grille_columns()
+		rows = _get_grille_rows(filters)
+		# the groups carry their own totals: no datatable total row
+		return columns, rows, None, None, _get_report_summary(_flat_rows(rows)), 1
 	columns = get_columns()
 	rows = _get_rows(filters)
 	return columns, rows, None, None, _get_report_summary(rows)
@@ -172,7 +175,7 @@ def _get_rows(filters: dict) -> list[dict]:
 		balance: dict = {}
 		for row in rows:
 			balance[row.account] = balance.get(row.account, 0.0) + flt(row.debit) - flt(row.credit)
-		rows = [row for row in rows if abs(balance.get(row.account, 0.0)) > 0.0005]
+		rows = [row for row in rows if abs(balance.get(row.account, 0.0)) > BALANCE_TOLERANCE]
 	# "Comptes mouvementes" and "Tous les comptes" both show the period's rows
 
 	numbers = frappe.get_all(
@@ -207,6 +210,21 @@ def get_columns() -> list[dict]:
 	]
 
 
+def _get_grille_columns() -> list[dict]:
+	return [
+		{"label": _("Date"), "fieldname": "date", "fieldtype": "Data", "width": 100},
+		{"label": _("Mvt"), "fieldname": "mvt", "fieldtype": "Dynamic Link", "options": "source_entry_doctype", "width": 130},
+		{"label": _("Libelle"), "fieldname": "libelle", "fieldtype": "Data", "width": 260},
+		{"label": _("Jrn"), "fieldname": "journal", "fieldtype": "Data", "width": 70},
+		{"label": _("Ref"), "fieldname": "ref_doc", "fieldtype": "Data", "width": 120},
+		{"label": _("Tresorerie"), "fieldname": "tresorerie", "fieldtype": "Link", "options": "Chart of Account", "width": 140},
+		{"label": _("Debit"), "fieldname": "debit", "fieldtype": "Currency", "options": "devise", "precision": "3", "width": 130},
+		{"label": _("Credit"), "fieldname": "credit", "fieldtype": "Currency", "options": "devise", "precision": "3", "width": 130},
+		{"label": _("Lettrage"), "fieldname": "lettrage", "fieldtype": "Data", "width": 90},
+		{"label": _("Solde"), "fieldname": "solde", "fieldtype": "Currency", "options": "devise", "precision": "3", "width": 140},
+	]
+
+
 def _get_report_summary(rows: list[dict]) -> list[dict]:
 	total_debit = flt(sum(flt(r["debit"]) for r in rows), 3)
 	total_credit = flt(sum(flt(r["credit"]) for r in rows), 3)
@@ -218,88 +236,32 @@ def _get_report_summary(rows: list[dict]) -> list[dict]:
 	]
 
 
-# ── the "Rapport PDF" (HTML paper) ───────────────────────────────────────────
+def _flat_rows(grille_rows: list[dict]) -> list[dict]:
+	"""Entry rows only (no header/opening/total markers) for the summary."""
+	return [row for row in grille_rows if row.get("row_type") == "entry"]
 
 
-def get_report_header(company: str) -> dict:
-	"""The page header. Kept as one function so it can be repointed from the
-	core Company doctype to the custom Entreprise doctype later."""
-	tax_id = frappe.db.get_value("Company", company, "tax_id") if company else None
-	return {"company_name": company or "", "tax_id": tax_id or ""}
-
-
-@frappe.whitelist()
-def get_pdf_view(filters: str, layout: str, page: int) -> dict:
-	"""One viewer page (~ROWS_PER_PAGE visual rows) of the Grand Livre."""
-	_check_permission()
-	parsed = json.loads(filters or "{}")
-	parsed["page"] = int(page or 1)
-	return _render_pdf(parsed, str(layout or "Simple"), int(page or 1))
-
-
-@frappe.whitelist()
-def get_pdf_view_all(filters: str, layout: str) -> dict:
-	"""The whole document, for "Imprimer" (A4 print CSS, repeated thead)."""
-	_check_permission()
-	parsed = json.loads(filters or "{}")
-	return _render_pdf(parsed, str(layout or "Simple"), page=None)
-
-
-def _render_pdf(filters: dict, layout: str, page: int | None) -> dict:
-	from_date, to_date = _resolve_period(filters)
+def _get_grille_rows(filters: dict) -> list[dict]:
+	"""Rows grouped per account: a bold header, the opening balance
+	(movements from 01/01 of the year up to the day before from_date), the
+	entries with a running Solde, and a bold totals row per account."""
 	rows = _get_rows(filters)
+	if not rows:
+		return []
+
+	from_date, to_date = _resolve_period(filters)
 	year = int(filters.get("year") or nowdate()[:4])
-	groups = _group_rows(rows, from_date, to_date, year)
-	pages = _paginate(groups, ROWS_PER_PAGE)
-	total_pages = max(len(pages), 1)
-	current = min(max(page or 1, 1), total_pages) if page else None
-	if page:
-		shown = pages[current - 1] if pages else []
-	else:
-		shown = [chunk for page_chunks in pages for chunk in page_chunks]
 
-	context = {
-		"header": get_report_header(filters.get("company")),
-		"title": _("Grand Livre"),
-		"du": from_date.strftime("%d/%m/%Y"),
-		"au": to_date.strftime("%d/%m/%Y"),
-		"layout": layout,
-		"layout_label": _("Simple") if layout == "Simple" else _("Detaille"),
-		"detaille": layout == "Detaille",
-		"groups": shown,
-		"page": current,
-		"total_pages": total_pages,
-		"fmt": _fmt,
-	}
-	return {
-		"html": _render_template("ledger_data_page.html", context),
-		"page": current,
-		"total_pages": total_pages,
-	}
-
-
-def _fmt(value) -> str:
-	"""Three decimals, system number format (French separators), minus sign."""
-	return fmt_money(flt(value), precision=3, currency=REPORT_CURRENCY)
-
-
-def _group_rows(rows: list[dict], from_date: date, to_date: date, year: int) -> list[dict]:
-	"""Group the period's rows per account with a running balance; the group
-	opens with the opening balance (movements from 01/01 of the year up to
-	the day before from_date) and closes with a totals row."""
-	accounts = []
+	accounts: list[str] = []
 	by_account: dict[str, list] = {}
 	for row in rows:
 		by_account.setdefault(row.account, []).append(row)
 		if row.account not in accounts:
 			accounts.append(row.account)
 
+	openings: dict[str, float] = {}
 	if from_date > date(year, 1, 1):
 		opening_until = from_date - timedelta(days=1)
-	else:
-		opening_until = None
-	openings: dict[str, float] = {}
-	if opening_until:
 		for account in by_account:
 			openings[account] = flt(
 				frappe.db.get_value(
@@ -315,91 +277,52 @@ def _group_rows(rows: list[dict], from_date: date, to_date: date, year: int) -> 
 				3,
 			)
 
-	groups = []
+	out: list[dict] = []
 	for account in accounts:
-		display = (by_account[account][0].get("compte_comptable") or account)
+		account_rows = by_account[account]
+		display = account_rows[0].get("compte_comptable") or account
 		solde = openings.get(account, 0.0)
-		movement_rows = []
 		total_debit = total_credit = 0.0
-		for row in by_account[account]:
+		out.append({"row_type": "header", "date": display})
+		if from_date > date(year, 1, 1):
+			out.append(
+				{
+					"row_type": "opening",
+					"date": opening_until.strftime("%d/%m/%Y"),
+					"libelle": _("Solde a nouveau / Report"),
+					"solde": solde,
+				}
+			)
+		for row in account_rows:
 			debit, credit = flt(row.debit), flt(row.credit)
 			solde = flt(solde + debit - credit, 3)
 			total_debit = flt(total_debit + debit, 3)
 			total_credit = flt(total_credit + credit, 3)
-			movement_rows.append(
+			out.append(
 				{
+					"row_type": "entry",
 					"date": getdate(row.posting_date).strftime("%d/%m/%Y"),
 					"mvt": row.mvt,
 					"libelle": row.libelle,
-					"jrn": row.journal,
-					"ref": row.ref_doc,
+					"journal": row.journal,
+					"ref_doc": row.ref_doc,
 					"tresorerie": row.tresorerie,
 					"lettrage": row.lettrage,
 					"debit": debit,
 					"credit": credit,
 					"solde": solde,
+					"source_entry_doctype": row.source_entry_doctype,
+					"source_doctype": row.source_doctype,
+					"source_name": row.source_name,
 				}
 			)
-		groups.append(
+		out.append(
 			{
-				"account": display,
-				"opening": {
-					"date": opening_until.strftime("%d/%m/%Y") if opening_until else from_date.strftime("%d/%m/%Y"),
-					"solde": openings.get(account, 0.0),
-				},
-				"rows": movement_rows,
-				"totals": {
-					"debit": total_debit,
-					"credit": total_credit,
-					"solde": flt(openings.get(account, 0.0) + total_debit - total_credit, 3),
-				},
-				"row_count": len(movement_rows) + 2,
+				"row_type": "total",
+				"date": _("Totaux {0}").format(display),
+				"debit": total_debit,
+				"credit": total_credit,
+				"solde": flt(openings.get(account, 0.0) + total_debit - total_credit, 3),
 			}
 		)
-	return groups
-
-
-def _paginate(groups: list[dict], rows_per_page: int) -> list[list[dict]]:
-	"""Whole groups per page where possible; a group larger than a page is
-	split at movement boundaries (the continuation reprints the column
-	header but not the group header)."""
-	pages: list[list[dict]] = []
-	current: list[dict] = []
-	used = 0
-	for group in groups:
-		if group["row_count"] > rows_per_page:
-			# flush what is on the page, then split the big group
-			if current:
-				pages.append(current)
-				current, used = [], 0
-			remaining = list(group["rows"])
-			first = True
-			while remaining or (first and not group["rows"]):
-				chunk_rows = remaining[: rows_per_page - 2]
-				remaining = remaining[rows_per_page - 2 :]
-				chunk = {
-					"account": group["account"],
-					"continued": not first,
-					"opening": group["opening"] if first else None,
-					"rows": chunk_rows if chunk_rows else [],
-					"totals": group["totals"] if not remaining else None,
-					"row_count": len(chunk_rows) + 2,
-				}
-				pages.append([chunk])
-				first = False
-			continue
-		if used + group["row_count"] > rows_per_page and current:
-			pages.append(current)
-			current, used = [], 0
-		current.append(group)
-		used += group["row_count"]
-	if current or not pages:
-		pages.append(current)
-	return [page for page in pages if page]
-
-
-def _render_template(template_name: str, context: dict) -> str:
-	path = os.path.join(os.path.dirname(__file__), template_name)
-	with open(path, encoding="utf-8") as fh:
-		source = fh.read()
-	return frappe.get_jenv().from_string(source).render(context)
+	return out

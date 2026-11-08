@@ -48,6 +48,7 @@ function extract_invoice_data(frm) {
 
 			if (!r.message || !r.message.success) {
 				const error_message = (r.message && r.message.error) || __("Unknown error.");
+				frm.set_value("ocr_status", "Echec");
 				frappe.msgprint({
 					title: __("Extraction Failed"),
 					message: error_message,
@@ -60,6 +61,7 @@ function extract_invoice_data(frm) {
 		},
 		error: function () {
 			frappe.dom.unfreeze();
+			frm.set_value("ocr_status", "Echec");
 			frappe.msgprint({
 				title: __("Extraction Failed"),
 				message: __("Something went wrong while contacting the extraction service."),
@@ -80,6 +82,8 @@ function apply_extracted_data(frm, data) {
 	if (data.reference_number) {
 		frm.set_value("reference_number", data.reference_number);
 	}
+
+	frm.set_value("ocr_status", "Termine");
 
 	frappe.show_alert({
 		message: __("Invoice data extracted. Please review before saving."),

@@ -1,7 +1,7 @@
 {
  "app": "erpnext",
  "charts": [],
- "content": "[{\"id\": \"54801002\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Total Payable Entries\", \"col\": 3}}, {\"id\": \"36840276\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Total Receivable Entries\", \"col\": 3}}, {\"id\": \"66377911\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Total Treasury Entries\", \"col\": 3}}, {\"id\": \"24537016\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Total Declaration Entries\", \"col\": 3}}]",
+ "content": "[]",
  "creation": "2026-08-13 00:00:00.000000",
  "custom_blocks": [],
  "docstatus": 0,
@@ -11,135 +11,14 @@
  "icon": "receipt-text",
  "idx": 0,
  "indicator_color": "purple",
- "is_hidden": 0,
+ "is_hidden": 1,
  "label": "Entries",
- "links": [
-  {
-   "type": "Card Break",
-   "label": "Transactions",
-   "icon": "receipt-text",
-   "hidden": 0,
-   "onboard": 0,
-   "is_query_report": 0,
-   "link_count": 2,
-   "link_type": "DocType",
-   "link_to": ""
-  },
-  {
-   "type": "Link",
-   "label": "Payable Transaction",
-   "link_type": "DocType",
-   "link_to": "Payable Transaction",
-   "hidden": 0,
-   "onboard": 0,
-   "is_query_report": 0,
-   "link_count": 0
-  },
-  {
-   "type": "Link",
-   "label": "Receivable Transaction",
-   "link_type": "DocType",
-   "link_to": "Receivable Transaction",
-   "hidden": 0,
-   "onboard": 0,
-   "is_query_report": 0,
-   "link_count": 0
-  },
-  {
-   "type": "Link",
-   "label": "Treasury Transaction",
-   "link_type": "DocType",
-   "link_to": "Treasury Transaction",
-   "hidden": 0,
-   "onboard": 0,
-   "is_query_report": 0,
-   "link_count": 0
-  },
-  {
-   "type": "Link",
-   "label": "Declaration Transaction",
-   "link_type": "DocType",
-   "link_to": "Declaration Transaction",
-   "hidden": 0,
-   "onboard": 0,
-   "is_query_report": 0,
-   "link_count": 0
-  },
-  {
-   "type": "Card Break",
-   "label": "Setup",
-   "icon": "settings",
-   "hidden": 0,
-   "onboard": 0,
-   "is_query_report": 0,
-   "link_count": 2,
-   "link_type": "DocType",
-   "link_to": ""
-  },
-  {
-   "type": "Link",
-   "label": "Journal",
-   "link_type": "DocType",
-   "link_to": "Journal",
-   "hidden": 0,
-   "onboard": 0,
-   "is_query_report": 0,
-   "link_count": 0
-  },
-  {
-   "type": "Link",
-   "label": "Journal Model",
-   "link_type": "DocType",
-   "link_to": "Journal Model",
-   "hidden": 0,
-   "onboard": 0,
-   "is_query_report": 0,
-   "link_count": 0
-  },
-  {
-   "type": "Card Break",
-   "label": "Reports",
-   "icon": "book-open",
-   "hidden": 0,
-   "onboard": 0,
-   "is_query_report": 0,
-   "link_count": 2,
-   "link_type": "DocType",
-   "link_to": ""
-  },
-  {
-   "type": "Link",
-   "label": "Ledger",
-   "link_type": "DocType",
-   "link_to": "Ecriture Comptable",
-   "hidden": 0,
-   "onboard": 0,
-   "is_query_report": 0,
-   "link_count": 0
-  }
- ],
- "modified": "2026-11-07 23:00:00.000000",
+ "links": [],
+ "modified": "2026-11-08 13:00:00.000000",
  "modified_by": "Administrator",
  "module": "Entries",
  "name": "Entries",
- "number_cards": [
-  {
-   "label": "Total Payable Entries",
-   "number_card_name": "Total Payable Entries"
-  },
-  {
-   "label": "Total Receivable Entries",
-   "number_card_name": "Total Receivable Entries"
-  },
-  {
-   "label": "Total Treasury Entries",
-   "number_card_name": "Total Treasury Entries"
-  },
-  {
-   "label": "Total Declaration Entries",
-   "number_card_name": "Total Declaration Entries"
-  }
- ],
+ "number_cards": [],
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,
@@ -147,104 +26,6 @@
  "roles": [],
  "sequence_id": 50.0,
  "shortcuts": [],
- "sidebar_items": [
-  {
-   "type": "Link",
-   "label": "Home",
-   "link_type": "Workspace",
-   "link_to": "Entries",
-   "icon": "house",
-   "child": 0,
-   "indent": 0,
-   "collapsible": 1,
-   "keep_closed": 0
-  },
-  {
-   "type": "Link",
-   "label": "Payable Transaction",
-   "link_type": "DocType",
-   "link_to": "Payable Transaction",
-   "icon": "arrow-down-to-line",
-   "child": 0,
-   "indent": 0,
-   "collapsible": 1,
-   "keep_closed": 0
-  },
-  {
-   "type": "Link",
-   "label": "Receivable Transaction",
-   "link_type": "DocType",
-   "link_to": "Receivable Transaction",
-   "icon": "arrow-up-from-line",
-   "child": 0,
-   "indent": 0,
-   "collapsible": 1,
-   "keep_closed": 0
-  },
-  {
-   "type": "Link",
-   "label": "Treasury Transaction",
-   "link_type": "DocType",
-   "link_to": "Treasury Transaction",
-   "icon": "landmark",
-   "child": 0,
-   "indent": 0,
-   "collapsible": 1,
-   "keep_closed": 0
-  },
-  {
-   "type": "Link",
-   "label": "Declaration Transaction",
-   "link_type": "DocType",
-   "link_to": "Declaration Transaction",
-   "icon": "file-text",
-   "child": 0,
-   "indent": 0,
-   "collapsible": 1,
-   "keep_closed": 0
-  },
-  {
-   "type": "Section Break",
-   "label": "Setup",
-   "icon": "settings",
-   "child": 0,
-   "indent": 1,
-   "collapsible": 1,
-   "keep_closed": 0
-  },
-  {
-   "type": "Link",
-   "label": "Journal",
-   "link_type": "DocType",
-   "link_to": "Journal",
-   "icon": "settings",
-   "child": 1,
-   "indent": 0,
-   "collapsible": 1,
-   "keep_closed": 0
-  },
-  {
-   "type": "Link",
-   "label": "Journal Model",
-   "link_type": "DocType",
-   "link_to": "Journal Model",
-   "icon": "clipboard-pen",
-   "child": 1,
-   "indent": 0,
-   "collapsible": 1,
-   "keep_closed": 0
-  },
-  {
-   "type": "Link",
-   "label": "Ledger",
-   "link_type": "DocType",
-   "link_to": "Ecriture Comptable",
-   "icon": "book-open",
-   "child": 0,
-   "indent": 0,
-   "collapsible": 1,
-   "keep_closed": 0
-  }
- ],
+ "sidebar_items": [],
  "title": "Entries"
 }

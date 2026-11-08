@@ -30,6 +30,77 @@ Object.assign(erpnext.entries, {
 		frm.set_value("total_debit", total_debit);
 		frm.set_value("total_credit", total_credit);
 		frm.set_value("solde", total_debit - total_credit);
+		erpnext.entries.render_totaux_cards(frm);
+	},
+
+	/** The Axeane footer: four cards sticky at the bottom of the form. */
+	render_totaux_cards(frm) {
+		const field = frm.fields_dict.totaux_html;
+		if (!field || !field.$wrapper) {
+			return;
+		}
+		const currency = frm.doc.devise || "";
+		const lines = (frm.doc.lines || []).filter((line) => line.account || flt(line.debit) || flt(line.credit)).length;
+		const fmt = (value) =>
+			frappe.format(flt(value), "Currency", { currency: currency, precision: 3 }, frm.doc);
+		if (!frappe._totaux_css) {
+			frappe._totaux_css = true;
+			$(`<style>
+				.totaux-cards { position: sticky; bottom: 0; z-index: 5; background: var(--card-bg, #fff);
+					border-top: 1px solid var(--border-color); padding: 8px 4px; display: flex; gap: 12px; }
+				.totaux-card { flex: 1; border: 1px solid var(--border-color); border-radius: 6px;
+					padding: 6px 10px; }
+				.totaux-card .totaux-label { font-size: 11px; color: var(--text-muted, #666); }
+				.totaux-card .totaux-value { font-size: 14px; font-weight: 700; }
+				.totaux-card.tot-debit .totaux-value { color: var(--text-on-green, #1a7f37); }
+				.totaux-card.tot-credit .totaux-value { color: var(--text-on-red, #c0392b); }
+				.totaux-card.tot-solde .totaux-value { color: var(--text-on-purple, #6f42c1); }
+			</style>`).appendTo("head");
+		}
+		const card = (label, value, css_class) =>
+			`<div class="totaux-card ${css_class}"><div class="totaux-label">${label}</div>
+				<div class="totaux-value">${fmt(value)}</div></div>`;
+		field.$wrapper.html(
+			`<div class="totaux-cards">` +
+				card(__("Mvt Compte"), lines, "mvt-compte") +
+				card(__("Tot Debit"), total_debit, "tot-debit") +
+				card(__("Tot Credit"), total_credit, "tot-credit") +
+				card(__("Solde"), total_debit - total_credit, "tot-solde") +
+				`</div>`
+		);
+	},
+
+	/** The list view's Totaux bar: aggregates over the currently filtered
+	 * rows (server-side, through get_list_totaux). */
+	list_totaux(listview) {
+		const args = listview.get_args ? listview.get_args() : {};
+		frappe.call({
+			method: "erpnext.custom_modules.entries.api.get_list_totaux",
+			args: {
+				doctype: listview.doctype,
+				filters: JSON.stringify(args.filters || []),
+				or_filters: JSON.stringify(args.or_filters || []),
+			},
+			callback(r) {
+				const totals = r.message || {};
+				let $bar = listview.$result.parent().find(".tu-list-totaux");
+				if (!$bar.length) {
+					$bar = $('<div class="totaux-cards tu-list-totaux" style="border-top: 1px solid var(--border-color); padding: 8px 4px; display: flex; gap: 12px;"></div>');
+					listview.$paging_area.before($bar);
+				}
+				const fmt = (value) => frappe.format(flt(value), "Currency", { currency: "", precision: 3 });
+				const card = (label, value, css_class) =>
+					`<div class="totaux-card ${css_class}" style="flex:1; border:1px solid var(--border-color); border-radius:6px; padding:4px 10px;">
+						<div class="totaux-label" style="font-size:11px; color:#666;">${label}</div>
+						<div class="totaux-value" style="font-size:14px; font-weight:700;">${fmt(value)}</div></div>`;
+				$bar.html(
+					card(__("Mvt Compte"), totals.count || 0, "mvt-compte") +
+						card(__("Tot Debit"), totals.total_debit || 0, "tot-debit") +
+						card(__("Tot Credit"), totals.total_credit || 0, "tot-credit") +
+						card(__("Solde"), totals.solde || 0, "tot-solde")
+				);
+			},
+		});
 	},
 
 	derive_period(frm) {

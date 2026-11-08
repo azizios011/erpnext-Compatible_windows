@@ -11,6 +11,7 @@ import json
 
 import frappe
 from frappe import _
+from frappe.utils import flt
 
 from erpnext.custom_modules.entries.entry_base import JOURNAL_CODE_BY_DOCTYPE
 from erpnext.custom_modules.facturation.facturation_base import ENTRY_DOCTYPE_BY_DOCTYPE
@@ -182,3 +183,33 @@ def save_journal_model(journal: str, model_name: str, lines: str) -> dict:
 	)
 	doc.insert()  # permission-checked
 	return {"name": doc.name}
+
+
+@frappe.whitelist()
+def get_list_totaux(doctype: str, filters: str = "", or_filters: str = "") -> dict:
+	"""Aggregate the Totaux bar over the list's currently filtered rows.
+
+	`filters`/`or_filters` are the list view's own filter JSON
+	([[doctype, field, op, value], ...]); they run through frappe.get_list
+	(never raw SQL) with a read permission check on the doctype.
+	"""
+	if doctype not in JOURNAL_CODE_BY_DOCTYPE:
+		frappe.throw(_("{0} is not an Entries document").format(doctype))
+	if not frappe.has_permission(doctype, "read"):
+		frappe.throw(_("Not permitted to read {0}").format(doctype), frappe.PermissionError)
+
+	parsed = json.loads(filters or "[]")
+	parsed_or = json.loads(or_filters or "[]")
+	rows = frappe.get_list(
+		doctype,
+		filters=parsed,
+		or_filters=parsed_or,
+		fields=["count(name) as lines_count", "sum(total_debit) as total_debit", "sum(total_credit) as total_credit"],
+	)
+	row = rows[0] if rows else {}
+	return {
+		"count": flt(row.get("lines_count") or 0),
+		"total_debit": flt(row.get("total_debit") or 0, 3),
+		"total_credit": flt(row.get("total_credit") or 0, 3),
+		"solde": flt(flt(row.get("total_debit") or 0, 3) - flt(row.get("total_credit") or 0, 3), 3),
+	}
