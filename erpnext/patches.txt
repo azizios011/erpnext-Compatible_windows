@@ -592,3 +592,5 @@ erpnext.custom_modules.organization.patches.seed_modeles_taxe
 erpnext.custom_modules.organization.patches.reshape_activite_convention
 erpnext.custom_modules.organization.patches.load_activites
 erpnext.custom_modules.organization.patches.backfill_entreprise_users_summary
+erpnext.custom_modules.organization.patches.seed_operations_tresorerie
+erpnext.custom_modules.entries.patches.clear_tresorerie_links
