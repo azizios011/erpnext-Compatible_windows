@@ -15,6 +15,17 @@
  "label": "Facturation",
  "links": [
   {
+   "type": "Link",
+   "label": "Envoi Multiple",
+   "link_type": "Page",
+   "link_to": "envoi-multiple",
+   "icon": "upload",
+   "hidden": 0,
+   "onboard": 0,
+   "is_query_report": 0,
+   "link_count": 0
+  },
+  {
    "type": "Card Break",
    "label": "Treasury",
    "icon": "landmark",
@@ -45,7 +56,7 @@
    "hidden": 0
   }
  ],
- "modified": "2026-11-08 10:00:00.000000",
+ "modified": "2026-11-08 16:45:00.000000",
  "modified_by": "Administrator",
  "module": "Facturation",
  "name": "Facturation",
