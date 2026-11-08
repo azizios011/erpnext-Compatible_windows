@@ -39,11 +39,11 @@
 		get() {
 			return context();
 		},
-		set(entreprise, fiscal_year) {
+		set(entreprise, exercice) {
 			return new Promise((resolve) => {
 				frappe.call({
 					method: CONTEXT_METHOD + ".set_context",
-					args: { entreprise: entreprise || "", fiscal_year: fiscal_year || "" },
+					args: { entreprise: entreprise || "", exercice: exercice || "" },
 					callback(r) {
 						const ctx = r.message;
 						if (ctx) apply_context(ctx);
@@ -63,7 +63,7 @@
 		const ctx = context() || {};
 		const parts = [];
 		if (ctx.entreprise) parts.push(ctx.entreprise);
-		if (ctx.fiscal_year) parts.push(ctx.fiscal_year);
+		if (ctx.exercice_label) parts.push(ctx.exercice_label);
 		return parts.length ? parts.join(" · ") : __("Contexte comptable");
 	}
 
@@ -123,7 +123,7 @@
 		}
 
 		// the Dropdown owns the trigger's click (menu-button pattern); the
-		// lists reload on every open so new Entreprises/Fiscal Years show up
+		// lists reload on every open so new Entreprises/Exercices show up
 		dropdown = new frappe.ui.Dropdown({
 			trigger: $button,
 			side: "right",
@@ -136,7 +136,7 @@
 						if (r.message) {
 							frappe.boot.axeane_context = r.message;
 							dropdown && dropdown.set_options(menu_options());
-							attach_tooltip($button);
+							refresh_tooltip();
 						}
 					},
 				});
@@ -153,13 +153,23 @@
 				select("entreprise", row.name);
 			},
 		}));
-		const year_rows = (ctx.fiscal_years || []).map((row) => ({
-			label: esc(row.label),
-			icon: row.name === ctx.fiscal_year ? "check" : "",
+		const exercice_rows = (ctx.exercices || []).map((row) => ({
+			label: `${esc(row.label)}${row.status === "Cloture" ? " (" + __("Cloture") + ")" : ""}`,
+			icon: row.name === ctx.exercice ? "check" : "",
 			onclick() {
-				select("fiscal_year", row.name);
+				select("exercice", row.name);
 			},
 		}));
+		if (!exercice_rows.length) {
+			exercice_rows.push({ label: __("Aucun exercice"), disabled: true });
+			exercice_rows.push({
+				label: __("Creer un exercice"),
+				icon: "plus",
+				onclick() {
+					frappe.new_doc("Exercice", { entreprise: ctx.entreprise || "" });
+				},
+			});
+		}
 		return [
 			{ group: __("Contexte comptable") },
 			{
@@ -168,9 +178,9 @@
 				submenu: entreprise_rows,
 			},
 			{
-				label: `${__("Exercice")}: ${ctx.fiscal_year || "—"}`,
+				label: `${__("Exercice")}: ${ctx.exercice_label || "—"}`,
 				icon: "calendar",
-				submenu: year_rows,
+				submenu: exercice_rows,
 			},
 		];
 	}
@@ -180,14 +190,18 @@
 	}
 
 	function select(kind, name) {
-		const args = kind === "entreprise" ? { entreprise: name } : { fiscal_year: name };
-		window.axeane.context.set(args.entreprise || "", args.fiscal_year || "").then((ctx) => {
-			if (!ctx) return;
-			frappe.show_alert({
-				message: __("Contexte comptable: {0} · {1}", [ctx.entreprise, ctx.fiscal_year]),
-				indicator: "green",
+		const args = kind === "entreprise" ? { entreprise: name } : { exercice: name };
+		window.axeane.context
+			.set(args.entreprise || "", args.exercice || "")
+			.then((ctx) => {
+				if (!ctx) return;
+				frappe.show_alert({
+					message: __("Contexte comptable: {0} · {1}", [ctx.entreprise, ctx.exercice_label]),
+					indicator: "green",
+				});
+				// the exercice list follows the freshly selected Entreprise
+				if (dropdown) dropdown.set_options(menu_options());
 			});
-		});
 	}
 
 	// a search input at the head of a submenu panel (MenuTree has no built-in

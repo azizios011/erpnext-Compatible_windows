@@ -1,0 +1,40 @@
+{
+ "actions": [],
+ "creation": "2026-11-08 17:00:00.000000",
+ "doctype": "DocType",
+ "document_type": "Document",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "libelle",
+  "type_taxe",
+  "mode",
+  "taux",
+  "montant",
+  "compte",
+  "deductible"
+ ],
+ "fields": [
+  {"fieldname": "libelle", "fieldtype": "Data", "reqd": 1, "in_list_view": 1, "label": "Libelle"},
+  {"fieldname": "type_taxe", "fieldtype": "Select", "options": "TVA\nTimbre fiscal\nFODEC\nRetenue a la source\nAutre", "reqd": 1, "in_list_view": 1, "label": "Type Taxe"},
+  {"fieldname": "mode", "fieldtype": "Select", "options": "Pourcentage\nMontant fixe", "default": "Pourcentage", "in_list_view": 1, "label": "Mode"},
+  {"fieldname": "taux", "fieldtype": "Percent", "label": "Taux", "depends_on": "eval:doc.mode == 'Pourcentage'"},
+  {"fieldname": "montant", "fieldtype": "Currency", "precision": "3", "label": "Montant", "depends_on": "eval:doc.mode == 'Montant fixe'"},
+  {"fieldname": "compte", "fieldtype": "Link", "options": "Chart of Account", "label": "Compte"},
+  {"fieldname": "deductible", "fieldtype": "Check", "default": "0", "label": "Deductible"}
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-11-08 17:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Organization",
+ "name": "Modele Taxe Ligne",
+ "owner": "Administrator",
+ "permissions": [
+
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
