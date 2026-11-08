@@ -561,3 +561,4 @@ erpnext.custom_modules.organization.patches.create_exercices_from_fiscal_years
 erpnext.custom_modules.organization.patches.seed_modeles_taxe
 erpnext.custom_modules.organization.patches.reshape_activite_convention
 erpnext.custom_modules.organization.patches.load_activites
+erpnext.custom_modules.organization.patches.backfill_entreprise_users_summary
