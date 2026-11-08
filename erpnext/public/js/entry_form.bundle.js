@@ -68,44 +68,13 @@ Object.assign(erpnext.entries, {
 				card(__("Solde"), total_debit - total_credit, "tot-solde") +
 				`</div>`
 		);
-	},
-
-	/** The list view's Totaux bar: aggregates over the currently filtered
-	 * rows (server-side, through get_list_totaux). */
-	list_totaux(listview) {
-		let args = {};
-		try {
-			args = listview.get_args ? listview.get_args() : {};
-		} catch (error) {
-			console.warn("entry-form: get_args failed", error);
-		}
-		frappe.call({
-			method: "erpnext.custom_modules.entries.api.get_list_totaux",
-			args: {
-				doctype: listview.doctype,
-				filters: JSON.stringify(args.filters || []),
-				or_filters: JSON.stringify(args.or_filters || []),
-			},
-			callback(r) {
-				const totals = r.message || {};
-				let $bar = listview.$result.parent().find(".tu-list-totaux");
-				if (!$bar.length) {
-					$bar = $('<div class="totaux-cards tu-list-totaux" style="border-top: 1px solid var(--border-color); padding: 8px 4px; display: flex; gap: 12px;"></div>');
-					listview.$paging_area.before($bar);
-				}
-				const fmt = (value) => frappe.format(flt(value), "Currency", { currency: "", precision: 3 });
-				const card = (label, value, css_class) =>
-					`<div class="totaux-card ${css_class}" style="flex:1; border:1px solid var(--border-color); border-radius:6px; padding:4px 10px;">
-						<div class="totaux-label" style="font-size:11px; color:#666;">${label}</div>
-						<div class="totaux-value" style="font-size:14px; font-weight:700;">${fmt(value)}</div></div>`;
-				$bar.html(
-					card(__("Mvt Compte"), totals.count || 0, "mvt-compte") +
-						card(__("Tot Debit"), totals.total_debit || 0, "tot-debit") +
-						card(__("Tot Credit"), totals.total_credit || 0, "tot-credit") +
-						card(__("Solde"), totals.solde || 0, "tot-solde")
-				);
-			},
-		});
+		// the cards must show on a new, unsaved document too: the layout's
+		// refresh_sections pass can leave the Totaux section collapsed while
+		// totaux_html is still empty — the content lands afterwards
+		field.$wrapper
+			.closest(".form-section")
+			.removeClass("empty-section")
+			.addClass("visible-section");
 	},
 
 	derive_period(frm) {
@@ -185,6 +154,37 @@ Object.assign(erpnext.entries, {
 		}
 	},
 
+	/** status is a hidden stored field: the form shows it as the page-head
+	 * indicator (orange Brouillon / green Comptabilise). */
+	show_status_indicator(frm) {
+		const status = frm.doc.status || "Brouillon";
+		frm.page.set_indicator(__(status), status === "Comptabilise" ? "green" : "orange");
+	},
+
+	/** One headline block for both: the accounting context ("MEDDEB · EX
+	 * 2026") and, when the entry has one, a link to its source document.
+	 * set_intro/set_headline share the same message area, so they are
+	 * joined here instead of overwriting each other. */
+	show_headline(frm) {
+		const parts = [];
+		const context_headline =
+			window.axeane && axeane.context && axeane.context.headline ? axeane.context.headline() : "";
+		if (context_headline) {
+			parts.push(frappe.utils.escape_html(context_headline));
+		}
+		if (frm.doc.source_doctype && frm.doc.source_name) {
+			const label = frappe.utils.escape_html(__(frm.doc.source_doctype) + " " + frm.doc.source_name);
+			const url = frappe.utils.get_form_link(
+				frm.doc.source_doctype,
+				frm.doc.source_name,
+				true,
+				label
+			);
+			parts.push(__("Source: {0}", [url]));
+		}
+		frm.dashboard.set_headline(parts.join(" &nbsp;—&nbsp; "));
+	},
+
 	set_lines(frm, lines) {
 		frm.clear_table("lines");
 		(lines || []).forEach((line) => {
@@ -206,6 +206,8 @@ Object.assign(erpnext.entries, {
 		erpnext.entries.derive_period(frm);
 		erpnext.entries.setup_tresorerie_query(frm);
 		erpnext.entries.preview_source_attachment(frm);
+		erpnext.entries.show_status_indicator(frm);
+		erpnext.entries.show_headline(frm);
 		frm.add_custom_button(__("Modifier la ligne source"), () => erpnext.entries.open_source(frm));
 		frm.add_custom_button(__("Appel Modele"), () => erpnext.entries.appel_modele(frm));
 		frm.add_custom_button(__("Enreg. Modele"), () => erpnext.entries.enreg_modele(frm));

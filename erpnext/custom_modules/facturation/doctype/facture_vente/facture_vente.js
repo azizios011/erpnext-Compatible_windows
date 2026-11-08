@@ -1,6 +1,6 @@
-// Facture Vente is an upload form (company, customer, posting date,
-// reference, attachment, status): the attachment feeds the AI extraction,
-// which fills the base fields only.
+// Facture Vente is an upload form (customer, posting date, reference,
+// attachment, status): the attachment feeds the AI extraction, which fills
+// the base fields only.
 frappe.ui.form.on("Facture Vente", {
 	refresh(frm) {
 		bind_print_icon_override(frm);

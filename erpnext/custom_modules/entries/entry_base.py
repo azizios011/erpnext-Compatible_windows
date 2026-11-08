@@ -8,6 +8,12 @@ from frappe.model.naming import make_autoname
 from frappe.utils import flt, getdate
 
 from erpnext.custom_modules.facturation.facturation_base import ENTRY_DOCTYPE_BY_DOCTYPE
+from erpnext.custom_modules.organization.context import (
+	require_context,
+	validate_date_in_exercice,
+	validate_exercice_open,
+	validate_source_context,
+)
 
 LEDGER_DOCTYPE = "Ecriture Comptable"
 
@@ -66,6 +72,14 @@ class EntryDocument(Document):
 	def autoname(self):
 		self.name = self.mvt
 
+	def before_insert(self):
+		# the context is the only source: the user never picks a company, and
+		# a document opened from a source must share the source's context
+		context = require_context()
+		validate_source_context(self.source_doctype, self.source_name, context)
+		self.entreprise = context["entreprise"]
+		self.exercice = context["exercice"]
+
 	def validate(self):
 		self.set_missing_values()
 		self.validate_lines()
@@ -73,6 +87,27 @@ class EntryDocument(Document):
 		self.apply_libelle()
 		self.compute_totals()
 		self.derive_period()
+		self.validate_context()
+
+	def validate_context(self):
+		"""The Exercice must be Ouvert and the operation date inside it; the
+		entry stays in the user's current Entreprise/Exercice."""
+		context = require_context()
+		validate_exercice_open(context)
+		if self.date_operation:
+			validate_date_in_exercice(self.date_operation, context, _("Date operation"))
+		if (self.entreprise and self.entreprise != context["entreprise"]) or (
+			self.exercice and self.exercice != context["exercice"]
+		):
+			frappe.throw(
+				_("L'ecriture appartient a un autre contexte comptable ({0} · {1}).").format(
+					self.entreprise, self.exercice
+				)
+			)
+		if not self.entreprise:
+			self.entreprise = context["entreprise"]
+		if not self.exercice:
+			self.exercice = context["exercice"]
 
 	def set_missing_values(self):
 		if not self.journal:
@@ -83,8 +118,6 @@ class EntryDocument(Document):
 				self.ref_doc = (
 					frappe.db.get_value(self.source_doctype, self.source_name, "reference_number") or ""
 				)
-			if not self.company:
-				self.company = frappe.db.get_value(self.source_doctype, self.source_name, "company")
 
 	def validate_lines(self):
 		if not self.lines or len(self.lines) < 2:
@@ -173,7 +206,9 @@ class EntryDocument(Document):
 					"libelle": line.libelle,
 					"debit": line.debit,
 					"credit": line.credit,
-					"company": self.company,
+					# the ledger rows copy the entry's own context
+					"entreprise": self.entreprise,
+					"exercice": self.exercice,
 					"devise": self.devise,
 					"ref_doc": self.ref_doc or "",
 					"tresorerie": line.tresorerie or "",

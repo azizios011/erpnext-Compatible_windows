@@ -48,7 +48,6 @@
 		}
 		state = {
 			frm,
-			company: frm.doc.company || frappe.defaults.get_user_default("Company") || "",
 			category: "Tous",
 			search: "",
 			hide_settled: 1,
@@ -72,7 +71,23 @@
 		wrapper.html(shell_html());
 		bind_shell(wrapper);
 		bind_realtime();
+		bind_context_changes(wrapper);
 		load_accounts();
+	}
+
+	/** Every query is scoped server-side by the dock context: a context
+	 * switch simply re-runs them. */
+	function bind_context_changes(wrapper) {
+		$(document)
+			.off("axeane-context-changed.lettrage")
+			.on("axeane-context-changed.lettrage", () => {
+				if (!wrapper.is(":visible") || !$("#lettrage-lines-wrap").length) {
+					return;
+				}
+				state.selection = {};
+				load_accounts();
+				load_lines();
+			});
 	}
 
 	function shell_html() {
@@ -205,7 +220,6 @@
 		frappe.call({
 			method: METHOD + "get_accounts",
 			args: {
-				company: state.company,
 				category: state.category,
 				search: state.search || "",
 				hide_settled: state.hide_settled,
@@ -298,7 +312,6 @@
 		frappe.call({
 			method: METHOD + "get_lines",
 			args: {
-				company: state.company,
 				account: state.account,
 				tab: state.tab,
 				filters: JSON.stringify(state.filters),
@@ -381,7 +394,6 @@
 		frappe.call({
 			method: METHOD + (kind === "lettrage" ? "run_auto_lettrage" : "run_auto_delettrage"),
 			args: {
-				company: state.company,
 				category: state.category,
 				account: state.account || "ALL",
 				rules: JSON.stringify(["R1", "R2"]),
@@ -396,7 +408,7 @@
 		if (!state.account) return;
 		frappe.call({
 			method: METHOD + "suggest",
-			args: { company: state.company, account: state.account },
+			args: { account: state.account },
 			callback(r) {
 				const candidates = (r.message && r.message.candidates) || [];
 				if (!candidates.length) {
@@ -425,7 +437,6 @@
 						frappe.call({
 							method: METHOD + "letter_lines",
 							args: {
-								company: state.company,
 								account: state.account,
 								names: JSON.stringify(candidate.names),
 								allow_partial: 0,
@@ -653,7 +664,7 @@
 		$bar.find(".tu-unletter").on("click", () => {
 			frappe.call({
 				method: METHOD + "unletter",
-				args: { company: state.company, names: JSON.stringify(names) },
+				args: { names: JSON.stringify(names) },
 				callback() {
 					state.selection = {};
 					load_lines();
@@ -667,7 +678,6 @@
 		frappe.call({
 			method: METHOD + "letter_lines",
 			args: {
-				company: state.company,
 				account: state.account,
 				names: JSON.stringify(names),
 				allow_partial: allow_partial,

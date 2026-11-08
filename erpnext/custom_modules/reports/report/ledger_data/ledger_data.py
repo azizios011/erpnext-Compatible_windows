@@ -16,6 +16,8 @@ import frappe
 from frappe import _
 from frappe.utils import flt, getdate, nowdate
 
+from erpnext.custom_modules.organization.context import require_context
+
 # auxiliary ledgers are the client / supplier account-number prefixes
 AUX_CLIENT_PREFIX = "411"
 AUX_FOURNISSEUR_PREFIX = "401"
@@ -44,33 +46,18 @@ QUARTER_MONTHS = {"T1": (1, 3), "T2": (4, 6), "T3": (7, 9), "T4": (10, 12)}
 
 def execute(filters=None) -> tuple:
 	"""Standard Script Report entry point: columns, rows, no chart,
-	report summary over ALL filtered rows."""
+	report summary over ALL filtered rows. Every query is scoped to the
+	dock context's Entreprise and Exercice."""
 	filters = filters or {}
+	context = require_context()
 	if filters.get("view") == "Grille":
 		columns = _get_grille_columns()
-		rows = _get_grille_rows(filters)
+		rows = _get_grille_rows(filters, context)
 		# the groups carry their own totals: no datatable total row
 		return columns, rows, None, None, _get_report_summary(_flat_rows(rows)), 1
 	columns = get_columns()
-	rows = _get_rows(filters)
+	rows = _get_rows(filters, context)
 	return columns, rows, None, None, _get_report_summary(rows)
-
-
-def get_ledger_years() -> list[str]:
-	"""Exercice options: the years present in the ledger, current year last."""
-	if not frappe.db.exists("DocType", LEDGER_DOCTYPE):
-		return [nowdate()[:4]]
-	years = frappe.get_all(
-		LEDGER_DOCTYPE,
-		fields=["distinct year(posting_date) as year"],
-		order_by="year asc",
-		pluck="year",
-	)
-	years = [str(y) for y in years if y]
-	current = nowdate()[:4]
-	if current not in years:
-		years.append(current)
-	return years
 
 
 def _check_permission() -> None:
@@ -78,21 +65,43 @@ def _check_permission() -> None:
 		frappe.throw(_("Not permitted to read the ledger"), frappe.PermissionError)
 
 
-def _resolve_period(filters: dict) -> tuple[date, date]:
-	"""Every period filter resolves to one (from_date, to_date) pair."""
+def _exercice_year(context: dict) -> int:
+	debut = context.get("date_debut")
+	return getdate(debut).year if debut else int(nowdate()[:4])
+
+
+def _resolve_period(filters: dict, context: dict) -> tuple[date, date]:
+	"""Every period filter resolves to one (from_date, to_date) pair, clamped
+	to the context's Exercice (date_debut..date_fin). The year is the
+	Exercice's, not a filter: the period can never leave the Exercice."""
 	period_type = filters.get("period_type") or "Mensuelle"
-	year = int(filters.get("year") or nowdate()[:4])
+	year = _exercice_year(context)
 	if period_type == "Personnalisee":
-		return getdate(filters.get("from_date")), getdate(filters.get("to_date"))
-	if period_type == "Trimestrielle":
+		from_date = getdate(filters.get("from_date"))
+		to_date = getdate(filters.get("to_date"))
+	elif period_type == "Trimestrielle":
 		first, last = QUARTER_MONTHS[filters.get("quarter") or "T1"]
-		return date(year, first, 1), date(year, last, 31 if last in (1, 3, 7, 8, 10, 12) else 30)
-	if period_type == "Annuelle":
-		return date(year, 1, 1), date(year, 12, 31)
-	# Mensuelle
-	month = MONTHS_FR.get(filters.get("month") or "", 1)
-	next_month = date(year + (month == 12), (month % 12) + 1, 1)
-	return date(year, month, 1), next_month - timedelta(days=1)
+		from_date = date(year, first, 1)
+		to_date = date(year, last, 31 if last in (1, 3, 7, 8, 10, 12) else 30)
+	elif period_type == "Annuelle":
+		from_date = date(year, 1, 1)
+		to_date = date(year, 12, 31)
+	else:
+		# Mensuelle: default to the Exercice's first month when no month comes
+		# in (the UI sends one, preselected on the Exercice)
+		default_month = getdate(context["date_debut"]).month if context.get("date_debut") else 1
+		month = MONTHS_FR.get(filters.get("month") or "", default_month)
+		next_month = date(year + (month == 12), (month % 12) + 1, 1)
+		from_date = date(year, month, 1)
+		to_date = next_month - timedelta(days=1)
+
+	debut = getdate(context["date_debut"]) if context.get("date_debut") else None
+	fin = getdate(context["date_fin"]) if context.get("date_fin") else None
+	if debut and from_date < debut:
+		from_date = debut
+	if fin and to_date > fin:
+		to_date = fin
+	return from_date, to_date
 
 
 def _account_filter(filters: dict) -> list[str]:
@@ -111,10 +120,14 @@ def _account_filter(filters: dict) -> list[str]:
 	)
 
 
-def _ledger_filters(filters: dict, from_date: date, to_date: date) -> list[list]:
-	out = [["posting_date", ">=", from_date], ["posting_date", "<=", to_date]]
-	if filters.get("company"):
-		out.append(["company", "=", filters["company"]])
+def _ledger_filters(filters: dict, context: dict, from_date: date, to_date: date) -> list[list]:
+	out = [
+		["posting_date", ">=", from_date],
+		["posting_date", "<=", to_date],
+		# the context's Entreprise and Exercice, always
+		["entreprise", "=", context["entreprise"]],
+		["exercice", "=", context["exercice"]],
+	]
 	if filters.get("journal"):
 		out.append(["journal", "in", _as_list(filters["journal"])])
 	if filters.get("mvt"):
@@ -142,12 +155,12 @@ def _as_list(value: Any) -> list:
 	return [v.strip() for v in str(value).split(",") if v.strip()]
 
 
-def _get_rows(filters: dict) -> list[dict]:
+def _get_rows(filters: dict, context: dict) -> list[dict]:
 	_check_permission()
-	from_date, to_date = _resolve_period(filters)
+	from_date, to_date = _resolve_period(filters, context)
 	rows = frappe.get_all(
 		LEDGER_DOCTYPE,
-		filters=_ledger_filters(filters, from_date, to_date),
+		filters=_ledger_filters(filters, context, from_date, to_date),
 		fields=[
 			"name",
 			"posting_date",
@@ -241,16 +254,16 @@ def _flat_rows(grille_rows: list[dict]) -> list[dict]:
 	return [row for row in grille_rows if row.get("row_type") == "entry"]
 
 
-def _get_grille_rows(filters: dict) -> list[dict]:
+def _get_grille_rows(filters: dict, context: dict) -> list[dict]:
 	"""Rows grouped per account: a bold header, the opening balance
-	(movements from 01/01 of the year up to the day before from_date), the
+	(movements from the Exercice start up to the day before from_date), the
 	entries with a running Solde, and a bold totals row per account."""
-	rows = _get_rows(filters)
+	rows = _get_rows(filters, context)
 	if not rows:
 		return []
 
-	from_date, to_date = _resolve_period(filters)
-	year = int(filters.get("year") or nowdate()[:4])
+	from_date, to_date = _resolve_period(filters, context)
+	year = _exercice_year(context)
 
 	accounts: list[str] = []
 	by_account: dict[str, list] = {}
@@ -260,16 +273,24 @@ def _get_grille_rows(filters: dict) -> list[dict]:
 			accounts.append(row.account)
 
 	openings: dict[str, float] = {}
-	if from_date > date(year, 1, 1):
+	exercice_debut = getdate(context["date_debut"]) if context.get("date_debut") else None
+	if exercice_debut and from_date > exercice_debut:
 		opening_until = from_date - timedelta(days=1)
+		# same Entreprise/Exercice scope as the main query, escaped inline
 		opening_rows = frappe.db.sql(
 			"""select account, sum(debit) - sum(credit) as balance
 				from `tabEcriture Comptable`
-				where company = %(company)s
-					and posting_date >= %(year_start)s
+				where entreprise = %(entreprise)s
+					and exercice = %(exercice)s
+					and posting_date >= %(exercice_start)s
 					and posting_date <= %(until)s
 				group by account""",
-			{"company": filters.get("company"), "year_start": date(year, 1, 1), "until": opening_until},
+			{
+				"entreprise": context["entreprise"],
+				"exercice": context["exercice"],
+				"exercice_start": exercice_debut,
+				"until": opening_until,
+			},
 			as_dict=True,
 		)
 		for row in opening_rows:
@@ -282,7 +303,7 @@ def _get_grille_rows(filters: dict) -> list[dict]:
 		solde = openings.get(account, 0.0)
 		total_debit = total_credit = 0.0
 		out.append({"row_type": "header", "date": display})
-		if from_date > date(year, 1, 1):
+		if openings:
 			out.append(
 				{
 					"row_type": "opening",

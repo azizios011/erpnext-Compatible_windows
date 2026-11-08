@@ -370,6 +370,33 @@ permission_query_conditions = {
 	"*": "erpnext.stock.doctype.company_restriction.company_restriction.get_inherited_permission_query_conditions",
 }
 
+# Axeane accounting context: the Facturation / Entries / ledger doctypes only
+# ever show the records of the user's current Entreprise and Exercice (one
+# shared hook, see organization.context.scope_conditions).
+permission_query_conditions.update(
+	{
+		doctype: "erpnext.custom_modules.organization.context.scope_conditions"
+		for doctype in [
+			"Facture Achat",
+			"Releve Achat",
+			"RS Achat",
+			"Facture Vente",
+			"RS Vente",
+			"Releve Vente",
+			"Releve Bancaire",
+			"Remise de Cheque",
+			"Versement Espece",
+			"Mensuelle",
+			"Payable Transaction",
+			"Receivable Transaction",
+			"Treasury Transaction",
+			"Declaration Transaction",
+			"Ecriture Comptable",
+			"Lettrage Groupe",
+		]
+	}
+)
+
 has_permission = {
 	"Employee": "erpnext.setup.doctype.employee.employee.has_permission",
 	"Asset Activity": "erpnext.assets.doctype.asset_activity.asset_activity.has_permission",

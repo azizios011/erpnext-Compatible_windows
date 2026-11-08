@@ -3,19 +3,28 @@
 
 // "Ledger Data" (Grand Livre): two views over the same filters — the flat
 // LIST view and the GRILLE (rows grouped per account, styled via row_type).
-// PDF export will come later as a backend service; nothing PDF-like lives
-// in the client.
+// No company and no year control: the report is scoped to the dock
+// context's Entreprise and Exercice, and the period is clamped to the
+// Exercice's dates server-side. PDF export will come later as a backend
+// service; nothing PDF-like lives in the client.
+
+const GL_MONTHS = [
+	"Janvier",
+	"Fevrier",
+	"Mars",
+	"Avril",
+	"Mai",
+	"Juin",
+	"Juillet",
+	"Aout",
+	"Septembre",
+	"Octobre",
+	"Novembre",
+	"Decembre",
+];
 
 frappe.query_reports["Ledger Data"] = {
 	filters: [
-		{
-			fieldname: "company",
-			label: __("Company"),
-			fieldtype: "Link",
-			options: "Company",
-			default: frappe.defaults.get_user_default("Company"),
-			reqd: 1,
-		},
 		{
 			fieldname: "ledger_type",
 			label: __("Type grand livre"),
@@ -40,13 +49,6 @@ frappe.query_reports["Ledger Data"] = {
 			options: "Mensuelle\nTrimestrielle\nAnnuelle\nPersonnalisee",
 			default: "Mensuelle",
 			reqd: 1,
-		},
-		{
-			fieldname: "year",
-			label: __("Exercice"),
-			fieldtype: "Select",
-			options: [frappe.datetime.get_today().slice(0, 4)],
-			default: frappe.datetime.get_today().slice(0, 4),
 		},
 		{
 			fieldname: "month",
@@ -134,20 +136,43 @@ frappe.query_reports["Ledger Data"] = {
 	},
 
 	onload(report) {
-		// Exercice options: the years actually present in the ledger
-		frappe.call({
-			method: "erpnext.custom_modules.reports.report.ledger_data.ledger_data.get_ledger_years",
-			args: {},
-			callback(r) {
-				const years = r.message && r.message.length ? r.message : [frappe.datetime.get_today().slice(0, 4)];
-				const year_filter = report.get_filter("year");
-				year_filter.df.options = years.join("\n");
-				if (!years.includes(year_filter.df.default)) {
-					year_filter.df.default = years[years.length - 1];
-				}
-				year_filter.refresh();
-			},
-		});
+		// the context defines the period: default month = the current month
+		// when it falls inside the Exercice, else the Exercice's first month
+		const context = (window.axeane && axeane.context && axeane.context.get()) || {};
+		if (context.date_debut) {
+			const today = frappe.datetime.str_to_obj(frappe.datetime.get_today());
+			const debut = frappe.datetime.str_to_obj(context.date_debut);
+			const fin = context.date_fin ? frappe.datetime.str_to_obj(context.date_fin) : null;
+			const inside = debut <= today && (!fin || today <= fin);
+			const month = inside ? today.getMonth() : debut.getMonth();
+			const month_filter = report.get_filter("month");
+			if (month_filter) {
+				month_filter.df.default = GL_MONTHS[month];
+				month_filter.set_input(GL_MONTHS[month]);
+			}
+		}
+
+		// the title carries the context: "MEDDEB · EX 2026"
+		const set_title = () => {
+			const ctx = (window.axeane && axeane.context && axeane.context.get()) || {};
+			if (ctx.entreprise_label || ctx.exercice_label) {
+				report.page.set_title(
+					__("Ledger Data") +
+						" · " +
+						[ctx.entreprise_label, ctx.exercice_label].filter(Boolean).join(" · ")
+				);
+			}
+		};
+		set_title();
+
+		// a context switch re-runs the queries (the dock re-renders the
+		// route, but a cached report page would keep its old data)
+		$(document)
+			.off("axeane-context-changed.ledger-data")
+			.on("axeane-context-changed.ledger-data", () => {
+				set_title();
+				frappe.query_report.refresh();
+			});
 
 		let filters_visible = true;
 		const set_filters_visible = (visible) => {

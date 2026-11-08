@@ -1,6 +1,7 @@
 {
  "actions": [],
- "autoname": "Prompt",
+ "autoname": "",
+ "naming_rule": "By script",
  "creation": "2026-11-07 00:00:00.000000",
  "default_view": "List",
  "doctype": "DocType",
@@ -10,7 +11,8 @@
  "field_order": [
   "mvt",
   "journal",
-  "company",
+  "entreprise",
+  "exercice",
   "posting_date",
   "period_month",
   "period_year",
@@ -26,7 +28,8 @@
  "fields": [
   {"fieldname": "mvt", "fieldtype": "Data", "read_only": 1, "label": "MVT"},
   {"fieldname": "journal", "fieldtype": "Data", "read_only": 1, "label": "Journal"},
-  {"fieldname": "company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1, "label": "Company"},
+  {"fieldname": "entreprise", "fieldtype": "Link", "options": "Entreprise", "read_only": 1, "hidden": 1, "search_index": 1, "label": "Entreprise"},
+  {"fieldname": "exercice", "fieldtype": "Link", "options": "Exercice", "read_only": 1, "hidden": 1, "search_index": 1, "label": "Exercice"},
   {"fieldname": "posting_date", "fieldtype": "Date", "reqd": 1, "in_list_view": 1, "default": "Today", "label": "Date piece"},
   {"fieldname": "period_month", "fieldtype": "Select", "label": "Period Month", "options": "01\n02\n03\n04\n05\n06\n07\n08\n09\n10\n11\n12"},
   {"fieldname": "period_year", "fieldtype": "Int", "label": "Period Year"},
@@ -40,7 +43,7 @@
   {"fieldname": "entry_status", "fieldtype": "Select", "options": "Non saisie\nBrouillon\nComptabilisee", "default": "Non saisie", "read_only": 1, "in_list_view": 1, "label": "Entry Status"}
  ],
  "links": [],
- "modified": "2026-11-08 14:00:00.000000",
+ "modified": "2026-11-08 23:45:00.000000",
  "modified_by": "Administrator",
  "module": "Facturation",
  "name": "Mensuelle",

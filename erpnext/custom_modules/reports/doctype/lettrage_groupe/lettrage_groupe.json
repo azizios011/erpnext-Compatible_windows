@@ -8,7 +8,8 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "company",
+  "entreprise",
+  "exercice",
   "account",
   "code",
   "date",
@@ -22,7 +23,8 @@
   "line_count"
  ],
  "fields": [
-  {"fieldname": "company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1, "label": "Company"},
+  {"fieldname": "entreprise", "fieldtype": "Link", "options": "Entreprise", "read_only": 1, "hidden": 1, "search_index": 1, "label": "Entreprise"},
+  {"fieldname": "exercice", "fieldtype": "Link", "options": "Exercice", "read_only": 1, "hidden": 1, "search_index": 1, "label": "Exercice"},
   {"fieldname": "account", "fieldtype": "Link", "options": "Chart of Account", "reqd": 1, "in_list_view": 1, "label": "Account"},
   {"fieldname": "code", "fieldtype": "Data", "read_only": 1, "in_list_view": 1, "label": "Code"},
   {"fieldname": "date", "fieldtype": "Date", "default": "Today", "in_list_view": 1, "label": "Date"},
@@ -36,7 +38,7 @@
   {"fieldname": "line_count", "fieldtype": "Int", "read_only": 1, "label": "Line Count"}
  ],
  "links": [],
- "modified": "2026-11-08 15:30:00.000000",
+ "modified": "2026-11-08 23:45:00.000000",
  "modified_by": "Administrator",
  "module": "Reports",
  "name": "Lettrage Groupe",

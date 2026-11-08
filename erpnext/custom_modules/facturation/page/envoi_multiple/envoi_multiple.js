@@ -89,6 +89,53 @@ frappe.pages["envoi-multiple"].on_page_load = function (wrapper) {
 	const in_flight = [];
 	let last_type = null;
 
+	// the dock context's Exercice drives the period: the year defaults to
+	// the Exercice's and the month list is limited to the months inside it
+	// (send_documents re-validates server-side)
+	const exercice_debut = frappe.boot.axeane_context?.date_debut
+		? frappe.datetime.str_to_obj(frappe.boot.axeane_context.date_debut)
+		: null;
+	const exercice_fin = frappe.boot.axeane_context?.date_fin
+		? frappe.datetime.str_to_obj(frappe.boot.axeane_context.date_fin)
+		: null;
+	if (exercice_debut) {
+		$annee.val(exercice_debut.getFullYear());
+	}
+
+	function rebuild_month_options() {
+		const year =
+			parseInt($annee.val(), 10) ||
+			(exercice_debut ? exercice_debut.getFullYear() : new Date().getFullYear());
+		let first = 1;
+		let last = 12;
+		if (exercice_debut) {
+			if (exercice_debut.getFullYear() > year) {
+				first = 13; // the year sits before the Exercice: no month at all
+			} else if (exercice_debut.getFullYear() === year) {
+				first = exercice_debut.getMonth() + 1;
+			}
+			if (exercice_fin) {
+				if (exercice_fin.getFullYear() === year) {
+					last = Math.min(last, exercice_fin.getMonth() + 1);
+				} else if (exercice_fin.getFullYear() < year) {
+					last = 0;
+				}
+			}
+		}
+		const selected = parseInt($mois.val(), 10) || 0;
+		const options = [`<option value="">${__("Choisir mois")}</option>`];
+		for (let month = first; month <= last; month++) {
+			options.push(`<option value="${month}">${MONTHS[month - 1]}</option>`);
+		}
+		$mois.html(options.join(""));
+		if (selected >= first && selected <= last) {
+			$mois.val(String(selected));
+		}
+		refresh_state();
+	}
+	rebuild_month_options();
+	$annee.on("change", rebuild_month_options);
+
 	function allowed(file) {
 		const ext = (file.name || "").split(".").pop().toLowerCase();
 		return ALLOWED.indexOf(ext) !== -1;
