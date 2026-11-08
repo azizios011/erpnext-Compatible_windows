@@ -262,20 +262,18 @@ def _get_grille_rows(filters: dict) -> list[dict]:
 	openings: dict[str, float] = {}
 	if from_date > date(year, 1, 1):
 		opening_until = from_date - timedelta(days=1)
-		for account in by_account:
-			openings[account] = flt(
-				frappe.db.get_value(
-					LEDGER_DOCTYPE,
-					[
-						["account", "=", account],
-						["posting_date", ">=", date(year, 1, 1)],
-						["posting_date", "<=", opening_until],
-					],
-					"sum(debit) - sum(credit)",
-				)
-				or 0.0,
-				3,
-			)
+		opening_rows = frappe.db.sql(
+			"""select account, sum(debit) - sum(credit) as balance
+				from `tabEcriture Comptable`
+				where company = %(company)s
+					and posting_date >= %(year_start)s
+					and posting_date <= %(until)s
+				group by account""",
+			{"company": filters.get("company"), "year_start": date(year, 1, 1), "until": opening_until},
+			as_dict=True,
+		)
+		for row in opening_rows:
+			openings[row.account] = flt(row.balance, 3)
 
 	out: list[dict] = []
 	for account in accounts:

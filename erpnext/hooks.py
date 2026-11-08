@@ -87,6 +87,7 @@ extend_doctype_class = {"Address": "erpnext.accounts.custom.address.ERPNextAddre
 override_whitelisted_methods = {
 	"frappe.www.contact.send_message": "erpnext.templates.utils.send_message",
 	"frappe.utils.global_search.search": "erpnext.custom_modules.organization.search_scope.global_search_search",
+	"frappe.desk.query_report.run": "erpnext.custom_modules.reports.report_path.run",
 }
 
 welcome_email = "erpnext.setup.utils.welcome_email"
