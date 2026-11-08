@@ -14,7 +14,7 @@ from typing import Any
 
 import frappe
 from frappe import _
-from frappe.utils import getdate
+from frappe.utils import cint, getdate
 
 ENTREPRISE_DEFAULT = "axeane_entreprise"
 EXERCICE_DEFAULT = "axeane_exercice"
@@ -106,6 +106,10 @@ def get_context() -> dict[str, Any]:
 	row = next((row for row in entreprises if row.name == entreprise), None)
 	exercices = _exercices_of(entreprise)
 	exercice_row = next((row for row in exercices if row.name == exercice), None)
+	type_plan = (frappe.db.get_value("Entreprise", entreprise, "type_plan_comptable") or "Societe") if entreprise else "Societe"
+	flux_tresorerie_autorise = cint(
+		frappe.db.get_value("Entreprise", entreprise, "modele_flux_tresorerie_autorise")
+	)
 
 	return {
 		"entreprise": entreprise,
@@ -115,6 +119,8 @@ def get_context() -> dict[str, Any]:
 		"exercice_label": (exercice_row.libelle or exercice) if exercice_row else "",
 		"date_debut": exercice_row.date_debut if exercice_row else None,
 		"date_fin": exercice_row.date_fin if exercice_row else None,
+		"type_plan": type_plan,
+		"flux_tresorerie_autorise": flux_tresorerie_autorise,
 		"entreprises": [
 			{"name": row.name, "label": row.raison_sociale or row.name} for row in entreprises
 		],
@@ -162,6 +168,10 @@ def get_accounting_context() -> dict[str, Any]:
 	entreprise, exercice = _resolve(entreprises, old_entreprise)
 	row = next((row for row in entreprises if row.name == entreprise), None)
 	exercice_row = next((row for row in _exercices_of(entreprise) if row.name == exercice), None)
+	type_plan = (frappe.db.get_value("Entreprise", entreprise, "type_plan_comptable") or "Societe") if entreprise else "Societe"
+	flux_tresorerie_autorise = cint(
+		frappe.db.get_value("Entreprise", entreprise, "modele_flux_tresorerie_autorise")
+	)
 	return {
 		"entreprise": entreprise,
 		"entreprise_label": (row.raison_sociale or row.name) if row else "",
@@ -170,6 +180,8 @@ def get_accounting_context() -> dict[str, Any]:
 		"exercice_label": (exercice_row.libelle or exercice) if exercice_row else "",
 		"date_debut": exercice_row.date_debut if exercice_row else None,
 		"date_fin": exercice_row.date_fin if exercice_row else None,
+		"type_plan": type_plan,
+		"flux_tresorerie_autorise": flux_tresorerie_autorise,
 	}
 
 

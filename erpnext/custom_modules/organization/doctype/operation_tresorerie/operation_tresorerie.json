@@ -1,0 +1,46 @@
+{
+ "actions": [],
+ "autoname": "format:OPT-{#####}",
+ "creation": "2026-11-08 20:00:00.000000",
+ "default_view": "List",
+ "doctype": "DocType",
+ "document_type": "Setup",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "libelle",
+  "categorie",
+  "type_plan",
+  "visible",
+  "ordre",
+  "description",
+  "comptes"
+ ],
+ "fields": [
+  {"fieldname": "libelle", "fieldtype": "Data", "reqd": 1, "in_list_view": 1, "label": "Libelle"},
+  {"fieldname": "categorie", "fieldtype": "Select", "options": "Exploitation\nInvestissement\nFinancement", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1, "label": "Categorie"},
+  {"fieldname": "type_plan", "fieldtype": "Select", "options": "Societe\nPersonne Physique", "reqd": 1, "default": "Societe", "in_standard_filter": 1, "label": "Type Plan"},
+  {"fieldname": "visible", "fieldtype": "Check", "default": "1", "in_list_view": 1, "label": "Visible"},
+  {"fieldname": "ordre", "fieldtype": "Int", "default": "0", "label": "Ordre"},
+  {"fieldname": "description", "fieldtype": "Small Text", "label": "Description"},
+  {"fieldname": "comptes", "fieldtype": "Table", "options": "Operation Tresorerie Compte", "label": "Comptes associes"}
+ ],
+ "links": [],
+ "modified": "2026-11-08 20:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Organization",
+ "name": "Operation Tresorerie",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1},
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Accounts Manager", "share": 1, "write": 1},
+  {"export": 1, "print": 1, "read": 1, "report": 1, "role": "Accounts User"}
+ ],
+ "sort_field": "categorie, ordre",
+ "sort_order": "ASC",
+ "states": [],
+ "title_field": "libelle",
+ "show_title_field_in_link": 1,
+ "search_fields": "libelle",
+ "track_changes": 1
+}
