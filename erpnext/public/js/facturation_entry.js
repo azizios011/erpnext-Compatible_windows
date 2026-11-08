@@ -9,6 +9,20 @@
 // app_include_js; the per-row pen button of every Facturation list view and
 // the "Saisie ecriture" form button both call it.
 (function () {
+	(function () {
+	"use strict";
+
+	var safe = function (fn) {
+		try {
+			return fn();
+		} catch (error) {
+			if (window.console && console.warn) {
+				console.warn("facturation-entry:", error);
+			}
+			return null;
+		}
+	};
+
 	window.erpnext = window.erpnext || {};
 	erpnext.facturation = erpnext.facturation || {};
 
@@ -90,12 +104,18 @@ erpnext.facturation.party_field = function (doctype) {
 
 /** Called once per list view (settings.onload). */
 erpnext.facturation.setup_list = function (listview) {
-	// nothing but the Filter control in the top bar: no ID/standard inputs,
-	// no sort selector (the doctype JSON keeps posting_date DESC)
-	listview.page.page_form.find(".standard-filter-section").addClass("hidden");
-	if (listview.sort_selector && listview.sort_selector.wrapper) {
-		listview.sort_selector.wrapper.addClass("hidden");
-	}
+	// top bar: nothing but the Filtres Axeane button — no ID/standard
+	// inputs, no frappe Filter popover, no sort selector (the doctype JSON
+	// keeps posting_date DESC)
+	safe(function () {
+		listview.page.page_form.find(".standard-filter-section").addClass("hidden");
+		if (listview.$filter_section) {
+			listview.$filter_section.addClass("hidden");
+		}
+		if (listview.sort_selector && listview.sort_selector.wrapper) {
+			listview.sort_selector.wrapper.addClass("hidden");
+		}
+	});
 	erpnext.facturation.setup_contenu_args(listview);
 	erpnext.facturation.setup_row_delegation(listview);
 	listview.page.add_inner_button(__("Filtres Axeane"), function () {
@@ -103,8 +123,11 @@ erpnext.facturation.setup_list = function (listview) {
 	});
 };
 
-/** Called after every render (settings.refresh). */
+/** Called after every render (settings.refresh). setup_list is idempotent
+ * and runs here too, so the top bar and button are in place even if the
+ * onload hook never fired. */
 erpnext.facturation.on_list_refresh = function (listview) {
+	erpnext.facturation.setup_list(listview);
 	erpnext.facturation.inject_row_buttons(listview);
 	erpnext.facturation.inject_extra_columns(listview);
 };
@@ -475,3 +498,4 @@ erpnext.facturation.prefill_filter_panel = function (listview, dialog) {
 		if (dialog.fields_dict[fieldname]) dialog.set_value(fieldname, values[fieldname]);
 	});
 };
+})();
