@@ -13,8 +13,8 @@ ENTRY_DOCTYPES = (
 
 def execute():
 	"""Re-post every entry through the same posting function so existing
-	Ecriture Comptable rows pick up the report fields (company, devise,
-	ref_doc, tresorerie, mois, annee, lettrage).
+	Ecriture Comptable rows pick up the report fields (entreprise, exercice,
+	devise, ref_doc, tresorerie, mois, annee, lettrage).
 
 	post_to_ledger is idempotent: it deletes the entry's rows and recreates
 	them from the lines.

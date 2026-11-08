@@ -5,16 +5,18 @@
  "document_type": "Setup",
  "engine": "InnoDB",
  "field_order": [
-  "company",
+  "entreprise",
+  "exercice",
   "ui_html"
  ],
  "fields": [
-  {"fieldname": "company", "fieldtype": "Link", "options": "Company", "hidden": 1, "label": "Company"},
+  {"fieldname": "entreprise", "fieldtype": "Link", "options": "Entreprise", "read_only": 1, "hidden": 1, "search_index": 1, "label": "Entreprise"},
+  {"fieldname": "exercice", "fieldtype": "Link", "options": "Exercice", "read_only": 1, "hidden": 1, "search_index": 1, "label": "Exercice"},
   {"fieldname": "ui_html", "fieldtype": "HTML", "label": "UI"}
  ],
  "issingle": 1,
  "links": [],
- "modified": "2026-11-08 15:30:00.000000",
+ "modified": "2026-11-08 23:45:00.000000",
  "modified_by": "Administrator",
  "module": "Reports",
  "name": "Lettrage",

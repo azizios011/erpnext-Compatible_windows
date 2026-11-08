@@ -4,13 +4,14 @@
 """Lettrage — the "Saisie du lettrage" tool over the Ecriture Comptable
 ledger (single-doctype tool form, like the Bank Reconciliation Tool).
 
-Everything here is parameterized; ledger rows are only ever touched with
+Everything is scoped to the dock context's Entreprise and Exercice: every
+query and every write carries the context conditions, and every entry
+point calls require_context(). Ledger rows are only ever touched with
 frappe.db.set_value / frappe.db.delete after a Lettrage permission check —
 the ledger itself stays read-only for users.
 """
 
 import json
-from datetime import date
 from typing import Any
 
 import frappe
@@ -18,6 +19,7 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import flt, getdate, nowdate
 
+from erpnext.custom_modules.organization.context import require_context
 from erpnext.custom_modules.reports.doctype.lettrage.lettrage_rules import run_rules
 
 LEDGER = "Ecriture Comptable"
@@ -44,9 +46,7 @@ CATEGORIES = ("Tous",) + tuple(CATEGORY_PREFIXES) + ("Autres",)
 TREASURY_ACCOUNT_TYPES = ("Bank", "Cash")
 
 
-from frappe.model.document import Document
-
-# ── permissions ──────────────────────────────────────────────────────────────
+# ── permissions and context scope ────────────────────────────────────────────
 
 
 def _check_read() -> None:
@@ -59,20 +59,32 @@ def _check_write() -> None:
 		frappe.throw(_("Not permitted to letter the ledger"), frappe.PermissionError)
 
 
+def _context() -> dict[str, Any]:
+	"""The strict write context every query and write of this tool obeys."""
+	return require_context()
+
+
+def _scope_filters(context: dict[str, Any]) -> list[list]:
+	"""entreprise/exercice conditions for frappe.get_all on the ledger."""
+	return [
+		["entreprise", "=", context["entreprise"]],
+		["exercice", "=", context["exercice"]],
+	]
+
+
 # ── accounts panel ───────────────────────────────────────────────────────────
 
 
 @frappe.whitelist()
-def get_accounts(
-	company: str, category: str = "Tous", search: str = "", hide_settled: int = 1, sort_by: str = "numero"
-) -> dict:
+def get_accounts(category: str = "Tous", search: str = "", hide_settled: int = 1, sort_by: str = "numero") -> dict:
 	"""Left panel: one card per account with its balance and the number of
 	non-lettered lines, plus the panel totals."""
 	_check_read()
+	context = _context()
 	rows = frappe.get_all(
 		LEDGER,
 		fields=["account", "debit", "credit", "lettrage_status"],
-		filters=[["company", "=", company]] if company else [],
+		filters=_scope_filters(context),
 	)
 	by_account: dict[str, Any] = {}
 	for row in rows:
@@ -154,12 +166,13 @@ def _in_category(account_number: str | None, category: str) -> bool:
 
 
 @frappe.whitelist()
-def get_lines(company: str, account: str, tab: str = "Toutes", filters: str = "{}", page: int = 1, page_size: int = 25) -> dict:
+def get_lines(account: str, tab: str = "Toutes", filters: str = "{}", page: int = 1, page_size: int = 25) -> dict:
 	"""Right panel rows: paged lines of one account ("ALL" = overview of the
-	whole company) with a running balance, plus the header stats."""
+	whole context) with a running balance, plus the header stats."""
 	_check_read()
+	context = _context()
 	parsed = json.loads(filters or "{}")
-	ledger_filters: list[list] = [["company", "=", company]] if company else []
+	ledger_filters: list[list] = _scope_filters(context)
 	if account and account != "ALL":
 		ledger_filters.append(["account", "=", account])
 
@@ -242,26 +255,27 @@ def get_lines(company: str, account: str, tab: str = "Toutes", filters: str = "{
 
 
 @frappe.whitelist()
-def letter_lines(company: str, account: str, names: str, allow_partial: int = 0) -> dict:
+def letter_lines(account: str, names: str, allow_partial: int = 0) -> dict:
 	"""Letter the selected lines together: balanced → Lettre, otherwise
 	Partiel when allowed (the ecart is returned in the error otherwise).
 	Selections touching a partial group pull the whole group in and reuse
 	its group and letter code."""
 	_check_write()
+	context = _context()
 	selected = json.loads(names or "[]")
 	if len(selected) < 2:
 		frappe.throw(_("Select at least two lines to letter."))
 
-	lines = _fetch_lines(selected)
+	lines = _fetch_lines(selected, context)
 	if not lines:
 		frappe.throw(_("No ledger lines found for the selection."))
+	if len(lines) < len(set(selected)):
+		# names outside the context's Entreprise/Exercice vanish on purpose
+		frappe.throw(_("Certaines lignes n'appartiennent pas au contexte comptable."))
 
-	companies = {line.company for line in lines}
 	accounts = {line.account for line in lines}
-	if len(companies) > 1 or len(accounts) > 1:
-		frappe.throw(_("All lettered lines must belong to the same company and account."))
-	if company and companies != {company}:
-		frappe.throw(_("The lines belong to another company."))
+	if len(accounts) > 1:
+		frappe.throw(_("All lettered lines must belong to the same account."))
 	if account and accounts != {account}:
 		frappe.throw(_("The lines belong to another account."))
 
@@ -276,8 +290,10 @@ def letter_lines(company: str, account: str, names: str, allow_partial: int = 0)
 		frappe.throw(_("The selection spans several partial groups; letter them separately."))
 	if partial_groups:
 		group_name = partial_groups.pop()
-		group_rows = frappe.get_all(LEDGER, filters={"lettrage_groupe": group_name}, pluck="name")
-		lines = _fetch_lines(sorted(set([line.name for line in lines]) | set(group_rows)))
+		group_rows = frappe.get_all(
+			LEDGER, filters=_scope_filters(context) + [("lettrage_groupe", "=", group_name)], pluck="name"
+		)
+		lines = _fetch_lines(sorted(set([line.name for line in lines]) | set(group_rows)), context)
 
 	any_pointe = any(line.pointe for line in lines)
 	if any_pointe:
@@ -313,11 +329,12 @@ def letter_lines(company: str, account: str, names: str, allow_partial: int = 0)
 			},
 		)
 	else:
-		code = _next_code(company or next(iter(companies)), next(iter(accounts)))
+		code = _next_code(context["entreprise"], next(iter(accounts)))
 		group = frappe.get_doc(
 			{
 				"doctype": "Lettrage Groupe",
-				"company": next(iter(companies)),
+				"entreprise": context["entreprise"],
+				"exercice": context["exercice"],
 				"account": next(iter(accounts)),
 				"code": code,
 				"date": today,
@@ -357,14 +374,17 @@ def letter_lines(company: str, account: str, names: str, allow_partial: int = 0)
 
 
 @frappe.whitelist()
-def unletter(company: str, names: str) -> dict:
+def unletter(names: str) -> dict:
 	"""Clear the letter on the selected lines and mark their groups Delettre
 	(groups stay for audit)."""
 	_check_write()
+	context = _context()
 	selected = json.loads(names or "[]")
 	if not selected:
 		frappe.throw(_("No lines selected."))
-	lines = _fetch_lines(selected)
+	lines = _fetch_lines(selected, context)
+	if len(lines) < len(set(selected)):
+		frappe.throw(_("Certaines lignes n'appartiennent pas au contexte comptable."))
 
 	today = nowdate()
 	groups = {line.lettrage_groupe for line in lines if line.lettrage_groupe}
@@ -382,10 +402,11 @@ def unletter(company: str, names: str) -> dict:
 
 
 @frappe.whitelist()
-def suggest(company: str, account: str) -> dict:
+def suggest(account: str) -> dict:
 	"""Candidate sets that would balance — rules only, nothing is written."""
 	_check_read()
-	lines = _account_lines(company, account)
+	context = _context()
+	lines = _account_lines(context, account)
 	candidates = run_rules(lines, ["R1", "R2"])
 	out = []
 	for candidate in candidates[:SUGGEST_LIMIT]:
@@ -413,10 +434,13 @@ def suggest(company: str, account: str) -> dict:
 def toggle_pointe(names: str, value: int) -> dict:
 	"""Pointage is a treasury-only flag (Bank/Cash accounts)."""
 	_check_write()
+	context = _context()
 	selected = json.loads(names or "[]")
 	if not selected:
 		frappe.throw(_("No lines selected."))
-	lines = _fetch_lines(selected)
+	lines = _fetch_lines(selected, context)
+	if len(lines) < len(set(selected)):
+		frappe.throw(_("Certaines lignes n'appartiennent pas au contexte comptable."))
 
 	value = 1 if int(value or 0) else 0
 	account_types = {
@@ -451,17 +475,19 @@ def toggle_pointe(names: str, value: int) -> dict:
 
 
 @frappe.whitelist()
-def run_auto_lettrage(company: str, category: str = "Tous", account: str = "ALL", rules: str = '["R1", "R2"]') -> dict:
+def run_auto_lettrage(category: str = "Tous", account: str = "ALL", rules: str = '["R1", "R2"]') -> dict:
 	"""Background pass: per account in scope, apply the rules and letter the
 	balanced sets (groups mode Automatique). Progress is published realtime."""
 	_check_write()
+	context = _context()
 	user = frappe.session.user
 	frappe.enqueue(
 		method="erpnext.custom_modules.reports.doctype.lettrage.lettrage._auto_lettrage_job",
 		queue="long",
 		is_async=True,
 		enqueue_after_commit=True,
-		company=company,
+		entreprise=context["entreprise"],
+		exercice=context["exercice"],
 		category=category,
 		account=account,
 		rules=json.loads(rules or '["R1", "R2"]'),
@@ -470,23 +496,25 @@ def run_auto_lettrage(company: str, category: str = "Tous", account: str = "ALL"
 	return {"started": 1}
 
 
-def _auto_lettrage_job(company: str, category: str, account: str, rules: list[str], user: str) -> None:
+def _auto_lettrage_job(entreprise: str, exercice: str, category: str, account: str, rules: list[str], user: str) -> None:
 	frappe.set_user(user)
-	scope = _scope_accounts(company, category, account)
+	context = _job_context(entreprise, exercice)
+	scope = _scope_accounts(context, category, account)
 	groups_created = 0
 	lines_lettered = 0
 	skipped = 0
 	total = len(scope) if scope else 0
 
 	for i, acct in enumerate(scope or [], start=1):
-		lines = _account_lines(company, acct)
+		lines = _account_lines(context, acct)
 		candidates = run_rules(lines, rules)
 		for candidate in candidates:
-			code = _next_code(company, acct)
+			code = _next_code(entreprise, acct)
 			group = frappe.get_doc(
 				{
 					"doctype": "Lettrage Groupe",
-					"company": company,
+					"entreprise": entreprise,
+					"exercice": exercice,
 					"account": acct,
 					"code": code,
 					"date": nowdate(),
@@ -545,16 +573,18 @@ def _auto_lettrage_job(company: str, category: str, account: str, rules: list[st
 
 
 @frappe.whitelist()
-def run_auto_delettrage(company: str, category: str = "Tous", account: str = "ALL") -> dict:
+def run_auto_delettrage(category: str = "Tous", account: str = "ALL") -> dict:
 	"""Background pass: undo every Automatique group in scope."""
 	_check_write()
+	context = _context()
 	user = frappe.session.user
 	frappe.enqueue(
 		method="erpnext.custom_modules.reports.doctype.lettrage.lettrage._auto_delettrage_job",
 		queue="long",
 		is_async=True,
 		enqueue_after_commit=True,
-		company=company,
+		entreprise=context["entreprise"],
+		exercice=context["exercice"],
 		category=category,
 		account=account,
 		user=user,
@@ -562,10 +592,14 @@ def run_auto_delettrage(company: str, category: str = "Tous", account: str = "AL
 	return {"started": 1}
 
 
-def _auto_delettrage_job(company: str, category: str, account: str, user: str) -> None:
+def _auto_delettrage_job(entreprise: str, exercice: str, category: str, account: str, user: str) -> None:
 	frappe.set_user(user)
-	scope = _scope_accounts(company, category, account)
-	filters: list[list] = [["company", "=", company], ["mode", "=", "Automatique"], ["status", "!=", "Delettre"]]
+	context = _job_context(entreprise, exercice)
+	scope = _scope_accounts(context, category, account)
+	filters: list[list] = _scope_filters(context) + [
+		["mode", "=", "Automatique"],
+		["status", "!=", "Delettre"],
+	]
 	if account and account != "ALL":
 		filters.append(["account", "=", account])
 	elif scope is not None:
@@ -599,13 +633,24 @@ def _auto_delettrage_job(company: str, category: str, account: str, user: str) -
 # ── shared helpers ───────────────────────────────────────────────────────────
 
 
-def _fetch_lines(names: list[str]) -> list[frappe._dict]:
+def _job_context(entreprise: str, exercice: str) -> dict[str, Any]:
+	"""The context the background job was enqueued with. The user defaults
+	are already set for the enqueuing user (frappe.set_user restored them);
+	read them back so every query inside the job carries the same scope."""
+	return {
+		"entreprise": entreprise,
+		"exercice": exercice,
+	}
+
+
+def _fetch_lines(names: list[str], context: dict[str, Any]) -> list[frappe._dict]:
 	return frappe.get_all(
 		LEDGER,
-		filters={"name": ("in", names)},
+		filters=_scope_filters(context) + [("name", ("in", names))],
 		fields=[
 			"name",
-			"company",
+			"entreprise",
+			"exercice",
 			"account",
 			"posting_date",
 			"mvt",
@@ -622,12 +667,12 @@ def _fetch_lines(names: list[str]) -> list[frappe._dict]:
 	)
 
 
-def _account_lines(company: str, account: str) -> list[dict]:
+def _account_lines(context: dict[str, Any], account: str) -> list[dict]:
 	"""Non-lettered lines of one account, oldest first (rule input)."""
 	return frappe.get_all(
 		LEDGER,
-		filters=[
-			["company", "=", company],
+		filters=_scope_filters(context)
+		+ [
 			["account", "=", account],
 			["lettrage_status", "=", "Non lettre"],
 		],
@@ -636,20 +681,22 @@ def _account_lines(company: str, account: str) -> list[dict]:
 	)
 
 
-def _scope_accounts(company: str, category: str, account: str) -> list[str] | None:
+def _scope_accounts(context: dict[str, Any], category: str, account: str) -> list[str] | None:
 	"""Accounts the automatic passes cover: one account, the category, or
-	everything (None = all accounts with ledger rows)."""
+	everything (None = all accounts with ledger rows in the context)."""
 	if account and account != "ALL":
 		return [account]
 	if category and category not in ("Tous", "Autres"):
 		prefix = CATEGORY_PREFIXES.get(category)
 		return frappe.get_all("Chart of Account", filters={"account_number": ("like", f"{prefix}%")}, pluck="name")
-	rows = frappe.get_all(LEDGER, filters=[["company", "=", company]], fields=["distinct account as account"])
+	rows = frappe.get_all(
+		LEDGER, filters=_scope_filters(context), fields=["distinct account as account"]
+	)
 	return [row.account for row in rows]
 
 
-def _next_code(company: str, account: str) -> str:
-	"""The next letter code for one (company, account): A..Z then AA..ZZ.
+def _next_code(entreprise: str, account: str) -> str:
+	"""The next letter code for one (entreprise, account): A..Z then AA..ZZ.
 
 	Serialized by a parameterized SELECT ... FOR UPDATE on the account's
 	latest group row; a MySQL named lock covers the empty-table case where
@@ -657,24 +704,24 @@ def _next_code(company: str, account: str) -> str:
 	existing = frappe.db.sql(
 		"""select code
 			from `tabLettrage Groupe`
-			where company = %(company)s and account = %(account)s
+			where entreprise = %(entreprise)s and account = %(account)s
 			order by creation desc, code desc
 			limit 1
 			for update""",
-		{"company": company, "account": account},
+		{"entreprise": entreprise, "account": account},
 		pluck="code",
 	)
 	if not existing:
-		lock_key = f"lettrage_{company}_{account}"
+		lock_key = f"lettrage_{entreprise}_{account}"
 		frappe.db.sql("select get_lock(%(key)s, 10) as locked", {"key": lock_key})
 		try:
 			existing = frappe.db.sql(
 				"""select code
 					from `tabLettrage Groupe`
-					where company = %(company)s and account = %(account)s
+					where entreprise = %(entreprise)s and account = %(account)s
 					order by creation desc, code desc
 					limit 1""",
-				{"company": company, "account": account},
+				{"entreprise": entreprise, "account": account},
 				pluck="code",
 			)
 		finally:
@@ -682,7 +729,7 @@ def _next_code(company: str, account: str) -> str:
 
 	code = _increment_code(existing[0] if existing else None)
 	if not code:
-		frappe.throw(_("Plus de codes de lettrage disponibles pour {0} - {1}.").format(company, account))
+		frappe.throw(_("Plus de codes de lettrage disponibles pour {0} - {1}.").format(entreprise, account))
 	return code
 
 

@@ -66,6 +66,10 @@
 	FACTURATION_DOCTYPES.forEach(function (doctype) {
 		frappe.ui.form.on(doctype, {
 			refresh(frm) {
+				// the dock context the user is writing into ("MEDDEB · EX 2026")
+				if (window.axeane && axeane.context && axeane.context.headline) {
+					frm.dashboard.set_headline(frappe.utils.escape_html(axeane.context.headline()));
+				}
 				frm.add_custom_button(__("Saisie ecriture"), function () {
 					erpnext.facturation.open_entry(frm.doctype, frm.doc.name);
 				});

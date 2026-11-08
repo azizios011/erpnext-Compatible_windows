@@ -14,10 +14,37 @@ from typing import Any
 
 import frappe
 from frappe import _
-from frappe.utils import cint, getdate
+from frappe.utils import cint, formatdate, getdate
 
 ENTREPRISE_DEFAULT = "axeane_entreprise"
 EXERCICE_DEFAULT = "axeane_exercice"
+
+# The dock "Contexte comptable" is the only source of Entreprise/Exercice for
+# every Facturation / Entries / Reports record; these doctypes carry the
+# entreprise and exercice columns and are scoped by scope_conditions.
+SCOPED_DOCTYPES = (
+	# Facturation upload documents
+	"Facture Achat",
+	"Releve Achat",
+	"RS Achat",
+	"Facture Vente",
+	"RS Vente",
+	"Releve Vente",
+	"Releve Bancaire",
+	"Remise de Cheque",
+	"Versement Espece",
+	"Mensuelle",
+	# Entries documents
+	"Payable Transaction",
+	"Receivable Transaction",
+	"Treasury Transaction",
+	"Declaration Transaction",
+	# ledger and lettrage groups
+	"Ecriture Comptable",
+	"Lettrage Groupe",
+)
+
+NO_CONTEXT_MESSAGE = "Choisissez une entreprise et un exercice dans le contexte comptable"
 
 
 def _is_admin() -> bool:
@@ -199,3 +226,127 @@ def boot_context(bootinfo: frappe._dict) -> None:
 		bootinfo.axeane_context = get_context()
 	except Exception:
 		frappe.log_error("axeane boot context failed", frappe.get_traceback())
+
+
+# ── write-side rules (require_context and friends) ───────────────────────────
+
+
+def require_context() -> dict[str, Any]:
+	"""The strict write context, straight from the user defaults (never
+	auto-resolved, never from client input).
+
+	Raises a French error when either the Entreprise or the Exercice is
+	missing, when the user may not use that Entreprise (same rule as
+	get_context) or when the Exercice does not belong to the Entreprise.
+	The Exercice's Ouvert/Cloture status is NOT enforced here — reads of a
+	closed Exercice stay possible; call validate_exercice_open on writes.
+	"""
+	entreprise = frappe.defaults.get_user_default(ENTREPRISE_DEFAULT) or ""
+	exercice = frappe.defaults.get_user_default(EXERCICE_DEFAULT) or ""
+	if not entreprise or not exercice:
+		frappe.throw(_(NO_CONTEXT_MESSAGE))
+
+	if entreprise not in {row.name for row in _accessible_entreprises()}:
+		frappe.throw(_("Vous n'avez pas acces a l'entreprise {0}.").format(entreprise))
+
+	exercice_row = next((row for row in _exercices_of(entreprise) if row.name == exercice), None)
+	if exercice_row is None:
+		frappe.throw(_("L'exercice {0} n'appartient pas a l'entreprise {1}.").format(exercice, entreprise))
+
+	entreprise_label = frappe.db.get_value("Entreprise", entreprise, "raison_sociale") or entreprise
+	return {
+		"entreprise": entreprise,
+		"entreprise_label": entreprise_label,
+		"exercice": exercice,
+		"exercice_label": exercice_row.libelle or exercice,
+		"status": exercice_row.status or "Ouvert",
+		"date_debut": exercice_row.date_debut,
+		"date_fin": exercice_row.date_fin,
+	}
+
+
+def context_for_read() -> tuple[str, str]:
+	"""(entreprise, exercice) from the user defaults, without enforcing
+	anything — the read-side scope for raw queries (reports, lettrage)."""
+	return (
+		frappe.defaults.get_user_default(ENTREPRISE_DEFAULT) or "",
+		frappe.defaults.get_user_default(EXERCICE_DEFAULT) or "",
+	)
+
+
+def validate_exercice_open(context: dict[str, Any]) -> None:
+	"""An entry or a Facturation document may only be created or modified
+	while its Exercice is Ouvert."""
+	if (context.get("status") or "Ouvert") != "Ouvert":
+		frappe.throw(
+			_("L'exercice {0} est cloture: creation et modification impossible.").format(
+				frappe.bold(context.get("exercice_label") or context.get("exercice") or "")
+			)
+		)
+
+
+def validate_date_in_exercice(date_value: Any, context: dict[str, Any], label: str) -> None:
+	"""The document date must fall inside the Exercice's date_debut..date_fin."""
+	if not date_value:
+		return
+	debut = getdate(context.get("date_debut")) if context.get("date_debut") else None
+	fin = getdate(context.get("date_fin")) if context.get("date_fin") else None
+	if not debut or not fin:
+		return
+	date = getdate(date_value)
+	if debut <= date <= fin:
+		return
+	frappe.throw(
+		_("{0} ({1}) est hors de l'exercice {2} ({3} - {4}).").format(
+			label,
+			frappe.bold(formatdate(date)),
+			frappe.bold(context.get("exercice_label") or context.get("exercice") or ""),
+			formatdate(debut),
+			formatdate(fin),
+		)
+	)
+
+
+def validate_source_context(source_doctype: str, source_name: str, context: dict[str, Any]) -> None:
+	"""A document opened from a source (pen action) must belong to the same
+	Entreprise and Exercice as the source."""
+	if not (source_doctype and source_name):
+		return
+	source = frappe.db.get_value(
+		source_doctype, source_name, ["entreprise", "exercice"], as_dict=True
+	)
+	if not source:
+		return
+	if (source.entreprise or source.exercice) and (
+		source.entreprise != context["entreprise"] or source.exercice != context["exercice"]
+	):
+		frappe.throw(
+			_("Le document source {0} {1} appartient a un autre contexte comptable.").format(
+				_(source_doctype), frappe.bold(source_name)
+			)
+		)
+
+
+# ── query-side scoping (permission_query_conditions hook) ────────────────────
+
+
+def scope_conditions(user: str | None = None, doctype: str = "") -> str:
+	"""permission_query_conditions hook for every scoped doctype: lists,
+	link searches and reports going through get_list only see the records of
+	the user's current Entreprise and Exercice. Without a context the scope
+	is "1 = 0": the lists come back empty.
+
+	Frappe runs this hook for every user on permission-checked queries
+	(db_query.build_match_conditions has no Administrator bypass); queries
+	issued with ignore_permissions (system code) skip it by design, and the
+	global search reads __global_search directly without this hook.
+	"""
+	entreprise, exercice = context_for_read()
+	if not (entreprise and exercice) or not doctype:
+		return "1 = 0"
+	# the doctype names carry spaces: the table must be quoted
+	table = f"`tab{doctype}`"
+	return (
+		f"({table}.entreprise = {frappe.db.escape(entreprise)} "
+		f"and {table}.exercice = {frappe.db.escape(exercice)})"
+	)

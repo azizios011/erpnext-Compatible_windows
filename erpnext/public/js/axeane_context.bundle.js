@@ -39,6 +39,12 @@
 		get() {
 			return context();
 		},
+		/** The small form headline ("MEDDEB · EX 2026"): which Entreprise
+		 * and Exercice the user is writing into. Empty without a context. */
+		headline() {
+			const ctx = context() || {};
+			return [ctx.entreprise_label, ctx.exercice_label].filter(Boolean).join(" · ");
+		},
 		set(entreprise, exercice) {
 			return new Promise((resolve) => {
 				frappe.call({

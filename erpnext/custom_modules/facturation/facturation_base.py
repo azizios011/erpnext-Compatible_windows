@@ -6,6 +6,13 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.model.naming import make_autoname
 
+from erpnext.custom_modules.organization.context import (
+	require_context,
+	validate_date_in_exercice,
+	validate_exercice_open,
+	validate_source_context,
+)
+
 # One journal code per Facturation doctype; doctypes sharing a code share the
 # same numbering series, i.e. one continuous MVT sequence per journal.
 JOURNAL_BY_DOCTYPE = {
@@ -45,6 +52,10 @@ class FacturationDocument(Document):
 	movement number: one numbering series per journal code, so the human
 	reference stays in `reference_number` and nothing is ever asked from
 	the user at naming time.
+
+	The Entreprise and Exercice always come from the dock "Contexte
+	comptable" (never from client input); the Exercice must be Ouvert and
+	the piece date must fall inside it.
 	"""
 
 	journal_code: str = ""
@@ -62,11 +73,30 @@ class FacturationDocument(Document):
 		self.name = make_autoname(f"{self.journal_code}-.YYYY.-.#####")
 		self.mvt = self.name
 
+	def before_insert(self):
+		# the context is the only source: the user never picks a company
+		context = require_context()
+		self.entreprise = context["entreprise"]
+		self.exercice = context["exercice"]
+
 	def validate(self):
 		if self.meta.has_field("journal"):
 			self.journal = self.journal_code
 		if self.meta.has_field("mvt") and not self.mvt:
 			self.mvt = self.name
+		self.validate_context()
+
+	def validate_context(self):
+		"""The Exercice must be Ouvert and the piece date inside it; the
+		record stays in the user's current Entreprise/Exercice."""
+		context = require_context()
+		validate_exercice_open(context)
+		if self.meta.has_field("posting_date") and self.posting_date:
+			validate_date_in_exercice(self.posting_date, context, _("Date piece"))
+		if not self.entreprise:
+			self.entreprise = context["entreprise"]
+		if not self.exercice:
+			self.exercice = context["exercice"]
 
 
 @frappe.whitelist()
@@ -90,6 +120,11 @@ def get_entry_target(doctype: str, name: str) -> dict:
 	source = frappe.get_doc(doctype, name)
 	source.check_permission("read")
 
+	# the pen action writes into the user's context: a source from another
+	# Entreprise/Exercice is refused before the form even opens
+	context = require_context()
+	validate_source_context(doctype, name, context)
+
 	defaults = {
 		"source_doctype": doctype,
 		"source_name": name,
@@ -97,7 +132,8 @@ def get_entry_target(doctype: str, name: str) -> dict:
 		"ref_doc": source.get("reference_number"),
 		"mvt": source.get("mvt"),
 		"journal": source.get("journal") or JOURNAL_BY_DOCTYPE.get(doctype, ""),
-		"company": source.get("company"),
+		"entreprise": context["entreprise"],
+		"exercice": context["exercice"],
 	}
 	return {
 		"entry_doctype": entry_doctype,
