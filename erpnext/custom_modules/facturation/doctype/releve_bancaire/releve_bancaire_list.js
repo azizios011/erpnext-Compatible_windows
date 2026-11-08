@@ -1,7 +1,9 @@
-// List view for Releve Bancaire: entry-status indicator + per-row pen button
-// (opens the stage-2 Entries form; see facturation_entry.js)
+// List view for Releve Bancaire: entry-status indicator, the Axeane filter panel
+// and the pen button in the row's activity cluster (shared code lives in
+// facturation_entry.js).
 frappe.listview_settings["Releve Bancaire"] = {
-	add_fields: ["entry_status", "entry", "entry_doctype", "mvt"],
+	add_fields: ["entry_status", "entry", "entry_doctype", "mvt", "creation", "owner", "attachment", "description"],
+	hide_name_filter: true,
 	get_indicator(doc) {
 		if (doc.entry_status === "Comptabilisee") {
 			return [__("Comptabilisee"), "green", "entry_status,=,Comptabilisee"];
@@ -11,18 +13,10 @@ frappe.listview_settings["Releve Bancaire"] = {
 		}
 		return [__("Non saisie"), "gray", "entry_status,=,Non saisie"];
 	},
-	button: {
-		show(doc) {
-			return !doc.__deleted;
-		},
-		get_label() {
-			return frappe.utils.icon("square-pen", "xs");
-		},
-		get_description() {
-			return __("Saisie ecriture");
-		},
-		action(doc) {
-			erpnext.facturation.open_entry(doc.doctype, doc.name);
-		},
+	onload(listview) {
+		erpnext.facturation.setup_list(listview);
+	},
+	refresh(listview) {
+		erpnext.facturation.on_list_refresh(listview);
 	},
 };
