@@ -556,3 +556,4 @@ erpnext.custom_modules.facturation.patches.rename_virement_to_versement_espece
 erpnext.custom_modules.entries.patches.repost_ledger_extra_fields
 erpnext.custom_modules.facturation.patches.backfill_mvt
 erpnext.custom_modules.entries.patches.delete_entries_number_cards
+erpnext.custom_modules.entries.patches.backfill_lettrage_status

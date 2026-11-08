@@ -139,8 +139,25 @@ class EntryDocument(Document):
 			self.jour = date.day
 
 	def on_update(self):
+		self.validate_ledger_not_lettered()
 		# every save re-posts: editing a posted entry rewrites its ledger rows
 		self.post_to_ledger()
+
+	def validate_ledger_not_lettered(self):
+		"""Re-posting deletes and recreates this entry's ledger rows, which
+		would destroy any lettrage/pointage the accountant already made."""
+		flagged = frappe.db.exists(
+			LEDGER_DOCTYPE,
+			{
+				"source_entry_doctype": self.doctype,
+				"source_entry": self.name,
+				"lettrage_status": ("!=", "Non lettre"),
+			},
+		) or frappe.db.exists(
+			LEDGER_DOCTYPE, {"source_entry_doctype": self.doctype, "source_entry": self.name, "pointe": 1}
+		)
+		if flagged:
+			frappe.throw(_("Ecriture lettree ou pointee: delettrer d'abord"))
 
 	def post_to_ledger(self):
 		frappe.db.delete(LEDGER_DOCTYPE, {"source_entry_doctype": self.doctype, "source_entry": self.name})
@@ -190,6 +207,7 @@ class EntryDocument(Document):
 		)
 
 	def on_trash(self):
+		self.validate_ledger_not_lettered()
 		frappe.db.delete(LEDGER_DOCTYPE, {"source_entry_doctype": self.doctype, "source_entry": self.name})
 		if not (self.source_doctype and self.source_name):
 			return
