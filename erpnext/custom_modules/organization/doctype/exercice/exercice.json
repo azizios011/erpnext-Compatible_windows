@@ -1,0 +1,42 @@
+{
+ "actions": [],
+ "autoname": "format:{entreprise}-EX{annee}",
+ "creation": "2026-11-08 17:00:00.000000",
+ "default_view": "List",
+ "doctype": "DocType",
+ "document_type": "Document",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "entreprise",
+  "annee",
+  "libelle",
+  "date_debut",
+  "date_fin",
+  "status"
+ ],
+ "fields": [
+  {"fieldname": "entreprise", "fieldtype": "Link", "options": "Entreprise", "reqd": 1, "set_only_once": 1, "in_list_view": 1, "in_standard_filter": 1, "label": "Entreprise"},
+  {"fieldname": "annee", "fieldtype": "Int", "reqd": 1, "set_only_once": 1, "in_list_view": 1, "label": "Annee"},
+  {"fieldname": "libelle", "fieldtype": "Data", "read_only": 1, "in_list_view": 1, "label": "Libelle"},
+  {"fieldname": "date_debut", "fieldtype": "Date", "reqd": 1, "in_list_view": 1, "label": "Date debut"},
+  {"fieldname": "date_fin", "fieldtype": "Date", "reqd": 1, "in_list_view": 1, "label": "Date fin"},
+  {"fieldname": "status", "fieldtype": "Select", "options": "Ouvert\nCloture", "default": "Ouvert", "in_list_view": 1, "label": "Status"}
+ ],
+ "links": [],
+ "modified": "2026-11-08 17:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Organization",
+ "name": "Exercice",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1},
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Accounts Manager", "share": 1, "write": 1},
+  {"export": 1, "print": 1, "read": 1, "report": 1, "role": "Accounts User"}
+ ],
+ "sort_field": "date_debut",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "libelle",
+ "track_changes": 1
+}

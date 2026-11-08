@@ -3,9 +3,11 @@
 
 """Axeane accounting context (Definir un contexte comptable).
 
-Per-user defaults selecting the Entreprise and the Fiscal Year the user
-works in. Stored through frappe user defaults; exposed to the desk via
-bootinfo (extend_bootinfo) and consumed by the axeane_context bundle.
+Per-user defaults selecting the Entreprise and the Exercice the user works
+in. Stored through frappe user defaults; exposed to the desk via bootinfo
+(extend_bootinfo) and consumed by the axeane_context bundle. The Exercice
+is our own doctype (module Organization); core Fiscal Year is no longer
+surfaced anywhere.
 """
 
 from typing import Any
@@ -15,7 +17,7 @@ from frappe import _
 from frappe.utils import getdate
 
 ENTREPRISE_DEFAULT = "axeane_entreprise"
-FISCAL_YEAR_DEFAULT = "axeane_fiscal_year"
+EXERCICE_DEFAULT = "axeane_exercice"
 
 
 def _is_admin() -> bool:
@@ -45,37 +47,52 @@ def _accessible_entreprises() -> list[frappe._dict]:
 	)
 
 
-def _fiscal_years() -> list[frappe._dict]:
-	"""Every enabled Fiscal Year, newest first (there is no Exercice
-	doctype: the fiscal year is the core Fiscal Year)."""
+def _exercices_of(entreprise: str) -> list[frappe._dict]:
+	"""The Entreprise's Exercices, newest first."""
 	return frappe.get_all(
-		"Fiscal Year",
-		filters={"disabled": 0},
-		fields=["name", "year", "year_start_date", "year_end_date"],
-		order_by="year_start_date desc",
+		"Exercice",
+		filters={"entreprise": entreprise},
+		fields=["name", "libelle", "status", "date_debut", "date_fin"],
+		order_by="date_debut desc",
 	)
 
 
-def _fiscal_year_containing_today(fiscal_years: list[frappe._dict]) -> str:
+def _exercice_containing_today(exercices: list[frappe._dict]) -> str:
 	today = getdate(frappe.utils.nowdate())
-	for fiscal_year in fiscal_years:
-		if fiscal_year.year_start_date and fiscal_year.year_end_date:
-			if getdate(fiscal_year.year_start_date) <= today <= getdate(fiscal_year.year_end_date):
-				return fiscal_year.name
+	for exercice in exercices:
+		if exercice.date_debut and exercice.date_fin:
+			if getdate(exercice.date_debut) <= today <= getdate(exercice.date_fin):
+				return exercice.name
 	return ""
 
 
-def _resolve(entreprises: list, fiscal_years: list) -> tuple[str, str]:
+def _current_exercice_for(entreprise: str) -> str:
+	"""The Entreprise's current Exercice: the one containing today, else the
+	latest, else empty."""
+	exercices = _exercices_of(entreprise)
+	return _exercice_containing_today(exercices) or (exercices[0].name if exercices else "")
+
+
+def _resolve(entreprises: list, old_entreprise: str) -> tuple[str, str]:
+	"""(entreprise, exercice) from the user defaults: an inaccessible
+	Entreprise falls back to the first accessible one, and a changed
+	Entreprise carries its own current Exercice."""
 	entreprise = frappe.defaults.get_user_default(ENTREPRISE_DEFAULT) or ""
 	if entreprise not in {row.name for row in entreprises}:
 		entreprise = entreprises[0].name if entreprises else ""
 
-	fiscal_year = frappe.defaults.get_user_default(FISCAL_YEAR_DEFAULT) or ""
-	if fiscal_year not in {row.name for row in fiscal_years}:
-		fiscal_year = _fiscal_year_containing_today(fiscal_years) or (
-			fiscal_years[0].name if fiscal_years else ""
-		)
-	return entreprise, fiscal_year
+	if entreprise != old_entreprise:
+		# switching Entreprise carries that Entreprise's own exercice
+		exercice = _current_exercice_for(entreprise)
+		if entreprise:
+			frappe.defaults.set_user_default(EXERCICE_DEFAULT, exercice)
+		return entreprise, exercice
+
+	exercice = frappe.defaults.get_user_default(EXERCICE_DEFAULT) or ""
+	exercice_names = {row.name for row in _exercices_of(entreprise)}
+	if exercice not in exercice_names:
+		exercice = _current_exercice_for(entreprise)
+	return entreprise, exercice
 
 
 @frappe.whitelist()
@@ -83,41 +100,56 @@ def get_context() -> dict[str, Any]:
 	"""The current context plus the lists the selector offers."""
 	_check_read()
 	entreprises = _accessible_entreprises()
-	fiscal_years = _fiscal_years()
-	entreprise, fiscal_year = _resolve(entreprises, fiscal_years)
+	old_entreprise = frappe.defaults.get_user_default(ENTREPRISE_DEFAULT) or ""
+	entreprise, exercice = _resolve(entreprises, old_entreprise)
 
 	row = next((row for row in entreprises if row.name == entreprise), None)
-	year_row = next((row for row in fiscal_years if row.name == fiscal_year), None)
+	exercices = _exercices_of(entreprise)
+	exercice_row = next((row for row in exercices if row.name == exercice), None)
 
 	return {
 		"entreprise": entreprise,
 		"entreprise_label": (row.raison_sociale or row.name) if row else "",
 		"matricule_fiscal": (row.matricule_fiscal or "") if row else "",
-		"fiscal_year": fiscal_year,
-		"year_start_date": year_row.year_start_date if year_row else None,
-		"year_end_date": year_row.year_end_date if year_row else None,
+		"exercice": exercice,
+		"exercice_label": (exercice_row.libelle or exercice) if exercice_row else "",
+		"date_debut": exercice_row.date_debut if exercice_row else None,
+		"date_fin": exercice_row.date_fin if exercice_row else None,
 		"entreprises": [
 			{"name": row.name, "label": row.raison_sociale or row.name} for row in entreprises
 		],
-		"fiscal_years": [{"name": row.name, "label": row.name} for row in fiscal_years],
+		"exercices": [
+			{"name": row.name, "label": row.libelle or row.name, "status": row.status}
+			for row in exercices
+		],
 	}
 
 
 @frappe.whitelist()
-def set_context(entreprise: str = "", fiscal_year: str = "") -> dict[str, Any]:
-	"""Validate and store the user's context, then return the fresh one."""
+def set_context(entreprise: str = "", exercice: str = "") -> dict[str, Any]:
+	"""Validate and store the user's context, then return the fresh one.
+
+	Only the Entreprise: its own current Exercice is selected. Only the
+	Exercice: it must belong to the selected Entreprise."""
 	_check_read()
 	entreprises = _accessible_entreprises()
+
+	old_entreprise = frappe.defaults.get_user_default(ENTREPRISE_DEFAULT) or ""
 	if entreprise:
 		if entreprise not in {row.name for row in entreprises}:
 			frappe.throw(_("Vous n'avez pas acces a l'entreprise {0}.").format(entreprise))
-		frappe.defaults.set_user_default(ENTREPRISE_DEFAULT, entreprise)
+		if entreprise != old_entreprise:
+			frappe.defaults.set_user_default(ENTREPRISE_DEFAULT, entreprise)
+			# the new Entreprise carries its own current Exercice
+			frappe.defaults.set_user_default(EXERCICE_DEFAULT, _current_exercice_for(entreprise))
 
-	fiscal_years = _fiscal_years()
-	if fiscal_year:
-		if fiscal_year not in {row.name for row in fiscal_years}:
-			frappe.throw(_("L'exercice {0} n'existe pas ou est desactive.").format(fiscal_year))
-		frappe.defaults.set_user_default(FISCAL_YEAR_DEFAULT, fiscal_year)
+	if exercice:
+		target = frappe.defaults.get_user_default(ENTREPRISE_DEFAULT) or entreprise
+		if not target or exercice not in {row.name for row in _exercices_of(target)}:
+			frappe.throw(
+				_("L'exercice {0} n'appartient pas a l'entreprise {1}.").format(exercice, target)
+			)
+		frappe.defaults.set_user_default(EXERCICE_DEFAULT, exercice)
 
 	return get_context()
 
@@ -126,17 +158,18 @@ def get_accounting_context() -> dict[str, Any]:
 	"""Plain helper for other modules: the current (resolved) context without
 	enforcing read permission. Not wired anywhere yet."""
 	entreprises = _accessible_entreprises()
-	fiscal_years = _fiscal_years()
-	entreprise, fiscal_year = _resolve(entreprises, fiscal_years)
+	old_entreprise = frappe.defaults.get_user_default(ENTREPRISE_DEFAULT) or ""
+	entreprise, exercice = _resolve(entreprises, old_entreprise)
 	row = next((row for row in entreprises if row.name == entreprise), None)
-	year_row = next((row for row in fiscal_years if row.name == fiscal_year), None)
+	exercice_row = next((row for row in _exercices_of(entreprise) if row.name == exercice), None)
 	return {
 		"entreprise": entreprise,
 		"entreprise_label": (row.raison_sociale or row.name) if row else "",
 		"matricule_fiscal": (row.matricule_fiscal or "") if row else "",
-		"fiscal_year": fiscal_year,
-		"year_start_date": year_row.year_start_date if year_row else None,
-		"year_end_date": year_row.year_end_date if year_row else None,
+		"exercice": exercice,
+		"exercice_label": (exercice_row.libelle or exercice) if exercice_row else "",
+		"date_debut": exercice_row.date_debut if exercice_row else None,
+		"date_fin": exercice_row.date_fin if exercice_row else None,
 	}
 
 
