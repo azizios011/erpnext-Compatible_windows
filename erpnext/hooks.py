@@ -48,7 +48,7 @@ code_only_modules = {
 
 develop_version = "17.x.x-develop"
 
-app_include_js = ["erpnext.bundle.js", "facturation_entry.bundle.js", "entry_form.bundle.js"]
+app_include_js = ["erpnext.bundle.js", "facturation_entry.bundle.js", "entry_form.bundle.js", "lettrage.bundle.js", "axeane_context.bundle.js"]
 app_include_css = "erpnext.bundle.css"
 web_include_css = "erpnext-web.bundle.css"
 email_css = "email_erpnext.bundle.css"
@@ -99,7 +99,10 @@ page_js = {"print": "public/js/print.js"}
 
 extend_doctype_class = {"Address": "erpnext.accounts.custom.address.ERPNextAddress"}
 
-override_whitelisted_methods = {"frappe.www.contact.send_message": "erpnext.templates.utils.send_message"}
+override_whitelisted_methods = {
+	"frappe.www.contact.send_message": "erpnext.templates.utils.send_message",
+	"frappe.utils.global_search.search": "erpnext.custom_modules.organization.search_scope.global_search_search",
+}
 
 welcome_email = "erpnext.setup.utils.welcome_email"
 
@@ -766,6 +769,8 @@ additional_timeline_content = {"*": ["erpnext.telephony.doctype.call_log.call_lo
 extend_bootinfo = [
 	"erpnext.support.doctype.service_level_agreement.service_level_agreement.add_sla_doctypes",
 	"erpnext.startup.boot.bootinfo",
+	"erpnext.custom_modules.organization.context.boot_context",
+	"erpnext.custom_modules.organization.search_scope.boot_scope",
 ]
 
 
