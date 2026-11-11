@@ -4,7 +4,7 @@
  "docstatus": 0,
  "doctype": "Page",
  "idx": 0,
- "modified": "2026-11-08 16:30:00.000000",
+ "modified": "2026-11-11 17:38:42.049",
  "modified_by": "Administrator",
  "module": "Facturation",
  "name": "envoi-multiple",
@@ -22,5 +22,6 @@
  "standard": "Yes",
  "style": null,
  "system_page": 0,
- "title": "Envoi Multiple des documents"
+ "title": "Envoi Multiple des documents",
+ "type": "Frappe UI"
 }
