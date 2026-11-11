@@ -79,10 +79,12 @@
 })();
 
 // ── Facturation list views ───────────────────────────────────────────────────
-// Top bar reduced to the Filter control, the Axeane "Validation Documents
-// Comptables" filter panel, the pen button inside the row's activity
-// cluster and two injected columns (Date transfert / Envoye par — creation
-// and owner are not docfields, so the fixtures cannot carry them).
+// Every Facturation upload doctype shares one listview_settings factory
+// (erpnext.facturation.list_settings). The top bar is reduced to the
+// "Filtres Axeane" dialog button, the pen button is the engine's sanctioned
+// settings.button (own column, delegated click), and two columns (Date
+// transfert / Envoye par) stay injected — creation and owner are not
+// docfields, so the fixtures cannot carry them.
 
 const GL_MONTHS = [
 	"Janvier",
@@ -106,93 +108,74 @@ erpnext.facturation.party_field = function (doctype) {
 	return df ? df.fieldname : null;
 };
 
-/** Called once per list view (settings.onload). */
-erpnext.facturation.setup_list = function (listview) {
-	// top bar: nothing but the Filtres Axeane button — no ID/standard
-	// inputs, no frappe Filter popover, no sort selector (the doctype JSON
-	// keeps posting_date DESC)
-	safe(function () {
-		listview.page.page_form.find(".standard-filter-section").addClass("hidden");
-		if (listview.$filter_section) {
-			listview.$filter_section.addClass("hidden");
-		}
-		if (listview.sort_selector && listview.sort_selector.wrapper) {
-			listview.sort_selector.wrapper.addClass("hidden");
-		}
-	});
-	safe(function () {
-		erpnext.facturation.setup_contenu_args(listview);
-	});
-	safe(function () {
-		erpnext.facturation.setup_row_delegation(listview);
-	});
-	safe(function () {
-		listview.page.add_inner_button(__("Filtres Axeane"), function () {
-			safe(function () {
-				erpnext.facturation.filter_panel(listview);
-			});
-		});
-	});
-};
-
-/** Called after every render (settings.refresh). setup_list is idempotent
- * and runs here too, so the top bar and button are in place even if the
- * onload hook never fired. Every step is guarded: our code can never blank
- * the rendered table. */
-erpnext.facturation.on_list_refresh = function (listview) {
-	safe(function () {
-		erpnext.facturation.setup_list(listview);
-	});
-	safe(function () {
-		erpnext.facturation.inject_row_buttons(listview);
-	});
-	safe(function () {
-		erpnext.facturation.inject_extra_columns(listview);
-	});
-};
-
-/** The pen button lives in the row's activity cluster (time · comments ·
- * like), not in its own column. Re-injected after every render; the
- * delegated click resolves the row name from the subject link. */
-erpnext.facturation.inject_row_buttons = function (listview) {
-	listview.$result.find(".list-row-container").each(function (i, el) {
-		const $row = $(el);
-		if ($row.find(".tu-entry-btn").length) {
-			return;
-		}
-		const name = $row.find("a[data-name]").attr("data-name");
-		if (!name) {
-			return;
-		}
-		const $activity = $row.find(".list-row-activity").first();
-		if (!$activity.length) {
-			return;
-		}
-		$(
-			'<button class="btn btn-xs btn-default tu-entry-btn" data-tu-name="' +
-				frappe.utils.escape_html(name) +
-				'" title="' +
-				__("Saisie ecriture") +
-				'">' +
-				frappe.utils.icon("square-pen", "xs") +
-				"</button>"
-		).prependTo($activity);
-	});
-};
-
-erpnext.facturation.setup_row_delegation = function (listview) {
-	if (listview.__tu_row_delegation) {
-		return;
+/** Hide the standard toolbar pieces on Facturation lists: no ID search row,
+ * no frappe Filter popover, no sort selector (the doctype JSON keeps
+ * posting_date DESC). Called on load and again on every refresh — render
+ * order can vary, and all three targets still exist on the current engine. */
+function hide_standard_toolbar(listview) {
+	listview.page.page_form.find(".standard-filter-section").addClass("hidden");
+	if (listview.$filter_section) {
+		listview.$filter_section.addClass("hidden");
 	}
-	listview.__tu_row_delegation = true;
-	listview.$result.on("click", ".tu-entry-btn", function (e) {
-		e.stopPropagation();
-		e.preventDefault();
-		const name = $(this).attr("data-tu-name");
-		if (name) {
-			erpnext.facturation.open_entry(listview.doctype, name);
-		}
-	});
+	if (listview.sort_selector && listview.sort_selector.wrapper) {
+		listview.sort_selector.wrapper.addClass("hidden");
+	}
+}
+
+/** The shared listview_settings for every Facturation upload doctype; the
+ * per-doctype <doctype>_list.js files assign this factory's result. The pen
+ * button is the engine's sanctioned settings.button — its own column and
+ * delegated click instead of DOM injection — and refresh() re-applies the
+ * toolbar hides and the injected columns after every render. Every step is
+ * guarded: our code can never blank the rendered table. */
+erpnext.facturation.list_settings = function (doctype) {
+	return {
+		add_fields: [
+			"entry_status",
+			"entry",
+			"entry_doctype",
+			"mvt",
+			"creation",
+			"owner",
+			"attachment",
+			"description",
+		],
+		hide_name_filter: true,
+		get_indicator(doc) {
+			if (doc.entry_status === "Comptabilisee") {
+				return [__("Comptabilisee"), "green", "entry_status,=,Comptabilisee"];
+			}
+			if (doc.entry_status === "Brouillon") {
+				return [__("Brouillon"), "orange", "entry_status,=,Brouillon"];
+			}
+			return [__("Non saisie"), "gray", "entry_status,=,Non saisie"];
+		},
+		onload(listview) {
+			hide_standard_toolbar(listview);
+			safe(function () {
+				erpnext.facturation.setup_contenu_args(listview);
+			});
+			safe(function () {
+				listview.page.add_inner_button(__("Filtres Axeane"), function () {
+					safe(function () {
+						erpnext.facturation.filter_panel(listview);
+					});
+				});
+			});
+		},
+		refresh(listview) {
+			hide_standard_toolbar(listview);
+			safe(function () {
+				erpnext.facturation.inject_extra_columns(listview);
+			});
+		},
+		button: {
+			get_label: () => frappe.utils.icon("square-pen", "xs"),
+			get_description: () => __("Saisie ecriture"),
+			show: () => true,
+			action: (doc) => erpnext.facturation.open_entry(doctype, doc.name),
+		},
+	};
 };
 
 /** Date transfert (creation) and Envoye par (owner) columns. */
