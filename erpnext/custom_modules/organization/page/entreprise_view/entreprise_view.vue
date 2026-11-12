@@ -79,14 +79,17 @@ const meta = useDoctypeMeta(DOCTYPE);
 
 // the raw validation_html field (template-literal cards in the standard form)
 // and the button stub are replaced by this island's own UI; hidden fields
-// (entreprise/exercice links, computed summaries) stay server-side.
+// (entreprise/exercice links, computed summaries) stay server-side. The child
+// metas feed the Documents / Utilisateurs grid columns.
 function build_layout(fields) {
-	const kept = (fields || []).filter(
-		(f) => !SKIPPED_FIELDTYPES.has(f.fieldtype) && !f.hidden
+	if (!Array.isArray(fields)) return;
+	const kept = fields.filter((f) => !SKIPPED_FIELDTYPES.has(f.fieldtype) && !f.hidden);
+	const child_metas = Object.fromEntries(
+		Object.entries(meta.metas.value || {}).map(([name, child]) => [name, child.fields || []])
 	);
-	layout.value = buildLayoutFromMeta(kept);
+	layout.value = buildLayoutFromMeta(kept, { childMetas: child_metas });
 }
-watch(() => meta.meta.value, build_layout, { immediate: true });
+watch(() => meta.meta.value?.fields, build_layout, { immediate: true });
 
 async function load_record(name) {
 	loading_doc.value = true;
