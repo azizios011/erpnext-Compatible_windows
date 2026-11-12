@@ -13,7 +13,7 @@
      validating reuses valider_entreprise. Server-side Entreprise-User
      visibility and permissions apply unchanged. -->
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, onErrorCaptured, ref, watch } from "vue";
 import { Badge, Button } from "frappe-ui";
 import { buildLayoutFromMeta, FormLayout } from "@framework/ui/FormLayout";
 import { useDoctypeMeta } from "@framework/ui";
@@ -74,6 +74,14 @@ const saving = ref(false);
 const validating = ref(false);
 const is_new = ref(false);
 const uploader_open = ref(false);
+const render_error = ref(null);
+
+// A render error inside the editor subtree blanks it silently otherwise;
+// captured here the message shows on the page itself.
+onErrorCaptured((error, instance, info) => {
+	render_error.value = `${error?.message || String(error)} (${info})`;
+	return false;
+});
 
 const meta = useDoctypeMeta(DOCTYPE);
 
@@ -185,7 +193,12 @@ async function save() {
 		);
 		frappe.show_alert({ message: __("Enregistre."), indicator: "green" });
 	} catch (error) {
-		frappe.msgprint({ message: error?.message || String(error), indicator: "red" });
+		const text = error?.message || error?.exc || "";
+		// frappe.call already displays server-raised messages; only surface
+		// client-side failures that carried no server message
+		if (text && !text.includes("Code is required") && !error?._server_messages) {
+			frappe.msgprint({ message: text, indicator: "red" });
+		}
 	} finally {
 		saving.value = false;
 	}
@@ -246,6 +259,11 @@ const FIELD_LABELS = {
 
 <template>
 	<div class="h-full overflow-y-auto pb-10">
+		<pre
+			v-if="render_error"
+			class="mx-auto max-w-3xl mb-4 rounded border border-surface-red-3 bg-surface-red-1 p-3 text-p-sm text-ink-red-6 whitespace-pre-wrap"
+			>{{ render_error }}</pre
+		>
 		<!-- ══ List mode ══ -->
 		<div v-if="mode === 'list'" class="mx-auto w-full max-w-3xl px-6">
 			<div class="mb-4 flex items-center justify-between gap-3">
