@@ -17,15 +17,15 @@ LIST_DOCTYPES = (
 	"Releve Vente",
 )
 
-NEW_FIELDS = ("transfer_date", "sent_by", "document_type", "file_name")
+NEW_FIELDS = ("transfer_date", "sent_by", "file_name")
 
 
 def execute():
 	"""Backfill the new list columns on existing rows: transfer_date comes
-	from creation, sent_by from owner, document_type is the doctype's own
-	name and file_name the attachment's base name. frappe.db.set_value fires
-	no hooks and leaves modified untouched, so lists keep their order. A
-	doctype whose sync has not added the columns yet is skipped."""
+	from creation, sent_by from owner and file_name the attachment's base
+	name. frappe.db.set_value fires no hooks and leaves modified untouched,
+	so lists keep their order. A doctype whose sync has not added the
+	columns yet is skipped."""
 	for doctype in LIST_DOCTYPES:
 		if not frappe.db.exists("DocType", doctype):
 			continue
@@ -43,8 +43,6 @@ def execute():
 				values["transfer_date"] = getdate(row.creation)
 			if not row.sent_by:
 				values["sent_by"] = row.owner
-			if not row.document_type:
-				values["document_type"] = doctype
 			if not row.file_name:
 				values["file_name"] = attachment_file_name(row.attachment)
 			if values:

@@ -91,15 +91,13 @@ class FacturationDocument(Document):
 		context = require_context()
 		self.entreprise = context["entreprise"]
 		self.exercice = context["exercice"]
-		# list columns filled by the system: when the piece arrived, who sent
-		# it and of which type it is (guarded: the treasury doctypes share
-		# this base and may not carry the fields)
+		# list columns filled by the system: when the piece arrived and who
+		# sent it (guarded: the treasury doctypes share this base and may not
+		# carry the fields)
 		if self.meta.has_field("transfer_date"):
 			self.transfer_date = nowdate()
 		if self.meta.has_field("sent_by"):
 			self.sent_by = frappe.session.user
-		if self.meta.has_field("document_type"):
-			self.document_type = self.doctype
 
 	def validate(self):
 		if self.meta.has_field("journal"):

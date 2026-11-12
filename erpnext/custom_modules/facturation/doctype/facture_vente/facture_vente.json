@@ -14,13 +14,12 @@
   "entreprise",
   "exercice",
   "file_name",
-  "customer",
   "posting_date",
   "transfer_date",
   "reference_number",
   "attachment",
   "status",
-  "document_type",
+  "customer",
   "sent_by",
   "description",
   "entry_doctype",
@@ -29,34 +28,162 @@
   "entry_status"
  ],
  "fields": [
-  {"fieldname": "mvt", "fieldtype": "Data", "read_only": 1, "label": "N° Pièce comptable"},
-  {"fieldname": "journal", "fieldtype": "Data", "read_only": 1, "label": "Journal"},
-  {"fieldname": "entreprise", "fieldtype": "Link", "options": "Entreprise", "read_only": 1, "hidden": 1, "search_index": 1, "label": "Entreprise"},
-  {"fieldname": "exercice", "fieldtype": "Link", "options": "Exercice", "read_only": 1, "hidden": 1, "search_index": 1, "label": "Exercice"},
-  {"fieldname": "file_name", "fieldtype": "Data", "read_only": 1, "in_list_view": 1, "label": "Nom fichier"},
-  {"fieldname": "customer", "fieldtype": "Link", "options": "Customer", "reqd": 1, "label": "Customer"},
-  {"fieldname": "posting_date", "fieldtype": "Date", "reqd": 1, "in_list_view": 1, "default": "Today", "label": "Date pièce"},
-  {"fieldname": "transfer_date", "fieldtype": "Date", "read_only": 1, "in_list_view": 1, "label": "Date transfert"},
-  {"fieldname": "reference_number", "fieldtype": "Data", "label": "Reference Number"},
-  {"fieldname": "attachment", "fieldtype": "Attach", "label": "Attachment"},
-  {"fieldname": "status", "fieldtype": "Select", "options": "Pending\nProcessed\nRejected", "default": "Pending", "in_list_view": 1, "label": "Statut"},
-  {"fieldname": "document_type", "fieldtype": "Data", "read_only": 1, "in_list_view": 1, "label": "Type document"},
-  {"fieldname": "sent_by", "fieldtype": "Link", "options": "User", "read_only": 1, "in_list_view": 1, "label": "Envoyé par"},
-  {"fieldname": "description", "fieldtype": "Small Text", "in_list_view": 1, "label": "Description"},
-  {"fieldname": "entry_doctype", "fieldtype": "Data", "read_only": 1, "hidden": 1, "label": "Entry Doctype"},
-  {"fieldname": "entry", "fieldtype": "Dynamic Link", "options": "entry_doctype", "read_only": 1, "label": "Entry"},
-  {"fieldname": "ocr_status", "fieldtype": "Select", "options": "Non traite\nEn cours\nTermine\nEchec", "default": "Non traite", "read_only": 1, "in_list_view": 1, "label": "S. OCR"},
-  {"fieldname": "entry_status", "fieldtype": "Select", "options": "Non saisie\nBrouillon\nComptabilisee", "default": "Non saisie", "read_only": 1, "in_list_view": 1, "label": "S. Écrit."}
+  {
+   "fieldname": "mvt",
+   "fieldtype": "Data",
+   "read_only": 1,
+   "label": "N\u00b0 Pi\u00e8ce comptable"
+  },
+  {
+   "fieldname": "journal",
+   "fieldtype": "Data",
+   "read_only": 1,
+   "label": "Journal"
+  },
+  {
+   "fieldname": "entreprise",
+   "fieldtype": "Link",
+   "options": "Entreprise",
+   "read_only": 1,
+   "hidden": 1,
+   "search_index": 1,
+   "label": "Entreprise"
+  },
+  {
+   "fieldname": "exercice",
+   "fieldtype": "Link",
+   "options": "Exercice",
+   "read_only": 1,
+   "hidden": 1,
+   "search_index": 1,
+   "label": "Exercice"
+  },
+  {
+   "fieldname": "file_name",
+   "fieldtype": "Data",
+   "read_only": 1,
+   "in_list_view": 1,
+   "label": "Nom fichier"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "options": "Customer",
+   "reqd": 1,
+   "label": "Client",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "reqd": 1,
+   "in_list_view": 1,
+   "default": "Today",
+   "label": "Date pi\u00e8ce"
+  },
+  {
+   "fieldname": "transfer_date",
+   "fieldtype": "Date",
+   "read_only": 1,
+   "in_list_view": 1,
+   "label": "Date transfert"
+  },
+  {
+   "fieldname": "reference_number",
+   "fieldtype": "Data",
+   "label": "Reference Number"
+  },
+  {
+   "fieldname": "attachment",
+   "fieldtype": "Attach",
+   "label": "Attachment"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "options": "Pending\nProcessed\nRejected",
+   "default": "Pending",
+   "in_list_view": 1,
+   "label": "Statut"
+  },
+  {
+   "fieldname": "sent_by",
+   "fieldtype": "Link",
+   "options": "User",
+   "read_only": 1,
+   "in_list_view": 1,
+   "label": "Envoy\u00e9 par"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Description"
+  },
+  {
+   "fieldname": "entry_doctype",
+   "fieldtype": "Data",
+   "read_only": 1,
+   "hidden": 1,
+   "label": "Entry Doctype"
+  },
+  {
+   "fieldname": "entry",
+   "fieldtype": "Dynamic Link",
+   "options": "entry_doctype",
+   "read_only": 1,
+   "label": "Entry"
+  },
+  {
+   "fieldname": "ocr_status",
+   "fieldtype": "Select",
+   "options": "Non traite\nEn cours\nTermine\nEchec",
+   "default": "Non traite",
+   "read_only": 1,
+   "in_list_view": 1,
+   "label": "S. OCR"
+  },
+  {
+   "fieldname": "entry_status",
+   "fieldtype": "Select",
+   "options": "Non saisie\nBrouillon\nComptabilisee",
+   "default": "Non saisie",
+   "read_only": 1,
+   "in_list_view": 1,
+   "label": "S. \u00c9crit."
+  }
  ],
  "links": [],
- "modified": "2026-11-12 00:00:00.000000",
+ "modified": "2026-11-12 17:35:17.327",
  "modified_by": "Administrator",
  "module": "Facturation",
  "name": "Facture Vente",
  "owner": "Administrator",
  "permissions": [
-  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Accounts User", "share": 1, "write": 1},
-  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Accounts Manager", "share": 1, "write": 1}
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
+   "write": 1
+  }
  ],
  "sort_field": "posting_date",
  "sort_order": "DESC",
