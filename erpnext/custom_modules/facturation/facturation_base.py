@@ -1,10 +1,14 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+import os
+from urllib.parse import urlparse
+
 import frappe
 from frappe import _
 from frappe.model.document import Document
 from frappe.model.naming import make_autoname
+from frappe.utils import nowdate
 
 from erpnext.custom_modules.organization.context import (
 	require_context,
@@ -12,6 +16,15 @@ from erpnext.custom_modules.organization.context import (
 	validate_exercice_open,
 	validate_source_context,
 )
+
+
+def attachment_file_name(url: str) -> str:
+	"""Value of the list column "Nom fichier": the base name of an
+	attachment path ("/files/pièce.pdf?v=1" -> "pièce.pdf")."""
+	if not url:
+		return ""
+	return os.path.basename(urlparse(url).path)
+
 
 # One journal code per Facturation doctype; doctypes sharing a code share the
 # same numbering series, i.e. one continuous MVT sequence per journal.
@@ -78,12 +91,25 @@ class FacturationDocument(Document):
 		context = require_context()
 		self.entreprise = context["entreprise"]
 		self.exercice = context["exercice"]
+		# list columns filled by the system: when the piece arrived, who sent
+		# it and of which type it is (guarded: the treasury doctypes share
+		# this base and may not carry the fields)
+		if self.meta.has_field("transfer_date"):
+			self.transfer_date = nowdate()
+		if self.meta.has_field("sent_by"):
+			self.sent_by = frappe.session.user
+		if self.meta.has_field("document_type"):
+			self.document_type = self.doctype
 
 	def validate(self):
 		if self.meta.has_field("journal"):
 			self.journal = self.journal_code
 		if self.meta.has_field("mvt") and not self.mvt:
 			self.mvt = self.name
+		if self.meta.has_field("file_name"):
+			# derived from the attachment: re-derived on every validate so an
+			# attachment change (or removal) keeps the list column in sync
+			self.file_name = attachment_file_name(self.attachment)
 		self.validate_context()
 
 	def validate_context(self):

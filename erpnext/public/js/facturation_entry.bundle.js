@@ -81,10 +81,10 @@
 // ── Facturation list views ───────────────────────────────────────────────────
 // Every Facturation upload doctype shares one listview_settings factory
 // (erpnext.facturation.list_settings). The top bar is reduced to the
-// "Filtres Axeane" dialog button, the pen button is the engine's sanctioned
-// settings.button (own column, delegated click), and two columns (Date
-// transfert / Envoye par) stay injected — creation and owner are not
-// docfields, so the fixtures cannot carry them.
+// "Filtres Axeane" dialog button and the pen button is the engine's
+// sanctioned settings.button (own column, delegated click). All list
+// columns are real docfields rendered natively (Date transfert, Envoyé
+// par, Type document, Nom fichier).
 
 const GL_MONTHS = [
 	"Janvier",
@@ -126,8 +126,8 @@ function hide_standard_toolbar(listview) {
  * per-doctype <doctype>_list.js files assign this factory's result. The pen
  * button is the engine's sanctioned settings.button — its own column and
  * delegated click instead of DOM injection — and refresh() re-applies the
- * toolbar hides and the injected columns after every render. Every step is
- * guarded: our code can never blank the rendered table. */
+ * toolbar hides after every render. Every step is guarded: our code can
+ * never blank the rendered table. */
 erpnext.facturation.list_settings = function (doctype) {
 	return {
 		add_fields: [
@@ -135,8 +135,6 @@ erpnext.facturation.list_settings = function (doctype) {
 			"entry",
 			"entry_doctype",
 			"mvt",
-			"creation",
-			"owner",
 			"attachment",
 			"description",
 		],
@@ -165,9 +163,6 @@ erpnext.facturation.list_settings = function (doctype) {
 		},
 		refresh(listview) {
 			hide_standard_toolbar(listview);
-			safe(function () {
-				erpnext.facturation.inject_extra_columns(listview);
-			});
 		},
 		button: {
 			get_label: () => frappe.utils.icon("square-pen", "xs"),
@@ -176,49 +171,6 @@ erpnext.facturation.list_settings = function (doctype) {
 			action: (doc) => erpnext.facturation.open_entry(doctype, doc.name),
 		},
 	};
-};
-
-/** Date transfert (creation) and Envoye par (owner) columns. */
-erpnext.facturation.inject_extra_columns = function (listview) {
-	const $head = listview.$result
-		.find(".list-row-head .level-left.list-header-subject")
-		.first();
-	if (!$head.length) {
-		return;
-	}
-	if (!$head.find(".tu-col-creation").length) {
-		$head.append(
-			'<div class="list-row-col hidden-xs tu-col tu-col-creation ellipsis">' +
-				__("Date transfert") +
-				"</div>"
-		);
-		$head.append(
-			'<div class="list-row-col hidden-xs tu-col tu-col-owner ellipsis">' +
-				__("Envoye par") +
-				"</div>"
-		);
-	}
-	listview.$result.find(".list-row-container").each(function (i, el) {
-		const $row = $(el);
-		if ($row.find(".tu-col-creation").length) {
-			return;
-		}
-		const name = $row.find("a[data-name]").attr("data-name");
-		const doc = (listview.data || []).find((d) => d.name === name) || {};
-		const creation = doc.creation ? frappe.datetime.str_to_user(doc.creation) : "";
-		const owner = doc.owner ? frappe.user_info(doc.owner).fullname || doc.owner : "";
-		const $left = $row.find(".level-left").first();
-		$(
-			'<div class="list-row-col hidden-xs tu-col tu-col-creation ellipsis">' +
-				frappe.utils.escape_html(creation) +
-				"</div>"
-		).appendTo($left);
-		$(
-			'<div class="list-row-col hidden-xs tu-col tu-col-owner ellipsis">' +
-				frappe.utils.escape_html(owner) +
-				"</div>"
-		).appendTo($left);
-	});
 };
 
 /** "Contenu" searches several fields at once; the list client only sends
