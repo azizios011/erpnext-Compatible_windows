@@ -9,7 +9,6 @@
 // app_include_js; the per-row pen button of every Facturation list view and
 // the "Saisie ecriture" form button both call it.
 (function () {
-	(function () {
 	"use strict";
 
 	var safe = function (fn) {
@@ -76,9 +75,8 @@
 			},
 		});
 	});
-})();
 
-// ── Facturation list views ───────────────────────────────────────────────────
+	// ── Facturation list views ───────────────────────────────────────────────────
 // Every Facturation upload doctype shares one listview_settings factory
 // (erpnext.facturation.list_settings). The top bar is reduced to the
 // "Filtres Axeane" dialog button and the pen button is the engine's
