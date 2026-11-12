@@ -16,8 +16,8 @@
    "is_default_module": 0,
    "keep_closed": 0,
    "label": "Entreprises",
-   "link_to": "Entreprise",
-   "link_type": "DocType",
+   "link_to": "entreprise-view",
+   "link_type": "Page",
    "open_in_new_tab": 0,
    "show_arrow": 0,
    "type": "Link"
@@ -155,7 +155,7 @@
    "indent": 0,
    "is_default_module": 0,
    "keep_closed": 0,
-   "label": "Activités",
+   "label": "Activit\u00e9s",
    "link_to": "Activite",
    "link_type": "DocType",
    "open_in_new_tab": 0,
@@ -224,7 +224,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-11-08 20:30:00.000000",
+ "modified": "2026-11-12 17:23:22.183",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Organization",

@@ -95,6 +95,25 @@ class Entreprise(Document):
 
 
 @frappe.whitelist()
+def save_entreprise(doc: dict) -> dict:
+	"""Full-document save from the Entreprise island page: update the loaded
+	doc with the client's fields (child tables included — assigning a fresh
+	list replaces it, so rows removed on the island are deleted here) and run
+	the normal validate + save pipeline."""
+	if isinstance(doc, str):
+		doc = json.loads(doc)
+	name = (doc or {}).get("name")
+	if not name:
+		frappe.throw(_("name is required"))
+
+	loaded = frappe.get_doc("Entreprise", name)
+	loaded.check_permission("write")
+	loaded.update(doc)
+	loaded.save()
+	return loaded.as_dict()
+
+
+@frappe.whitelist()
 def valider_entreprise(name: str) -> str:
 	"""Set the Entreprise to Creee: re-runs the full validation, refuses when
 	a mandatory field is still empty, then saves."""

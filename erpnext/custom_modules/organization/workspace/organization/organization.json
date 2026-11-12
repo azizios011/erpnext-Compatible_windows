@@ -30,8 +30,8 @@
   {
    "type": "Link",
    "label": "Entreprises",
-   "link_type": "DocType",
-   "link_to": "Entreprise",
+   "link_type": "Page",
+   "link_to": "entreprise-view",
    "icon": "building",
    "child": 0,
    "indent": 0,
