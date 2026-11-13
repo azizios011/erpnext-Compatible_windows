@@ -13,9 +13,9 @@
      validating reuses valider_entreprise. Server-side Entreprise-User
      visibility and permissions apply unchanged. -->
 <script setup>
-import { computed, onErrorCaptured, ref, watch } from "vue";
+import { computed, onErrorCaptured, provide, ref, watch } from "vue";
 import { Badge, Button } from "frappe-ui";
-import { buildLayoutFromMeta, FormLayout } from "@framework/ui/FormLayout";
+import { buildLayoutFromMeta, FormLayout, LinkTitlesKey } from "@framework/ui/FormLayout";
 import { useDoctypeMeta } from "@framework/ui";
 import { FileUploadDialog } from "@framework/ui/FileUpload";
 
@@ -115,7 +115,13 @@ const saving = ref(false);
 const validating = ref(false);
 const is_new = ref(false);
 const uploader_open = ref(false);
+const plan_uploader_open = ref(false);
 const render_error = ref(null);
+
+// ── Link fields human titles (Part 1) ────────────────────────────────────────
+const linkTitles = ref({});
+provide(LinkTitlesKey, linkTitles);
+const convention_details = ref(null);
 
 // A render error inside the editor subtree blanks it silently otherwise;
 // captured here the message shows on the page itself.
@@ -125,6 +131,87 @@ onErrorCaptured((error, instance, info) => {
 });
 
 const meta = useDoctypeMeta(DOCTYPE);
+
+function get_link_fields() {
+	return (meta.meta.value?.fields || []).filter(
+		(f) => f.fieldtype === "Link" && f.options
+	);
+}
+
+async function fetch_link_title(doctype, docname) {
+	if (!doctype || !docname) return;
+	const key = `${doctype}::${docname}`;
+	if (linkTitles.value[key] !== undefined) return linkTitles.value[key];
+	try {
+		const title = await frappe.xcall("frappe.desk.search.get_link_title", {
+			doctype,
+			docname,
+		});
+		if (title) {
+			linkTitles.value = { ...linkTitles.value, [key]: title };
+			return title;
+		}
+	} catch {
+		// Ignore failures silently
+	}
+}
+
+async function fetch_all_link_titles() {
+	if (!doc.value) return;
+	const link_fields = get_link_fields();
+	for (const field of link_fields) {
+		const val = doc.value[field.fieldname];
+		if (val) {
+			fetch_link_title(field.options, val);
+		}
+	}
+}
+
+watch(
+	() => {
+		if (!doc.value) return [];
+		const link_fields = get_link_fields();
+		return link_fields.map((f) => ({
+			doctype: f.options,
+			val: doc.value[f.fieldname],
+		}));
+	},
+	(fields) => {
+		for (const { doctype, val } of fields) {
+			if (doctype && val && !linkTitles.value[`${doctype}::${val}`]) {
+				fetch_link_title(doctype, val);
+			}
+		}
+	},
+	{ deep: true, immediate: true }
+);
+
+async function load_convention_details(code) {
+	if (!code) {
+		convention_details.value = null;
+		return;
+	}
+	try {
+		const res = await frappe.xcall("frappe.client.get_value", {
+			doctype: "Convention Collective",
+			filters: { name: code },
+			fieldname: ["nombre_jours", "nombre_heures", "droit_conge"],
+		});
+		if (res) {
+			convention_details.value = res;
+		}
+	} catch {
+		convention_details.value = null;
+	}
+}
+
+watch(
+	() => doc.value?.convention,
+	(code) => {
+		load_convention_details(code);
+	},
+	{ immediate: true }
+);
 
 // Apply default values from doctype metadata to new records without overwriting
 // anything the user has already typed.
@@ -228,16 +315,19 @@ async function load_record(name) {
 	loading_doc.value = true;
 	try {
 		doc.value = await frappe.xcall("frappe.client.get", { doctype: DOCTYPE, name });
+		if (!Array.isArray(doc.value.documents)) doc.value.documents = [];
 		is_new.value = false;
+		fetch_all_link_titles();
 	} finally {
 		loading_doc.value = false;
 	}
 }
 
 function start_new_record() {
-	doc.value = { doctype: DOCTYPE, status: "En creation" };
+	doc.value = { doctype: DOCTYPE, status: "En creation", documents: [] };
 	is_new.value = true;
 	apply_meta_defaults(doc.value);
+	fetch_all_link_titles();
 }
 
 watch(
@@ -355,19 +445,371 @@ async function valider() {
 	}
 }
 
+// ── Plan comptable & formatting helpers (Part 2) ───────────────────────────────
+function get_filename(url) {
+	if (!url) return "";
+	try {
+		const path = new URL(url, "http://x").pathname;
+		return decodeURIComponent(path.split("/").filter(Boolean).pop() || url);
+	} catch {
+		return String(url).split("/").pop() || String(url);
+	}
+}
+
+function format_date_dmy(val) {
+	if (!val) return null;
+	if (typeof val === "string" && /^\d{4}-\d{2}-\d{2}/.test(val)) {
+		const [y, m, d] = val.slice(0, 10).split("-");
+		return `${d}/${m}/${y}`;
+	}
+	try {
+		const dt = new Date(val);
+		if (isNaN(dt.getTime())) return String(val);
+		const d = String(dt.getDate()).padStart(2, "0");
+		const m = String(dt.getMonth() + 1).padStart(2, "0");
+		const y = dt.getFullYear();
+		return `${d}/${m}/${y}`;
+	} catch {
+		return String(val);
+	}
+}
+
+function format_datetime_dmy(val) {
+	if (!val) return "";
+	if (typeof val === "string" && /^\d{4}-\d{2}-\d{2}/.test(val)) {
+		const [y, m, d] = val.slice(0, 10).split("-");
+		const time = val.slice(11, 16);
+		return time ? `${d}/${m}/${y} ${time}` : `${d}/${m}/${y}`;
+	}
+	try {
+		const dt = new Date(val);
+		if (isNaN(dt.getTime())) return String(val);
+		const d = String(dt.getDate()).padStart(2, "0");
+		const m = String(dt.getMonth() + 1).padStart(2, "0");
+		const y = dt.getFullYear();
+		const time = `${String(dt.getHours()).padStart(2, "0")}:${String(dt.getMinutes()).padStart(2, "0")}`;
+		return `${d}/${m}/${y} ${time}`;
+	} catch {
+		return String(val);
+	}
+}
+
+function format_number_fr(val) {
+	if (val === undefined || val === null || val === "") return null;
+	const num = Number(val);
+	if (isNaN(num)) return String(val);
+	return new Intl.NumberFormat("fr-FR").format(num);
+}
+
+function get_type_document_options() {
+	const child_fields = meta.metas.value?.["Entreprise Document"]?.fields;
+	const main_fields = meta.meta.value?.fields;
+	const field =
+		(child_fields || []).find((f) => f.fieldname === "type_document") ||
+		(main_fields || []).find((f) => f.fieldname === "type_document");
+	if (field?.options) {
+		return field.options
+			.split("\n")
+			.map((s) => s.trim())
+			.filter(Boolean);
+	}
+	return [];
+}
+
 function on_documents_committed(results) {
+	if (!doc.value) return;
+	if (!Array.isArray(doc.value.documents)) {
+		doc.value.documents = [];
+	}
+	const type_options = get_type_document_options();
+	const default_non_plan =
+		type_options.find((opt) => opt !== "Plan comptable") || type_options[0] || "Autre";
+
 	for (const uploaded of results || []) {
-		const filename = (uploaded.file_name || "").toLowerCase();
-		const is_plan = filename.includes("plan") && /\.(xlsx|xls|pdf)$/.test(filename);
-		doc.value?.documents?.push({
-			type_document: is_plan ? "Plan comptable" : "Autre",
+		const filename = uploaded.file_name || "";
+		const is_plan = filename.toLowerCase().includes("plan");
+		doc.value.documents.push({
+			doctype: "Entreprise Document",
+			parentfield: "documents",
+			parenttype: DOCTYPE,
+			type_document: is_plan ? "Plan comptable" : default_non_plan,
 			libelle: uploaded.file_name,
 			fichier: uploaded.file_url,
-			date_ajout: frappe.datetime.nowdate(),
-			ajoute_par: frappe.session.user,
+			date_ajout: frappe.datetime?.nowdate?.() || new Date().toISOString().slice(0, 10),
+			ajoute_par: frappe.session?.user || "Administrator",
 		});
 	}
 }
+
+function on_plan_comptable_committed(results) {
+	const first = results?.[0];
+	if (first && doc.value) {
+		doc.value.plan_comptable_fichier = first.file_url;
+		doc.value.plan_comptable_ajoute_le =
+			frappe.datetime?.now_datetime?.() ||
+			new Date().toISOString().slice(0, 19).replace("T", " ");
+	}
+}
+
+function clear_plan_comptable() {
+	if (!doc.value) return;
+	doc.value.plan_comptable_fichier = null;
+	doc.value.plan_comptable_ajoute_le = null;
+}
+
+function remove_document(index) {
+	if (doc.value?.documents) {
+		doc.value.documents.splice(index, 1);
+	}
+}
+
+function open_file(url) {
+	if (url) {
+		window.open(url, "_blank", "noopener");
+	}
+}
+
+// ── Validation preview section (Part 3) ───────────────────────────────────────
+const LAYOUT_FIELDTYPES = new Set([
+	"Section Break",
+	"Column Break",
+	"Tab Break",
+	"HTML",
+	"Button",
+	"Fold",
+	"Heading",
+]);
+
+function is_value_empty(val) {
+	if (val === undefined || val === null) return true;
+	if (typeof val === "string" && val.trim() === "") return true;
+	if (Array.isArray(val) && val.length === 0) return true;
+	return false;
+}
+
+const missing_required_fields = computed(() => {
+	if (!doc.value || !meta.meta.value?.fields) return [];
+	const d = doc.value;
+	return meta.meta.value.fields.filter((field) => {
+		if (!field.reqd || LAYOUT_FIELDTYPES.has(field.fieldtype) || field.hidden) {
+			return false;
+		}
+		return is_value_empty(d[field.fieldname]);
+	});
+});
+
+const missing_count_label = computed(() => {
+	const count = missing_required_fields.value.length;
+	return count === 1
+		? __("1 champ obligatoire manquant")
+		: __("{0} champs obligatoires manquants", [count]);
+});
+
+const forme_juridique_title = computed(() => {
+	const f = doc.value?.forme_juridique;
+	if (!f) return null;
+	return linkTitles.value[`Forme Juridique::${f}`] || f;
+});
+
+const activite_display = computed(() => {
+	const code = doc.value?.activite;
+	if (!code) return null;
+	const title = linkTitles.value[`Activite::${code}`];
+	return title && title !== code ? `${code} — ${title}` : code;
+});
+
+const convention_display = computed(() => {
+	const code = doc.value?.convention;
+	if (!code) return null;
+	const title = linkTitles.value[`Convention Collective::${code}`];
+	return title && title !== code ? `${code} — ${title}` : code;
+});
+
+const convention_summary = computed(() => {
+	const c = convention_details.value;
+	if (!c) return null;
+	const parts = [];
+	if (c.nombre_jours !== undefined && c.nombre_jours !== null) {
+		parts.push(`${c.nombre_jours} jours`);
+	}
+	if (c.nombre_heures !== undefined && c.nombre_heures !== null) {
+		parts.push(`${c.nombre_heures} heures`);
+	}
+	if (c.droit_conge !== undefined && c.droit_conge !== null) {
+		parts.push(`${c.droit_conge} congé`);
+	}
+	return parts.length ? parts.join(" · ") : null;
+});
+
+const adresse_display = computed(() => {
+	const d = doc.value;
+	if (!d) return null;
+	const street = [d.numero, d.rue]
+		.filter((v) => v !== undefined && v !== null && String(v).trim() !== "")
+		.join(" ");
+	const city = [d.code_postal, d.ville]
+		.filter((v) => v !== undefined && v !== null && String(v).trim() !== "")
+		.join(" ");
+	const country_title = d.pays_adresse
+		? linkTitles.value[`Country::${d.pays_adresse}`] || d.pays_adresse
+		: "";
+	const parts = [street, city, country_title].filter((p) => p && p.trim() !== "");
+	return parts.length ? parts.join(", ") : null;
+});
+
+const pays_comptabilite_title = computed(() => {
+	const p = doc.value?.pays;
+	if (!p) return null;
+	return linkTitles.value[`Country::${p}`] || p;
+});
+
+const devise_title = computed(() => {
+	const d = doc.value?.devise;
+	if (!d) return null;
+	return linkTitles.value[`Currency::${d}`] || d;
+});
+
+const date_arrete_display = computed(() => {
+	const j = doc.value?.jour_arrete;
+	const m = doc.value?.mois_arrete;
+	if (j === undefined || j === null || j === "" || m === undefined || m === null || m === "") {
+		return null;
+	}
+	const jour = String(j).padStart(2, "0");
+	const mois = String(m).padStart(2, "0");
+	return `${jour}/${mois}`;
+});
+
+const plan_comptable_main_preview = computed(() => {
+	const file = doc.value?.plan_comptable_fichier;
+	if (!file) return null;
+	const filename = get_filename(file);
+	const date = doc.value?.plan_comptable_ajoute_le
+		? format_datetime_dmy(doc.value.plan_comptable_ajoute_le)
+		: "";
+	return date ? `${filename} · ${date}` : filename;
+});
+
+const preview_identification = computed(() => [
+	{ label: __("Code"), value: doc.value?.code, reqd: true },
+	{ label: __("Raison sociale"), value: doc.value?.raison_sociale, reqd: true },
+	{ label: __("Matricule fiscal"), value: doc.value?.matricule_fiscal, reqd: true },
+	{ label: __("Forme juridique"), value: forme_juridique_title.value, reqd: true },
+	{ label: __("Activité"), value: activite_display.value, reqd: true },
+	{
+		label: __("Convention"),
+		value: convention_display.value,
+		subtitle: convention_summary.value,
+		reqd: true,
+	},
+	{
+		label: __("Personne physique"),
+		value: doc.value?.personne_physique ? __("Oui") : __("Non"),
+		reqd: false,
+	},
+	{
+		label: __("Date de création"),
+		value: format_date_dmy(doc.value?.date_creation),
+		reqd: true,
+	},
+	{ label: __("Numéro RNE"), value: doc.value?.numero_rne, reqd: true },
+	{ label: __("Numéro dossier"), value: doc.value?.numero_dossier, reqd: false },
+	{ label: __("Code exploitation CNSS RG"), value: doc.value?.code_exploitation, reqd: true },
+	{
+		label: __("Code exploitation AV-CNSS"),
+		value: doc.value?.code_exploitation_karama,
+		reqd: false,
+	},
+	{ label: __("Adresse"), value: adresse_display.value, reqd: true },
+	{ label: __("Pays comptabilité"), value: pays_comptabilite_title.value, reqd: true },
+]);
+
+const preview_financier = computed(() => [
+	{
+		label: __("Capital social"),
+		value: format_number_fr(doc.value?.capital_social),
+		reqd: false,
+	},
+	{
+		label: __("Nb actions/parts"),
+		value: format_number_fr(doc.value?.nombre_actions_parts_sociales),
+		reqd: false,
+	},
+	{
+		label: __("Valeur nominale"),
+		value: format_number_fr(doc.value?.valeur_nominale_action),
+		reqd: false,
+	},
+	{ label: __("Devise"), value: devise_title.value, reqd: true },
+	{
+		label: __("Taux imposition (%)"),
+		value:
+			doc.value?.taux_imposition !== undefined &&
+			doc.value?.taux_imposition !== null &&
+			doc.value?.taux_imposition !== ""
+				? `${doc.value.taux_imposition} %`
+				: null,
+		reqd: true,
+	},
+	{
+		label: __("Durée exercice (mois)"),
+		value:
+			doc.value?.duree_exercice !== undefined &&
+			doc.value?.duree_exercice !== null &&
+			doc.value?.duree_exercice !== ""
+				? `${doc.value.duree_exercice} mois`
+				: null,
+		reqd: true,
+	},
+	{ label: __("Date d'arrêté"), value: date_arrete_display.value, reqd: true },
+	{ label: __("Code douane"), value: doc.value?.code_douane, reqd: false },
+	{ label: __("N. CNSS"), value: doc.value?.numero_cnss, reqd: true },
+	{ label: __("Type plan comptable"), value: doc.value?.type_plan_comptable, reqd: false },
+	{ label: __("Modèle bilan"), value: doc.value?.modele_bilan, reqd: true },
+	{ label: __("Modèle état de résultat"), value: doc.value?.modele_etat_resultat, reqd: true },
+	{
+		label: __("Longueur compte comptable"),
+		value: doc.value?.longueur_compte_comptable,
+		reqd: false,
+	},
+	{
+		label: __("Flux trésorerie autorisé"),
+		value: doc.value?.modele_flux_tresorerie_autorise ? __("Oui") : __("Non"),
+		reqd: false,
+	},
+]);
+
+const preview_plan_comptable = computed(() => [
+	{
+		label: __("Plan comptable principal"),
+		value: plan_comptable_main_preview.value,
+		reqd: false,
+	},
+	{
+		label: __("Nombre de documents"),
+		value: doc.value?.documents?.length
+			? `${doc.value.documents.length} document(s)`
+			: "0 document",
+		reqd: false,
+	},
+]);
+
+const valider_disabled = computed(() => {
+	return Boolean(is_new.value || missing_required_fields.value.length > 0 || is_validated.value);
+});
+
+const valider_tooltip = computed(() => {
+	if (is_new.value) {
+		return __("Veuillez d'abord enregistrer l'entreprise avant de la valider.");
+	}
+	if (missing_required_fields.value.length > 0) {
+		return __("Des champs obligatoires sont manquants.");
+	}
+	if (is_validated.value) {
+		return __("Entreprise déjà validée.");
+	}
+	return __("Valider l'entreprise");
+});
 
 const FIELD_LABELS = {
 	code: __("Code"),
@@ -623,13 +1065,9 @@ const FIELD_LABELS = {
 				</div>
 
 				<template v-else-if="doc">
-					<div v-if="is_documents_tab" class="mb-4 flex justify-end">
-						<Button variant="subtle" :label="__('Ajouter des documents')" @click="uploader_open = true" />
-					</div>
-
-					<!-- Stacked white cards -->
+					<!-- Stacked white cards: 1. Informations Générales  2. Informations Financières  3. Plan comptable  4. Validation -->
 					<div class="flex flex-col gap-6 entreprise-form">
-						<!-- Informations Générales Card -->
+						<!-- ══ Card 1: Informations Générales ══ -->
 						<div class="rounded-lg border border-surface-gray-2 bg-surface-white p-6 shadow-xs">
 							<div class="text-base font-bold text-ink-gray-9">
 								{{ __("Informations Générales") }}
@@ -643,7 +1081,7 @@ const FIELD_LABELS = {
 							/>
 						</div>
 
-						<!-- Informations Financières Card -->
+						<!-- ══ Card 2: Informations Financières ══ -->
 						<div class="rounded-lg border border-surface-gray-2 bg-surface-white p-6 shadow-xs">
 							<div class="text-base font-bold text-ink-gray-9">
 								{{ __("Informations Financières") }}
@@ -656,25 +1094,355 @@ const FIELD_LABELS = {
 								@update:activeTab="active_tab = $event"
 							/>
 						</div>
-					</div>
 
-					<!-- Validation tab body (retained recap cards) -->
-					<div v-if="is_validation_tab" class="mt-6 flex flex-wrap gap-4">
-						<div
-							v-for="(rows, group) in card_rows"
-							:key="group"
-							class="min-w-[300px] flex-1 rounded-lg border border-surface-gray-2 bg-surface-white p-6 shadow-xs"
-						>
-							<div class="mb-3 font-semibold text-ink-amber-6">
-								{{ group === "identification" ? __("Identification") : __("Comptabilité") }}
+						<!-- ══ Card 3: Plan comptable ══ -->
+						<div class="rounded-lg border border-surface-gray-2 bg-surface-white p-6 shadow-xs space-y-6">
+							<div class="text-base font-bold text-ink-gray-9">
+								{{ __("Plan comptable") }}
 							</div>
+							<div class="border-b border-surface-gray-2" />
+
+							<!-- Block A: Plan comptable principal -->
+							<div class="space-y-3">
+								<div class="text-xs font-semibold uppercase tracking-wider text-ink-gray-5">
+									{{ __("Plan comptable principal") }}
+								</div>
+
+								<!-- File tile when file is set -->
+								<div
+									v-if="doc.plan_comptable_fichier"
+									class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-lg border border-surface-gray-2 bg-surface-gray-1/60 p-4"
+								>
+									<div class="flex items-center gap-3 min-w-0">
+										<div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-surface-white border border-surface-gray-2 text-ink-gray-6">
+											<svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+												<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+												<polyline points="14 2 14 8 20 8" />
+											</svg>
+										</div>
+										<div class="min-w-0">
+											<div class="truncate text-p-sm font-semibold text-ink-gray-9">
+												{{ get_filename(doc.plan_comptable_fichier) }}
+											</div>
+											<div v-if="doc.plan_comptable_ajoute_le" class="text-xs text-ink-gray-5">
+												{{ __("Ajouté le {0}", [format_datetime_dmy(doc.plan_comptable_ajoute_le)]) }}
+											</div>
+										</div>
+									</div>
+
+									<div class="flex flex-wrap items-center gap-2 shrink-0">
+										<Button
+											variant="ghost"
+											:label="__('Afficher')"
+											@click="open_file(doc.plan_comptable_fichier)"
+										/>
+										<Button
+											variant="subtle"
+											:label="__('Remplacer')"
+											@click="plan_uploader_open = true"
+										/>
+										<Button
+											variant="ghost"
+											theme="red"
+											:label="__('Supprimer')"
+											@click="clear_plan_comptable"
+										/>
+									</div>
+								</div>
+
+								<!-- Empty state when no file -->
+								<div
+									v-else
+									class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-lg border border-dashed border-surface-gray-3 bg-surface-gray-1/40 p-5"
+								>
+									<div class="flex items-center gap-3">
+										<div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-surface-gray-2 text-ink-gray-4">
+											<svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+												<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+												<polyline points="14 2 14 8 20 8" />
+											</svg>
+										</div>
+										<div>
+											<div class="text-p-sm font-medium text-ink-gray-7">
+												{{ __("Aucun plan comptable principal") }}
+											</div>
+											<div class="text-xs text-ink-gray-5">
+												{{ __("Rattachez un fichier de plan comptable (xlsx, pdf, etc.)") }}
+											</div>
+										</div>
+									</div>
+
+									<Button
+										variant="subtle"
+										:label="__('Choisir un plan comptable')"
+										@click="plan_uploader_open = true"
+									/>
+								</div>
+							</div>
+
+							<!-- Block B: Documents -->
+							<div class="space-y-3">
+								<div class="flex items-center justify-between">
+									<div class="text-xs font-semibold uppercase tracking-wider text-ink-gray-5">
+										{{ __("Documents") }}
+									</div>
+									<Button
+										variant="subtle"
+										:label="__('Ajouter des documents')"
+										@click="uploader_open = true"
+									/>
+								</div>
+
+								<div class="overflow-hidden rounded-lg border border-surface-gray-2 bg-surface-white">
+									<table v-if="doc.documents && doc.documents.length" class="w-full text-left border-collapse">
+										<thead>
+											<tr class="border-b border-surface-gray-2 bg-surface-gray-1">
+												<th class="px-4 py-2.5 text-p-xs font-semibold uppercase tracking-wider text-ink-gray-6">
+													{{ __("Nom") }}
+												</th>
+												<th class="px-4 py-2.5 text-p-xs font-semibold uppercase tracking-wider text-ink-gray-6">
+													{{ __("Type") }}
+												</th>
+												<th class="px-4 py-2.5 text-p-xs font-semibold uppercase tracking-wider text-ink-gray-6">
+													{{ __("Date") }}
+												</th>
+												<th class="px-4 py-2.5 text-p-xs font-semibold uppercase tracking-wider text-ink-gray-6">
+													{{ __("Ajouté par") }}
+												</th>
+												<th class="px-4 py-2.5 text-p-xs font-semibold uppercase tracking-wider text-ink-gray-6 text-end">
+													{{ __("Actions") }}
+												</th>
+											</tr>
+										</thead>
+										<tbody class="divide-y divide-surface-gray-2">
+											<tr
+												v-for="(row, idx) in doc.documents"
+												:key="idx"
+												class="transition-colors hover:bg-surface-gray-1/60"
+											>
+												<td class="px-4 py-3 text-p-sm font-medium text-ink-gray-9">
+													{{ row.libelle || get_filename(row.fichier) || "—" }}
+												</td>
+												<td class="px-4 py-3 text-p-sm text-ink-gray-7">
+													<Badge variant="subtle" size="sm" :label="row.type_document || '—'" />
+												</td>
+												<td class="px-4 py-3 text-p-sm text-ink-gray-6">
+													{{ format_date_dmy(row.date_ajout) || row.date_ajout || "—" }}
+												</td>
+												<td class="px-4 py-3 text-p-sm text-ink-gray-6">
+													{{ row.ajoute_par || "—" }}
+												</td>
+												<td class="px-4 py-3 text-p-sm text-end">
+													<div class="inline-flex items-center gap-1">
+														<Button
+															variant="ghost"
+															size="sm"
+															:label="__('Afficher')"
+															@click="open_file(row.fichier)"
+														/>
+														<Button
+															variant="ghost"
+															size="sm"
+															theme="red"
+															:label="__('Supprimer')"
+															@click="remove_document(idx)"
+														/>
+													</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+
+									<!-- Empty state -->
+									<div
+										v-else
+										class="flex flex-col items-center justify-center px-6 py-10 text-center"
+									>
+										<div class="mb-3 flex size-12 items-center justify-center rounded-full bg-surface-gray-2 text-ink-gray-4">
+											<svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+												<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+												<polyline points="14 2 14 8 20 8" />
+											</svg>
+										</div>
+										<p class="text-p-sm font-medium text-ink-gray-7">
+											{{ __("Aucun document") }}
+										</p>
+										<p class="mt-1 text-xs text-ink-gray-5">
+											{{ __("Ajoutez des documents complémentaires pour cette entreprise.") }}
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- ══ Card 4: Validation ══ -->
+						<div class="rounded-lg border border-surface-gray-2 bg-surface-white p-6 shadow-xs space-y-6">
+							<div class="text-base font-bold text-ink-gray-9">
+								{{ __("Validation") }}
+							</div>
+							<div class="border-b border-surface-gray-2" />
+
+							<!-- Top banner -->
 							<div
-								v-for="[fieldname, value] in rows"
-								:key="fieldname"
-								class="flex items-baseline justify-between gap-4 border-b border-dashed border-surface-gray-2 py-2 text-p-sm last:border-0"
+								v-if="missing_required_fields.length > 0"
+								class="rounded-lg border border-surface-amber-3 bg-surface-amber-1 p-4 text-p-sm"
 							>
-								<span class="text-ink-gray-5">{{ FIELD_LABELS[fieldname] || fieldname }}</span>
-								<span class="text-ink-gray-9">{{ value }}</span>
+								<div class="flex items-center gap-2 font-semibold text-ink-amber-8">
+									<svg class="size-5 shrink-0 text-ink-amber-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+										<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+										<line x1="12" y1="9" x2="12" y2="13" />
+										<line x1="12" y1="17" x2="12.01" y2="17" />
+									</svg>
+									<span>{{ missing_count_label }}</span>
+								</div>
+								<div class="mt-3 flex flex-wrap gap-1.5">
+									<span
+										v-for="field in missing_required_fields"
+										:key="field.fieldname"
+										class="inline-flex items-center rounded bg-surface-amber-2 px-2.5 py-1 text-xs font-medium text-ink-amber-9 border border-surface-amber-3"
+									>
+										{{ field.label || field.fieldname }}
+									</span>
+								</div>
+							</div>
+
+							<div
+								v-else
+								class="flex items-center gap-2.5 rounded-lg border border-surface-green-3 bg-surface-green-1 px-4 py-3 text-p-sm font-semibold text-ink-green-8"
+							>
+								<svg class="size-5 shrink-0 text-ink-green-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+									<polyline points="22 4 12 14.01 9 11.01" />
+								</svg>
+								<span>{{ __("Prêt à valider") }}</span>
+							</div>
+
+							<!-- 3 Preview cards -->
+							<div class="flex flex-col gap-6">
+								<!-- Preview Card A: Identification -->
+								<div class="rounded-lg border border-surface-gray-2 bg-surface-gray-1/30 p-5">
+									<div class="mb-4 text-xs font-semibold uppercase tracking-wider text-ink-gray-5">
+										{{ __("Identification") }}
+									</div>
+									<div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3.5">
+										<div
+											v-for="item in preview_identification"
+											:key="item.label"
+											class="flex flex-col gap-0.5 min-w-0"
+										>
+											<span class="text-xs font-medium text-ink-gray-5 truncate">
+												{{ item.label }}
+											</span>
+											<div class="flex items-center gap-2 text-p-sm font-semibold text-ink-gray-9">
+												<template v-if="item.value !== null && item.value !== undefined && item.value !== ''">
+													<div class="min-w-0">
+														<div class="truncate">{{ item.value }}</div>
+														<div v-if="item.subtitle" class="text-xs font-normal text-ink-gray-5">
+															{{ item.subtitle }}
+														</div>
+													</div>
+												</template>
+												<template v-else>
+													<span class="text-ink-gray-4 font-normal">—</span>
+													<span
+														v-if="item.reqd"
+														class="inline-flex items-center rounded bg-surface-red-2 px-1.5 py-0.5 text-[11px] font-medium text-ink-red-6"
+													>
+														{{ __("Manquant") }}
+													</span>
+												</template>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- Preview Card B: Informations financières -->
+								<div class="rounded-lg border border-surface-gray-2 bg-surface-gray-1/30 p-5">
+									<div class="mb-4 text-xs font-semibold uppercase tracking-wider text-ink-gray-5">
+										{{ __("Informations financières") }}
+									</div>
+									<div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3.5">
+										<div
+											v-for="item in preview_financier"
+											:key="item.label"
+											class="flex flex-col gap-0.5 min-w-0"
+										>
+											<span class="text-xs font-medium text-ink-gray-5 truncate">
+												{{ item.label }}
+											</span>
+											<div class="flex items-center gap-2 text-p-sm font-semibold text-ink-gray-9">
+												<template v-if="item.value !== null && item.value !== undefined && item.value !== ''">
+													<div class="min-w-0">
+														<div class="truncate">{{ item.value }}</div>
+													</div>
+												</template>
+												<template v-else>
+													<span class="text-ink-gray-4 font-normal">—</span>
+													<span
+														v-if="item.reqd"
+														class="inline-flex items-center rounded bg-surface-red-2 px-1.5 py-0.5 text-[11px] font-medium text-ink-red-6"
+													>
+														{{ __("Manquant") }}
+													</span>
+												</template>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- Preview Card C: Plan comptable -->
+								<div class="rounded-lg border border-surface-gray-2 bg-surface-gray-1/30 p-5">
+									<div class="mb-4 text-xs font-semibold uppercase tracking-wider text-ink-gray-5">
+										{{ __("Plan comptable") }}
+									</div>
+									<div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3.5">
+										<div
+											v-for="item in preview_plan_comptable"
+											:key="item.label"
+											class="flex flex-col gap-0.5 min-w-0"
+										>
+											<span class="text-xs font-medium text-ink-gray-5 truncate">
+												{{ item.label }}
+											</span>
+											<div class="flex items-center gap-2 text-p-sm font-semibold text-ink-gray-9">
+												<template v-if="item.value !== null && item.value !== undefined && item.value !== ''">
+													<div class="min-w-0">
+														<div class="truncate">{{ item.value }}</div>
+													</div>
+												</template>
+												<template v-else>
+													<span class="text-ink-gray-4 font-normal">—</span>
+													<span
+														v-if="item.reqd"
+														class="inline-flex items-center rounded bg-surface-red-2 px-1.5 py-0.5 text-[11px] font-medium text-ink-red-6"
+													>
+														{{ __("Manquant") }}
+													</span>
+												</template>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- Bottom action bar -->
+							<div class="pt-4 border-t border-surface-gray-2 flex items-center justify-end gap-3">
+								<Button
+									variant="outline"
+									:label="__('Enregistrer')"
+									:loading="saving"
+									@click="save"
+								/>
+								<div :title="valider_disabled ? valider_tooltip : undefined" class="inline-flex">
+									<Button
+										variant="solid"
+										:label="__('Valider l\'entreprise')"
+										:loading="validating"
+										:disabled="valider_disabled"
+										:tooltip="valider_tooltip"
+										@click="valider"
+									/>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -683,6 +1451,7 @@ const FIELD_LABELS = {
 		</div>
 
 		<FileUploadDialog v-model:open="uploader_open" multiple @committed="on_documents_committed" />
+		<FileUploadDialog v-model:open="plan_uploader_open" :multiple="false" @committed="on_plan_comptable_committed" />
 	</div>
 </template>
 
