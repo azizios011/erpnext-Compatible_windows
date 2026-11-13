@@ -18,6 +18,7 @@ import { Badge, Button } from "frappe-ui";
 import { buildLayoutFromMeta, FormLayout, LinkTitlesKey } from "@framework/ui/FormLayout";
 import { useDoctypeMeta } from "@framework/ui";
 import { FileUploadDialog } from "@framework/ui/FileUpload";
+import PlanComptableImportDialog from "../_shared/PlanComptableImportDialog.vue";
 
 const frappe = window.frappe;
 const __ = window.__;
@@ -116,6 +117,10 @@ const validating = ref(false);
 const is_new = ref(false);
 const uploader_open = ref(false);
 const plan_uploader_open = ref(false);
+const plan_import_open = ref(false);
+const plan_accounts_count = ref(0);
+const plan_import_hint = __("Enregistrez l'entreprise avant d'importer son plan comptable");
+const plan_import_disabled = computed(() => Boolean(is_new.value || !doc.value?.name));
 const render_error = ref(null);
 
 // ── Link fields human titles (Part 1) ────────────────────────────────────────
@@ -318,6 +323,10 @@ async function load_record(name) {
 		if (!Array.isArray(doc.value.documents)) doc.value.documents = [];
 		is_new.value = false;
 		fetch_all_link_titles();
+		plan_accounts_count.value = await frappe.xcall("frappe.client.get_count", {
+			doctype: "Chart of Account",
+			filters: { entreprise: name },
+		});
 	} finally {
 		loading_doc.value = false;
 	}
@@ -326,6 +335,7 @@ async function load_record(name) {
 function start_new_record() {
 	doc.value = { doctype: DOCTYPE, status: "En creation", documents: [] };
 	is_new.value = true;
+	plan_accounts_count.value = 0;
 	apply_meta_defaults(doc.value);
 	fetch_all_link_titles();
 }
@@ -406,7 +416,10 @@ async function save() {
 		if (is_new.value) {
 			const inserted = await frappe.xcall("frappe.client.insert", { doc: payload });
 			is_new.value = false;
-			frappe.show_alert({ message: __("Entreprise creee."), indicator: "green" });
+			frappe.show_alert({
+				message: __("Entreprise enregistrée — vous pouvez maintenant importer son plan comptable"),
+				indicator: "green",
+			});
 			frappe.set_route("entreprise-view", inserted.name);
 			return;
 		}
@@ -555,6 +568,30 @@ function clear_plan_comptable() {
 	if (!doc.value) return;
 	doc.value.plan_comptable_fichier = null;
 	doc.value.plan_comptable_ajoute_le = null;
+}
+
+function open_plan_comptable() {
+	if (doc.value?.name) {
+		frappe.set_route("plan-comptable", { entreprise: doc.value.name });
+	}
+}
+
+async function on_plan_imported() {
+	// the backend stamped plan_comptable_fichier / plan_comptable_ajoute_le:
+	// reload the doc and the imported-accounts count
+	if (!doc.value?.name) return;
+	try {
+		doc.value = await frappe.xcall("frappe.client.get", { doctype: DOCTYPE, name: doc.value.name });
+		if (!Array.isArray(doc.value.documents)) doc.value.documents = [];
+		is_new.value = false;
+		fetch_all_link_titles();
+		plan_accounts_count.value = await frappe.xcall("frappe.client.get_count", {
+			doctype: "Chart of Account",
+			filters: { entreprise: doc.value.name },
+		});
+	} catch {
+		// the server message is already surfaced by frappe.call
+	}
 }
 
 function remove_document(index) {
@@ -779,18 +816,21 @@ const preview_financier = computed(() => [
 	},
 ]);
 
+const plan_comptable_preview_value = computed(() => {
+	const count = plan_accounts_count.value || 0;
+	return count === 1 ? __("1 compte importé") : __("{0} comptes importés", [count]);
+});
+
 const preview_plan_comptable = computed(() => [
 	{
-		label: __("Plan comptable principal"),
-		value: plan_comptable_main_preview.value,
+		label: __("Plan comptable"),
+		value: plan_comptable_preview_value.value,
+		subtitle: doc.value?.plan_comptable_ajoute_le
+			? __("Ajouté le {0}", [format_datetime_dmy(doc.value.plan_comptable_ajoute_le)])
+			: null,
 		reqd: false,
-	},
-	{
-		label: __("Nombre de documents"),
-		value: doc.value?.documents?.length
-			? `${doc.value.documents.length} document(s)`
-			: "0 document",
-		reqd: false,
+		onClick: plan_accounts_count.value > 0 ? open_plan_comptable : null,
+		linkLabel: __("Ouvrir le plan comptable"),
 	},
 ]);
 
@@ -1136,16 +1176,19 @@ const FIELD_LABELS = {
 											:label="__('Afficher')"
 											@click="open_file(doc.plan_comptable_fichier)"
 										/>
+										<div :title="plan_import_disabled ? plan_import_hint : undefined" class="inline-flex">
+											<Button
+												variant="subtle"
+												:label="__('Importer un plan comptable')"
+												:disabled="plan_import_disabled"
+												@click="plan_import_open = true"
+											/>
+										</div>
 										<Button
+											v-if="plan_accounts_count > 0"
 											variant="subtle"
-											:label="__('Remplacer')"
-											@click="plan_uploader_open = true"
-										/>
-										<Button
-											variant="ghost"
-											theme="red"
-											:label="__('Supprimer')"
-											@click="clear_plan_comptable"
+											:label="__('Ouvrir le plan comptable')"
+											@click="open_plan_comptable"
 										/>
 									</div>
 								</div>
@@ -1167,112 +1210,23 @@ const FIELD_LABELS = {
 												{{ __("Aucun plan comptable principal") }}
 											</div>
 											<div class="text-xs text-ink-gray-5">
-												{{ __("Rattachez un fichier de plan comptable (xlsx, pdf, etc.)") }}
+												{{ __("Rattachez un fichier de plan comptable (fichier Excel .xlsx)") }}
 											</div>
 										</div>
 									</div>
 
-									<Button
-										variant="subtle"
-										:label="__('Choisir un plan comptable')"
-										@click="plan_uploader_open = true"
-									/>
-								</div>
-							</div>
-
-							<!-- Block B: Documents -->
-							<div class="space-y-3">
-								<div class="flex items-center justify-between">
-									<div class="text-xs font-semibold uppercase tracking-wider text-ink-gray-5">
-										{{ __("Documents") }}
-									</div>
-									<Button
-										variant="subtle"
-										:label="__('Ajouter des documents')"
-										@click="uploader_open = true"
-									/>
-								</div>
-
-								<div class="overflow-hidden rounded-lg border border-surface-gray-2 bg-surface-white">
-									<table v-if="doc.documents && doc.documents.length" class="w-full text-left border-collapse">
-										<thead>
-											<tr class="border-b border-surface-gray-2 bg-surface-gray-1">
-												<th class="px-4 py-2.5 text-p-xs font-semibold uppercase tracking-wider text-ink-gray-6">
-													{{ __("Nom") }}
-												</th>
-												<th class="px-4 py-2.5 text-p-xs font-semibold uppercase tracking-wider text-ink-gray-6">
-													{{ __("Type") }}
-												</th>
-												<th class="px-4 py-2.5 text-p-xs font-semibold uppercase tracking-wider text-ink-gray-6">
-													{{ __("Date") }}
-												</th>
-												<th class="px-4 py-2.5 text-p-xs font-semibold uppercase tracking-wider text-ink-gray-6">
-													{{ __("Ajouté par") }}
-												</th>
-												<th class="px-4 py-2.5 text-p-xs font-semibold uppercase tracking-wider text-ink-gray-6 text-end">
-													{{ __("Actions") }}
-												</th>
-											</tr>
-										</thead>
-										<tbody class="divide-y divide-surface-gray-2">
-											<tr
-												v-for="(row, idx) in doc.documents"
-												:key="idx"
-												class="transition-colors hover:bg-surface-gray-1/60"
-											>
-												<td class="px-4 py-3 text-p-sm font-medium text-ink-gray-9">
-													{{ row.libelle || get_filename(row.fichier) || "—" }}
-												</td>
-												<td class="px-4 py-3 text-p-sm text-ink-gray-7">
-													<Badge variant="subtle" size="sm" :label="row.type_document || '—'" />
-												</td>
-												<td class="px-4 py-3 text-p-sm text-ink-gray-6">
-													{{ format_date_dmy(row.date_ajout) || row.date_ajout || "—" }}
-												</td>
-												<td class="px-4 py-3 text-p-sm text-ink-gray-6">
-													{{ row.ajoute_par || "—" }}
-												</td>
-												<td class="px-4 py-3 text-p-sm text-end">
-													<div class="inline-flex items-center gap-1">
-														<Button
-															variant="ghost"
-															size="sm"
-															:label="__('Afficher')"
-															@click="open_file(row.fichier)"
-														/>
-														<Button
-															variant="ghost"
-															size="sm"
-															theme="red"
-															:label="__('Supprimer')"
-															@click="remove_document(idx)"
-														/>
-													</div>
-												</td>
-											</tr>
-										</tbody>
-									</table>
-
-									<!-- Empty state -->
-									<div
-										v-else
-										class="flex flex-col items-center justify-center px-6 py-10 text-center"
-									>
-										<div class="mb-3 flex size-12 items-center justify-center rounded-full bg-surface-gray-2 text-ink-gray-4">
-											<svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-												<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-												<polyline points="14 2 14 8 20 8" />
-											</svg>
-										</div>
-										<p class="text-p-sm font-medium text-ink-gray-7">
-											{{ __("Aucun document") }}
-										</p>
-										<p class="mt-1 text-xs text-ink-gray-5">
-											{{ __("Ajoutez des documents complémentaires pour cette entreprise.") }}
-										</p>
+									<div :title="plan_import_disabled ? plan_import_hint : undefined" class="inline-flex">
+										<Button
+											variant="subtle"
+											:label="__('Importer un plan comptable')"
+											:disabled="plan_import_disabled"
+											@click="plan_import_open = true"
+										/>
 									</div>
 								</div>
 							</div>
+
+							
 						</div>
 
 						<!-- ══ Card 4: Validation ══ -->
@@ -1408,6 +1362,17 @@ const FIELD_LABELS = {
 												<template v-if="item.value !== null && item.value !== undefined && item.value !== ''">
 													<div class="min-w-0">
 														<div class="truncate">{{ item.value }}</div>
+														<div v-if="item.subtitle" class="text-xs font-normal text-ink-gray-5">
+															{{ item.subtitle }}
+														</div>
+														<button
+															v-if="item.onClick"
+															type="button"
+															class="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-ink-gray-7 underline decoration-surface-gray-3 underline-offset-2 hover:text-ink-gray-9"
+															@click.stop="item.onClick"
+														>
+															{{ item.linkLabel }}
+														</button>
 													</div>
 												</template>
 												<template v-else>
@@ -1450,8 +1415,11 @@ const FIELD_LABELS = {
 			</div>
 		</div>
 
-		<FileUploadDialog v-model:open="uploader_open" multiple @committed="on_documents_committed" />
-		<FileUploadDialog v-model:open="plan_uploader_open" :multiple="false" @committed="on_plan_comptable_committed" />
+		<PlanComptableImportDialog
+			v-model:open="plan_import_open"
+			:entreprise="doc?.name || ''"
+			@imported="on_plan_imported"
+		/>
 	</div>
 </template>
 

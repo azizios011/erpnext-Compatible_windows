@@ -14,6 +14,7 @@ import { computed, onErrorCaptured, onMounted, ref, watch } from "vue";
 import { Badge, Button, Dialog, Dropdown, FormControl } from "frappe-ui";
 
 import PlanComptableAccount from "./plan_comptable_account.vue";
+import PlanComptableImportDialog from "../_shared/PlanComptableImportDialog.vue";
 
 const frappe = window.frappe;
 const __ = window.__;
@@ -330,6 +331,13 @@ function add_sub_account(row) {
 
 const delete_target = ref(null);
 const delete_dialog_open = ref(false);
+const import_dialog_open = ref(false);
+
+function on_imported() {
+	// same class tab, fresh counts and rows
+	load_counts();
+	load_rows();
+}
 
 function ask_delete(row) {
 	delete_target.value = row;
@@ -476,9 +484,12 @@ watch(
 					</div>
 
 					<div class="flex items-center gap-2">
-						<span :title="__('Bientôt')">
-							<Button variant="subtle" :label="__('Importer un plan comptable')" disabled />
-						</span>
+						<Button
+							variant="subtle"
+							:label="__('Importer un plan comptable')"
+							:disabled="!selected_entreprise"
+							@click="import_dialog_open = true"
+						/>
 						<Button variant="solid" :label="__('Nouveau compte')" @click="new_account" />
 					</div>
 				</div>
@@ -522,9 +533,7 @@ watch(
 							{{ __("Importez le plan comptable de l'entreprise ou créez vos premiers comptes à la main.") }}
 						</p>
 						<div class="mt-6 flex items-center gap-2">
-							<span :title="__('Bientôt')">
-								<Button variant="subtle" :label="__('Importer un plan comptable')" disabled />
-							</span>
+							<Button variant="subtle" :label="__('Importer un plan comptable')" @click="import_dialog_open = true" />
 							<Button variant="solid" :label="__('Nouveau compte')" @click="new_account" />
 						</div>
 					</div>
@@ -787,5 +796,12 @@ watch(
 				<Button variant="solid" theme="red" :label="__('Supprimer')" @click="confirm_delete" />
 			</template>
 		</Dialog>
+
+		<!-- Import dialog (shared with the Entreprise page) -->
+		<PlanComptableImportDialog
+			v-model:open="import_dialog_open"
+			:entreprise="selected_entreprise"
+			@imported="on_imported"
+		/>
 	</div>
 </template>
