@@ -95,7 +95,36 @@ function build_layout(fields) {
 	const child_metas = Object.fromEntries(
 		Object.entries(meta.metas.value || {}).map(([name, child]) => [name, child.fields || []])
 	);
-	layout.value = buildLayoutFromMeta(kept, { childMetas: child_metas });
+	const tabs = buildLayoutFromMeta(kept, { childMetas: child_metas });
+
+	const general_tab = tabs.find((t) => t.name === "tab_general");
+	const financier_tab = tabs.find((t) => t.name === "tab_financier");
+	const kept_tabs = [general_tab, financier_tab].filter(Boolean);
+
+	for (const tab of kept_tabs) {
+		(tab.sections || []).forEach((section, index) => {
+			if (index === 0) {
+				section.label = tab.label;
+				if (tab === general_tab) {
+					section.hideBorder = true;
+				}
+			} else {
+				section.hideLabel = true;
+				section.hideBorder = true;
+			}
+		});
+	}
+
+	const merged = {
+		name: "main",
+		label: "",
+		sections: [
+			...(general_tab?.sections || []),
+			...(financier_tab?.sections || []),
+		],
+	};
+	layout.value = [merged];
+	console.debug("[entreprise-view] sections:", merged.sections.map((s) => s.label || s.name));
 }
 watch(() => meta.meta.value?.fields, build_layout, { immediate: true });
 
