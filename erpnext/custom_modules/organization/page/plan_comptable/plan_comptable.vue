@@ -13,6 +13,8 @@
 import { computed, onErrorCaptured, onMounted, ref, watch } from "vue";
 import { Badge, Button, Dialog, Dropdown, FormControl } from "frappe-ui";
 
+import PlanComptableAccount from "./plan_comptable_account.vue";
+
 const frappe = window.frappe;
 const __ = window.__;
 
@@ -55,8 +57,6 @@ const mode = computed(() => {
 	if (!props.route?.length) return "list";
 	return props.route[0] === "new" ? "new" : "record";
 });
-
-const record_title = computed(() => props.route?.[0] || __("Plan comptable"));
 
 // A render error inside the island blanks it silently otherwise; captured here
 // the message shows on the page itself (same pattern as the Entreprise page).
@@ -394,7 +394,31 @@ onMounted(async () => {
 	}
 });
 
-// Navigating back from new/<record> (Task 3) can carry ?entreprise= again
+// ── account panel (create / edit) ────────────────────────────────────────────
+function on_panel_title(title) {
+	emit("title", title);
+}
+
+function on_account_saved(payload = {}) {
+	// back to the list, on the class tab of the saved account
+	if (payload.classe) {
+		active_tab.value = ROOT_CLASSES.includes(payload.classe) ? payload.classe : "other";
+	}
+	page.value = 1;
+	frappe.set_route("plan-comptable", {});
+	load_counts();
+	load_rows();
+}
+
+function on_account_deleted() {
+	page.value = 1;
+	frappe.set_route("plan-comptable", {});
+	load_counts();
+	load_rows();
+}
+
+// Navigating between list and the account panel keeps the list state; the
+// watcher only syncs the entreprise when the URL explicitly carries one
 watch(
 	() => props.route,
 	(route) => {
@@ -410,6 +434,11 @@ watch(
 			}
 		} else if (route[0] === "new") {
 			emit("title", __("Nouveau compte"));
+			const wanted = props.query?.entreprise;
+			if (wanted && wanted !== selected_entreprise.value && entreprises.value.some((e) => e.name === wanted)) {
+				remember_entreprise(wanted);
+				selected_entreprise.value = wanted;
+			}
 		} else {
 			emit("title", route[0]);
 		}
@@ -729,51 +758,17 @@ watch(
 			</div>
 		</div>
 
-		<!-- ══ New / record mode — the form arrives in Task 3 ══ -->
-		<div v-else class="min-h-full">
-			<div class="sticky top-0 z-20 border-b border-surface-gray-2 bg-surface-white">
-				<div class="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-4 px-6 lg:px-10 py-3.5">
-					<div class="flex min-w-0 items-center gap-3">
-						<Button variant="ghost" :label="__('← Plan comptable')" @click="frappe.set_route('plan-comptable')" />
-						<div class="h-4 w-px bg-surface-gray-2" />
-						<h1 class="truncate text-p-base font-semibold text-ink-gray-9">
-							{{ mode === "new" ? __("Nouveau compte") : record_title }}
-						</h1>
-					</div>
-				</div>
-			</div>
-
-			<div class="mx-auto w-full max-w-[1600px] px-6 lg:px-10 py-6 pb-16">
-				<div class="rounded-lg border border-surface-gray-2 bg-surface-white p-6 shadow-xs">
-					<div class="flex flex-col items-center justify-center px-6 py-16 text-center">
-						<div class="mb-4 flex size-14 items-center justify-center rounded-full bg-surface-gray-2 text-ink-gray-5">
-							<svg class="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-								<circle cx="12" cy="12" r="10" />
-								<polyline points="12 6 12 12 16 14" />
-							</svg>
-						</div>
-						<h3 class="text-p-base font-semibold text-ink-gray-9">{{ __("Bientôt") }}</h3>
-						<p class="mt-1 max-w-sm text-p-sm text-ink-gray-5">
-							{{
-								mode === "new"
-									? __("La création de comptes sera disponible dans une prochaine étape.")
-									: __("La consultation et l'édition du compte seront disponibles dans une prochaine étape.")
-							}}
-						</p>
-						<p v-if="props.query?.entreprise || props.query?.parent" class="mt-2 text-xs text-ink-gray-4">
-							{{
-								[
-									props.query?.entreprise ? `entreprise=${props.query.entreprise}` : "",
-									props.query?.parent ? `parent=${props.query.parent}` : "",
-								]
-									.filter(Boolean)
-									.join(" · ")
-							}}
-						</p>
-					</div>
-				</div>
-			</div>
-		</div>
+		<!-- ══ New / record mode — the account panel ══ -->
+		<PlanComptableAccount
+			v-else
+			:mode="mode"
+			:record-name="mode === 'record' ? props.route?.[0] || '' : ''"
+			:entreprise="selected_entreprise"
+			:parent-name="props.query?.parent || ''"
+			@title="on_panel_title"
+			@saved="on_account_saved"
+			@deleted="on_account_deleted"
+		/>
 
 		<!-- Delete confirmation -->
 		<Dialog v-model="delete_dialog_open" :options="{ title: __('Supprimer le compte') }">
