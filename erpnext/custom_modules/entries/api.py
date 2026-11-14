@@ -12,7 +12,7 @@ import json
 import frappe
 from frappe import _
 
-from erpnext.custom_modules.entries.entry_base import JOURNAL_CODE_BY_DOCTYPE
+from erpnext.custom_modules.entries.entry_base import JOURNAL_CODE_BY_DOCTYPE, PARTY_RULE_BY_DOCTYPE
 from erpnext.custom_modules.facturation.facturation_base import ENTRY_DOCTYPE_BY_DOCTYPE
 
 # Releve Vente Detail field feeding each non-manual amount source
@@ -38,7 +38,17 @@ def get_entry_defaults(entry_doctype: str, source_doctype: str = "", source_name
 		)
 
 	journal = JOURNAL_CODE_BY_DOCTYPE.get(entry_doctype, "")
-	defaults: dict = {"journal": journal, "mvt": "", "ref_doc": "", "attachment": "", "lines": []}
+	rule = PARTY_RULE_BY_DOCTYPE.get(entry_doctype, {})
+	defaults: dict = {
+		"journal": journal,
+		"tiers_prefix": rule.get("prefix", ""),
+		"tiers_side": rule.get("side", ""),
+		"tiers_label": rule.get("label", ""),
+		"mvt": "",
+		"ref_doc": "",
+		"attachment": "",
+		"lines": [],
+	}
 
 	if source_doctype and source_name:
 		source = frappe.get_doc(source_doctype, source_name)  # enforces read permission

@@ -31,6 +31,14 @@ JOURNAL_CODE_BY_DOCTYPE = {
 	"Declaration Transaction": "DC",
 }
 
+# The third-party rule per entry doctype: Payable = achat = supplier account
+# 401 = CREDIT side; Receivable = vente = client account 411 = DEBIT side.
+# This constant will later drive the ledger, so it stays in this one place.
+PARTY_RULE_BY_DOCTYPE = {
+	"Payable Transaction": {"prefix": "401", "side": "Credit", "label": "Fournisseur"},
+	"Receivable Transaction": {"prefix": "411", "side": "Debit", "label": "Client"},
+}
+
 
 class EntryDocument(Document):
 	"""Common base for the four Entries documents.
@@ -83,11 +91,40 @@ class EntryDocument(Document):
 	def validate(self):
 		self.set_missing_values()
 		self.validate_lines()
+		self.validate_party_side()
 		self.validate_single_entry_per_source()
 		self.apply_libelle()
 		self.compute_totals()
 		self.derive_period()
 		self.validate_context()
+
+	def validate_party_side(self):
+		"""Non-blocking third-party side reminder: a line on the party account
+		(401 Fournisseur / 411 Client) normally carries the rule's side — the
+		opposite side is legal for credit notes (avoirs), so this only warns
+		with an orange alert and never throws. No-op for doctypes outside the
+		party rule."""
+		rule = PARTY_RULE_BY_DOCTYPE.get(self.doctype)
+		if not rule:
+			return
+		prefix = rule["prefix"]
+		expected = "crédit" if rule["side"] == "Credit" else "débit"
+		opposite_field = "debit" if rule["side"] == "Credit" else "credit"
+		for line in self.lines:
+			if not line.account:
+				continue
+			if flt(line.get(opposite_field)) <= 0:
+				continue
+			number = frappe.db.get_value("Chart of Account", line.account, "account_number") or ""
+			if not number.startswith(prefix) or len(number) <= len(prefix):
+				continue
+			frappe.msgprint(
+				_("Compte {0}: {1} attendu sur cette ligne (avoir ?)").format(
+					_(rule["label"]), frappe.bold(expected)
+				),
+				indicator="orange",
+				alert=True,
+			)
 
 	def validate_context(self):
 		"""The Exercice must be Ouvert and the operation date inside it; the
