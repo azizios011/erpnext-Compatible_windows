@@ -49,7 +49,7 @@ REQUIRED_FIELDS = {
 	"Convention Collective": ("code", "libelle", "nombre_jours", "droit_conge"),
 }
 
-MAX_LABEL_LENGTH = 140
+MAX_LABEL_LENGTH = 255
 ERROR_PREVIEW = 50
 
 
