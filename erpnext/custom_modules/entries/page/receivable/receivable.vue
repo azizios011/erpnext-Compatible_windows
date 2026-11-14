@@ -1,20 +1,22 @@
 <!-- Payable Transaction — Frappe UI island page for the Entries doctypes.
 
-     Routes (props.route / props.query, like plan_comptable):
-       - /app/payable-entry            → list of this doctype's entries
-       - /app/payable-entry/new        → new entry (optional query params
+     Routes (props.route / props.query):
+       - /app/payable                     → list of this doctype's entries
+       - /app/payable/creation            → new entry (optional query params
          source_doctype, source_name, date_operation, ref_doc, journal)
-       - /app/payable-entry/<MVT>      → edit a saved entry
-     The Entreprise/Exercice never come from the client: the controller takes
-     them from the accounting context on before_insert, and get_list is scoped
-     server-side (SCOPED_DOCTYPES). Saving runs the controller, so the ledger
-     posting happens exactly like on the classic forms. The third-party rule
-     (401 Credit / Fournisseur) is read from get_entry_defaults, never
-     hard-coded here.
+       - /app/payable/modify/<MVT>        → edit a saved entry
+       - /app/payable/inspect/<MVT>       → read-only view
+       - /app/payable/<MVT>               → redirected to inspect
+     Three modes share one screen: creation and modify are editable, inspect
+     is fully read-only (no model buttons, no save, no delete). The
+     Entreprise/Exercice never come from the client: the controller takes them
+     from the accounting context on before_insert, get_list is scoped
+     server-side (SCOPED_DOCTYPES), and the third-party rule + the
+     can_modify / existence / context checks come from entries.api.open_entry.
 
-     The receivable-entry island is the same code with different constants —
-     shared components (entry_lines_grid, totals_footer, model_dialogs) exist
-     as identical copies in both page folders (toolchain rule, bd3ffc3cab). -->
+     The receivable island is the same code with different constants — shared
+     components (entry_lines_grid, totals_footer, model_dialogs) exist as
+     identical copies in both page folders (toolchain rule, bd3ffc3cab). -->
 <script setup>
 import { computed, onErrorCaptured, onMounted, ref, watch } from "vue";
 import { Badge, Button, FormControl } from "frappe-ui";
@@ -25,7 +27,7 @@ import TotalsFooter from "./totals_footer.vue";
 
 // ── page constants (the only difference between the two islands) ─────────────
 const DOCTYPE = "Receivable Transaction";
-const PAGE = "receivable-entry";
+const PAGE = "receivable";
 const TITLE = "Receivable Transaction";
 const DEFAULT_JOURNAL = "VT";
 
@@ -96,12 +98,16 @@ onErrorCaptured((error, instance, info) => {
 	return false;
 });
 
-// ── routing ──────────────────────────────────────────────────────────────────
+// ── routing: list / creation / modify / inspect ──────────────────────────────
 const mode = computed(() => {
 	if (!props.route?.length) return "list";
-	return props.route[0] === "new" ? "new" : "record";
+	const head = props.route[0];
+	if (head === "creation" || head === "modify" || head === "inspect") return head;
+	return "redirect";
 });
-const record_name = computed(() => (mode.value === "record" ? props.route?.[0] || "" : ""));
+const record_name = computed(() =>
+	mode.value === "modify" || mode.value === "inspect" ? props.route?.[1] || "" : ""
+);
 
 // ── list mode ────────────────────────────────────────────────────────────────
 const entries = ref([]);
@@ -113,6 +119,7 @@ const list_journal = ref("all");
 const date_from = ref("");
 const date_to = ref("");
 
+const journal_options = ref([]);
 
 function list_filters() {
 	const filters = { entreprise: context_entreprise(), exercice: context_exercice() };
@@ -179,10 +186,10 @@ function go_to_page(target) {
 }
 
 function open_entry(row) {
-	frappe.set_route(PAGE, row.name);
+	frappe.set_route(PAGE, "inspect", row.name);
 }
 function new_entry() {
-	frappe.set_route(PAGE, "new");
+	frappe.set_route(PAGE, "creation");
 }
 
 let search_timer = null;
@@ -210,9 +217,12 @@ const source_attachment = ref("");
 const saving = ref(false);
 const deleting = ref(false);
 const form_error = ref(null);
+const page_error = ref(null);
+const can_modify = ref(false);
 const model_dialogs_ref = ref(null);
 
-const is_new = computed(() => mode.value === "new");
+const is_inspect = computed(() => mode.value === "inspect");
+const editable = computed(() => mode.value !== "inspect");
 const has_source = computed(() => Boolean(doc.value?.source_doctype && doc.value?.source_name));
 const show_tresorerie = computed(() => Boolean(Number(frappe.boot?.axeane_context?.flux_tresorerie_autorise)));
 
@@ -220,11 +230,11 @@ const status_theme = computed(() => (status.value === "Comptabilise" ? "green" :
 const status_label = computed(() => (status.value === "Comptabilise" ? "Comptabilise" : "Brouillon"));
 
 const panel_title = computed(() => {
-	if (is_new.value) return __("Nouvelle écriture");
-	return doc.value?.mvt || record_name.value || __("Nouvelle écriture");
+	if (is_inspect.value) return doc.value?.mvt || record_name.value;
+	if (mode.value === "modify") return doc.value?.mvt || record_name.value;
+	return doc.value?.mvt || __("Nouvelle écriture");
 });
 
-const journal_options = ref([]);
 const currency_options = ref([]);
 
 async function load_journal_and_devise_options() {
@@ -255,12 +265,40 @@ async function load_attachment() {
 	source_attachment.value = (r && r.attachment) || "";
 }
 
-// ── init (new / record) ──────────────────────────────────────────────────────
+// ── init (creation / modify / inspect) ───────────────────────────────────────
 async function init_new() {
 	form_error.value = null;
+	page_error.value = null;
+	can_modify.value = true;
 	status.value = "Brouillon";
 	source_attachment.value = "";
 	const q = props.query || {};
+	const source_doctype = q.source_doctype || "";
+	const source_name = q.source_name || "";
+	if (source_doctype && source_name) {
+		// a source that already has an entry redirects to its modify/inspect
+		// view instead of opening a second form (one entry per document)
+		const target = await frappe
+			.xcall(`${METHOD}.open_entry`, {
+				entry_doctype: DOCTYPE,
+				mode: "auto",
+				source_doctype,
+				source_name,
+			})
+			.catch((error) => {
+				page_error.value = [extract_error(error)];
+				return null;
+			});
+		if (!target) return;
+		if (target.mode !== "creation") {
+			frappe.show_alert({
+				message: __("This document already has an entry; opening it."),
+				indicator: "orange",
+			});
+			frappe.set_route(...target.route);
+			return;
+		}
+	}
 	doc.value = {
 		doctype: DOCTYPE,
 		date_operation: q.date_operation || frappe.datetime.get_today(),
@@ -270,17 +308,26 @@ async function init_new() {
 		ref_doc: q.ref_doc || "",
 		libelle: "",
 		apply_libelle_to_lines: 0,
-		source_doctype: q.source_doctype || "",
-		source_name: q.source_name || "",
+		source_doctype,
+		source_name,
 		lines: [empty_row(), empty_row()],
 	};
 	await load_defaults();
 }
 
-async function init_record(name) {
+async function init_record(name, head) {
 	form_error.value = null;
+	page_error.value = null;
 	loading_doc.value = true;
 	try {
+		// the resolver enforces existence, permissions and the context match,
+		// and reports whether the exercice still allows modification
+		const target = await frappe.xcall(`${METHOD}.open_entry`, {
+			entry_doctype: DOCTYPE,
+			mode: head,
+			name,
+		});
+		can_modify.value = Boolean(target?.can_modify);
 		const loaded = await frappe.xcall("frappe.client.get", { doctype: DOCTYPE, name });
 		doc.value = {
 			doctype: DOCTYPE,
@@ -307,14 +354,16 @@ async function init_record(name) {
 		await load_defaults();
 	} catch (error) {
 		doc.value = null;
-		form_error.value = [extract_error(error)];
+		can_modify.value = false;
+		page_error.value = [extract_error(error)];
 	} finally {
 		loading_doc.value = false;
 	}
 }
 
-/** New-form prefill and edit-mode rule/attachment loads — the same data the
- * classic bundle's load_entry_defaults fetches, through the same api.py. */
+/** New-form prefill and modify/inspect rule + attachment loads — the same
+ * data the classic bundle's load_entry_defaults fetches, through the same
+ * api.py. Model lines only ever land on a creation form. */
 async function load_defaults() {
 	const source_doctype = doc.value.source_doctype || "";
 	const source_name = doc.value.source_name || "";
@@ -334,7 +383,7 @@ async function load_defaults() {
 	else await load_attachment();
 
 	const is_releve_vente = source_doctype === "Releve Vente" && source_name;
-	if (is_releve_vente && is_new.value) {
+	if (is_releve_vente && mode.value === "creation") {
 		const result = await frappe.xcall(`${METHOD}.get_model_lines`, {
 			source_doctype,
 			source_name,
@@ -351,7 +400,7 @@ async function load_defaults() {
 				indicator: "orange",
 			});
 		}
-	} else if (is_new.value && (defaults.lines || []).length && !doc.value.lines.some((l) => l.account)) {
+	} else if (mode.value === "creation" && (defaults.lines || []).length && !doc.value.lines.some((l) => l.account)) {
 		apply_model_lines(defaults.lines);
 	}
 }
@@ -417,7 +466,8 @@ async function save_entry() {
 		}
 		frappe.show_alert({ message: __("Entry posted to the ledger."), indicator: "green" });
 		if (is_new.value && saved?.name) {
-			frappe.set_route(PAGE, saved.name);
+			// a fresh creation continues in modify mode
+			frappe.set_route(PAGE, "modify", saved.name);
 		} else {
 			status.value = saved?.status || "Comptabilise";
 		}
@@ -466,13 +516,27 @@ watch(
 		if (!route?.length) {
 			emit("title", __(TITLE));
 			load_entries();
-		} else if (route[0] === "new") {
-			emit("title", __("Nouvelle écriture"));
-			init_new();
-		} else {
-			emit("title", route[0]);
-			init_record(route[0]);
+			return;
 		}
+		const head = route[0];
+		if (head === "creation") {
+			emit("title", `${__(TITLE)} · ${__("Création")}`);
+			init_new();
+			return;
+		}
+		if (head === "modify" || head === "inspect") {
+			if (!route[1]) {
+				page_error.value = [__("Cette route demande le numéro d'une ecriture.")];
+				emit("title", __(TITLE));
+				return;
+			}
+			const word = head === "modify" ? "Modification" : "Consultation";
+			emit("title", `${__(TITLE)} · ${__(word)} ${route[1]}`);
+			init_record(route[1], head);
+			return;
+		}
+		// /app/payable/<MVT> without a mode: the inspect view
+		frappe.set_route(PAGE, "inspect", head);
 	},
 	{ immediate: true }
 );
@@ -600,7 +664,7 @@ watch(
 			</div>
 		</div>
 
-		<!-- ══ Form mode (new / record) ══ -->
+		<!-- ══ Form modes (creation / modify / inspect) ══ -->
 		<div v-else class="min-h-full">
 			<!-- Sticky top bar -->
 			<div class="sticky top-0 z-20 border-b border-surface-gray-2 bg-surface-white">
@@ -609,14 +673,26 @@ watch(
 						<Button variant="ghost" :label="`← ${__(TITLE)}`" @click="go_back" />
 						<div class="h-4 w-px bg-surface-gray-2" />
 						<h1 class="truncate font-mono text-p-base font-semibold text-ink-gray-9">{{ panel_title }}</h1>
-						<Badge variant="subtle" size="sm" :theme="status_theme" :label="status_label" />
+						<Badge v-if="mode !== 'creation'" variant="subtle" size="sm" :theme="status_theme" :label="status_label" />
 					</div>
 					<div class="flex items-center gap-2">
-						<Button variant="outline" :label="__('Appel Modele')" @click="model_dialogs_ref?.open_appel()" />
-						<Button variant="outline" :label="__('Enreg. Modele')" @click="model_dialogs_ref?.open_enreg()" />
-						<Button v-if="has_source" variant="ghost" :label="__('Modifier la ligne source')" @click="open_source" />
-						<Button v-if="!is_new" variant="outline" theme="red" :label="__('Supprimer')" :loading="deleting" @click="delete_entry" />
-						<Button variant="solid" :label="__('Enregistrer')" :loading="saving" @click="save_entry" />
+						<template v-if="mode !== 'inspect'">
+							<Button variant="outline" :label="__('Appel Modele')" @click="model_dialogs_ref?.open_appel()" />
+							<Button variant="outline" :label="__('Enreg. Modele')" @click="model_dialogs_ref?.open_enreg()" />
+							<Button v-if="has_source" variant="ghost" :label="__('Modifier la ligne source')" @click="open_source" />
+						</template>
+						<template v-if="mode === 'modify'">
+							<Button variant="subtle" :label="__('Consulter')" @click="frappe.set_route(PAGE, 'inspect', doc.name)" />
+							<Button variant="outline" theme="red" :label="__('Supprimer')" :loading="deleting" @click="delete_entry" />
+						</template>
+						<Button v-if="mode === 'inspect' && has_source" variant="outline" :label="__('Voir la source')" @click="open_source" />
+						<Button
+							v-if="mode === 'inspect' && can_modify"
+							variant="solid"
+							:label="__('Modifier')"
+							@click="frappe.set_route(PAGE, 'modify', doc.name)"
+						/>
+						<Button v-if="mode !== 'inspect'" variant="solid" :label="__('Enregistrer')" :loading="saving" @click="save_entry" />
 					</div>
 				</div>
 			</div>
@@ -628,12 +704,12 @@ watch(
 					<span>{{ context_headline() }}</span>
 					<template v-if="has_source">
 						<span class="text-ink-gray-4">—</span>
-						<Button variant="ghost" :label="`${__(doc.source_doctype)} ${doc.source_name}`" @click="open_source" />
+						<Button variant="ghost" :label="mode === 'inspect' ? __('Voir la source') : `${__(doc.source_doctype)} ${doc.source_name}`" @click="open_source" />
 					</template>
 				</div>
 
-				<!-- Error box -->
-				<div v-if="form_error?.length" class="rounded-lg border border-surface-red-3 bg-surface-red-1 p-4">
+				<!-- Page-level error: unknown route, missing entry, wrong doctype... -->
+				<div v-if="page_error?.length" class="rounded-lg border border-surface-red-3 bg-surface-red-1 p-4">
 					<div class="flex items-center gap-2 text-p-sm font-semibold text-ink-red-8">
 						<svg class="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
@@ -643,82 +719,88 @@ watch(
 						<span>{{ __("Vérifiez les points suivants") }}</span>
 					</div>
 					<ul class="mt-2 list-disc space-y-1 pl-5 text-p-sm text-ink-red-7">
-						<li v-for="(message, index) in form_error" :key="index">{{ message }}</li>
+						<li v-for="(message, index) in page_error" :key="index">{{ message }}</li>
 					</ul>
 				</div>
 
-				<!-- Loading skeleton -->
-				<div v-if="loading_doc" class="rounded-lg border border-surface-gray-2 bg-surface-white p-5 shadow-xs">
-					<div class="grid grid-cols-1 gap-3.5 md:grid-cols-3">
-						<div v-for="i in 6" :key="i" class="h-10 animate-pulse rounded bg-surface-gray-2" />
+				<template v-else>
+					<!-- Loading skeleton -->
+					<div v-if="loading_doc" class="rounded-lg border border-surface-gray-2 bg-surface-white p-5 shadow-xs">
+						<div class="grid grid-cols-1 gap-3.5 md:grid-cols-3">
+							<div v-for="i in 6" :key="i" class="h-10 animate-pulse rounded bg-surface-gray-2" />
+						</div>
+						<div class="mt-4 h-24 animate-pulse rounded bg-surface-gray-2" />
 					</div>
-					<div class="mt-4 h-24 animate-pulse rounded bg-surface-gray-2" />
-				</div>
 
-				<!-- Header card -->
-				<div v-else-if="doc" class="rounded-lg border border-surface-gray-2 bg-surface-white p-5 shadow-xs">
-					<div class="grid grid-cols-1 gap-x-6 gap-y-3.5 md:grid-cols-3">
-						<FormControl v-model="doc.date_operation" type="date" :label="__('Date Operation')" :required="true" />
-						<FormControl
-							v-model="doc.journal"
-							type="select"
-							:label="__('Journal')"
-							:required="true"
-							:options="journal_options"
-						/>
-						<FormControl
-							v-model="doc.devise"
-							type="select"
-							:label="__('Devise')"
-							:options="currency_options"
-						/>
-						<FormControl v-model="doc.mvt" :label="__('MVT')" :disabled="true" />
-						<FormControl v-model="doc.ref_doc" :label="__('Ref/N°doc')" :required="true" />
-						<FormControl v-model="doc.libelle" :label="__('Libelle')" />
-						<FormControl
-							v-model="doc.apply_libelle_to_lines"
-							type="checkbox"
-							:label="__('Apply libelle to all lines')"
+					<!-- Header card -->
+					<div v-else-if="doc" class="rounded-lg border border-surface-gray-2 bg-surface-white p-5 shadow-xs">
+						<div class="grid grid-cols-1 gap-x-6 gap-y-3.5 md:grid-cols-3">
+							<FormControl v-model="doc.date_operation" type="date" :label="__('Date Operation')" :required="true" :disabled="is_inspect" />
+							<FormControl
+								v-model="doc.journal"
+								type="select"
+								:label="__('Journal')"
+								:required="true"
+								:options="journal_options"
+								:disabled="is_inspect"
+							/>
+							<FormControl
+								v-model="doc.devise"
+								type="select"
+								:label="__('Devise')"
+								:options="currency_options"
+								:disabled="is_inspect"
+							/>
+							<FormControl v-model="doc.mvt" :label="__('MVT')" :disabled="true" />
+							<FormControl v-model="doc.ref_doc" :label="__('Ref/N°doc')" :required="true" :disabled="is_inspect" />
+							<FormControl v-model="doc.libelle" :label="__('Libelle')" :disabled="is_inspect" />
+							<FormControl
+								v-model="doc.apply_libelle_to_lines"
+								type="checkbox"
+								:label="__('Apply libelle to all lines')"
+								:disabled="is_inspect"
+							/>
+						</div>
+					</div>
+
+					<!-- Lines card -->
+					<div v-if="doc && !loading_doc" class="rounded-lg border border-surface-gray-2 bg-surface-white p-5 shadow-xs">
+						<EntryLinesGrid
+							:lines="doc.lines"
+							:party-rule="party_rule"
+							:show-tresorerie="show_tresorerie"
+							:read-only="is_inspect"
+							@add-row="doc.lines.push(empty_row())"
+							@remove-row="(index) => doc.lines.splice(index, 1)"
 						/>
 					</div>
-				</div>
 
-				<!-- Lines card -->
-				<div v-if="doc && !loading_doc" class="rounded-lg border border-surface-gray-2 bg-surface-white p-5 shadow-xs">
-					<EntryLinesGrid
-						:lines="doc.lines"
-						:party-rule="party_rule"
-						:show-tresorerie="show_tresorerie"
-						@add-row="doc.lines.push(empty_row())"
-						@remove-row="(index) => doc.lines.splice(index, 1)"
-					/>
-				</div>
-
-				<!-- Source attachment preview -->
-				<div v-if="has_source && !loading_doc" class="rounded-lg border border-surface-gray-2 bg-surface-white p-5 shadow-xs">
-					<div class="text-base font-bold text-ink-gray-9">{{ __("Pièce source") }}</div>
-					<div class="my-3 border-b border-surface-gray-2" />
-					<iframe
-						v-if="source_attachment && is_pdf(source_attachment)"
-						:src="`${source_attachment}#toolbar=0&navpanes=0&scrollbar=0`"
-						class="h-[480px] w-full rounded border border-surface-gray-2"
-					></iframe>
-					<img
-						v-else-if="source_attachment"
-						:src="source_attachment"
-						class="block max-h-[480px] max-w-full rounded border border-surface-gray-2"
-					/>
-					<div v-else class="text-p-sm text-ink-gray-5">{{ __("The source document carries no attachment.") }}</div>
-				</div>
+					<!-- Source attachment preview -->
+					<div v-if="has_source && !loading_doc" class="rounded-lg border border-surface-gray-2 bg-surface-white p-5 shadow-xs">
+						<div class="text-base font-bold text-ink-gray-9">{{ __("Pièce source") }}</div>
+						<div class="my-3 border-b border-surface-gray-2" />
+						<iframe
+							v-if="source_attachment && is_pdf(source_attachment)"
+							:src="`${source_attachment}#toolbar=0&navpanes=0&scrollbar=0`"
+							class="h-[480px] w-full rounded border border-surface-gray-2"
+						></iframe>
+						<img
+							v-else-if="source_attachment"
+							:src="source_attachment"
+							class="block max-h-[480px] max-w-full rounded border border-surface-gray-2"
+						/>
+						<div v-else class="text-p-sm text-ink-gray-5">{{ __("The source document carries no attachment.") }}</div>
+					</div>
+				</template>
 			</div>
 
 			<!-- Totals footer -->
-			<TotalsFooter v-if="doc && !loading_doc" :lines="doc.lines" :devise="doc.devise || ''" />
+			<TotalsFooter v-if="doc && !loading_doc && !page_error?.length" :lines="doc.lines" :devise="doc.devise || ''" />
 		</div>
 
 		<!-- Model dialogs (Appel Modele / Enreg. Modele) -->
 		<ModelDialogs
-			v-if="doc"
+			v-if="doc && mode !== 'inspect'"
 			ref="model_dialogs_ref"
 			:journal="doc.journal || ''"
 			:lines="doc.lines"

@@ -23,6 +23,7 @@ const props = defineProps({
 	lines: { type: Array, default: () => [] },
 	partyRule: { type: Object, default: () => ({ prefix: "", side: "", label: "" }) },
 	showTresorerie: { type: Boolean, default: false },
+	readOnly: { type: Boolean, default: false },
 });
 const emit = defineEmits(["add-row", "remove-row"]);
 
@@ -105,6 +106,7 @@ function badge_text(row) {
 }
 
 function row_note(row, side) {
+	if (props.readOnly) return ""; // inspect: badges stay, warnings do not
 	const expected = expected_side(row);
 	if (!expected || expected === side) return "";
 	const amount_on_side = side === "Debit" ? flt(row.debit) : flt(row.credit);
@@ -197,7 +199,7 @@ function focus_side(index, side) {
 							<th class="bg-surface-gray-1 px-3 py-2 text-p-xs font-semibold uppercase tracking-wider text-ink-gray-6 text-end">
 								{{ __("Credit") }}
 							</th>
-							<th class="w-12 bg-surface-gray-1"></th>
+							<th v-if="!readOnly" class="w-12 bg-surface-gray-1"></th>
 						</tr>
 					</thead>
 					<tbody class="divide-y divide-surface-gray-2">
@@ -239,7 +241,8 @@ function focus_side(index, side) {
 										step="0.001"
 										min="0"
 										data-side="Debit"
-										class="h-7 w-full rounded border bg-surface-white px-2 text-end text-p-sm tabular-nums text-ink-gray-9 placeholder:text-ink-gray-4 focus:outline-none focus:ring-1 focus:ring-ink-gray-5"
+										:disabled="readOnly"
+										class="h-7 w-full rounded border bg-surface-white disabled:bg-surface-gray-1 disabled:text-ink-gray-5 px-2 text-end text-p-sm tabular-nums text-ink-gray-9 placeholder:text-ink-gray-4 focus:outline-none focus:ring-1 focus:ring-ink-gray-5"
 										:class="expected_side(row) === 'Debit' ? EXPECTED_CLASSES : 'border-surface-gray-3'"
 										@input="on_debit_input(row)"
 									/>
@@ -257,7 +260,8 @@ function focus_side(index, side) {
 										step="0.001"
 										min="0"
 										data-side="Credit"
-										class="h-7 w-full rounded border bg-surface-white px-2 text-end text-p-sm tabular-nums text-ink-gray-9 placeholder:text-ink-gray-4 focus:outline-none focus:ring-1 focus:ring-ink-gray-5"
+										:disabled="readOnly"
+										class="h-7 w-full rounded border bg-surface-white disabled:bg-surface-gray-1 disabled:text-ink-gray-5 px-2 text-end text-p-sm tabular-nums text-ink-gray-9 placeholder:text-ink-gray-4 focus:outline-none focus:ring-1 focus:ring-ink-gray-5"
 										:class="expected_side(row) === 'Credit' ? EXPECTED_CLASSES : 'border-surface-gray-3'"
 										@input="on_credit_input(row)"
 									/>
@@ -267,7 +271,7 @@ function focus_side(index, side) {
 									</div>
 								</div>
 							</td>
-							<td class="px-2 py-2.5 text-center">
+							<td v-if="!readOnly" class="px-2 py-2.5 text-center">
 								<Button variant="ghost" :title="__('Supprimer la ligne')" @click="emit('remove-row', index)">
 									<svg class="size-4 text-ink-red-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 										<line x1="5" y1="12" x2="19" y2="12" />
