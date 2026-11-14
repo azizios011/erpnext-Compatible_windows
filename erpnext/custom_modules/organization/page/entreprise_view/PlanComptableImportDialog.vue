@@ -1,10 +1,11 @@
 <!-- Plan comptable — shared xlsx import dialog.
 
-     Consumed by BOTH island pages (plan_comptable.vue and entreprise_view.vue)
-     through a relative import. It lives in page/_shared/, a folder WITHOUT a
-     `<name>.json`, so the island discovery (frappe-Compatible_windows/ui/vite/
-     island/pages.js — readPage skips any page folder with no json beside it)
-     never treats it as a page of its own.
+     An identical copy of this dialog lives in BOTH page folders
+     (plan_comptable/ and entreprise_view/): the island toolchain resolves bare
+     imports (@framework/*, frappe-ui) only for files under a DISCOVERED page
+     directory (ui/vite/island/toolchain.js — toolchainResolver scopes by the
+     dirs pages.js returns), so a shared page/_shared/ copy is skipped by
+     discovery and then fails to resolve its imports. Keep the copies in sync.
 
      Flow: drop zone (.xlsx only, uploaded as a PRIVATE File through the
      framework's useUploader — the same engine behind FileUploadDialog used by

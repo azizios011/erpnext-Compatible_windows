@@ -14,7 +14,7 @@ import { computed, onErrorCaptured, onMounted, ref, watch } from "vue";
 import { Badge, Button, Dialog, Dropdown, FormControl } from "frappe-ui";
 
 import PlanComptableAccount from "./plan_comptable_account.vue";
-import PlanComptableImportDialog from "../_shared/PlanComptableImportDialog.vue";
+import PlanComptableImportDialog from "./PlanComptableImportDialog.vue";
 
 const frappe = window.frappe;
 const __ = window.__;

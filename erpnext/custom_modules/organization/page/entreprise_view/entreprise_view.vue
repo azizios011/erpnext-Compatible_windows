@@ -18,7 +18,7 @@ import { Badge, Button } from "frappe-ui";
 import { buildLayoutFromMeta, FormLayout, LinkTitlesKey } from "@framework/ui/FormLayout";
 import { useDoctypeMeta } from "@framework/ui";
 import { FileUploadDialog } from "@framework/ui/FileUpload";
-import PlanComptableImportDialog from "../_shared/PlanComptableImportDialog.vue";
+import PlanComptableImportDialog from "./PlanComptableImportDialog.vue";
 
 const frappe = window.frappe;
 const __ = window.__;
