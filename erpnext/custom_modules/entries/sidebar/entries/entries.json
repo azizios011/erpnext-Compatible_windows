@@ -16,8 +16,8 @@
    "is_default_module": 1,
    "keep_closed": 0,
    "label": "Payable Transaction",
-   "link_to": "Payable Transaction",
-   "link_type": "DocType",
+   "link_to": "payable-entry",
+   "link_type": "Page",
    "open_in_new_tab": 0,
    "show_arrow": 0,
    "type": "Link"
@@ -32,8 +32,8 @@
    "is_default_module": 0,
    "keep_closed": 0,
    "label": "Receivable Transaction",
-   "link_to": "Receivable Transaction",
-   "link_type": "DocType",
+   "link_to": "receivable-entry",
+   "link_type": "Page",
    "open_in_new_tab": 0,
    "show_arrow": 0,
    "type": "Link"
@@ -71,7 +71,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-11-08 13:00:00.000000",
+ "modified": "2026-11-14 23:00:00.000000",
  "modified_by": "Administrator",
  "module": "Entries",
  "name": "Entries",

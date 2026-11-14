@@ -38,8 +38,33 @@
 				if (!target || !target.entry_doctype) {
 					return;
 				}
+				// the two tiers entries run on their Frappe UI islands; the
+				// Treasury / Declaration forms stay classic
+				const ISLAND_PAGE = {
+					"Payable Transaction": "payable-entry",
+					"Receivable Transaction": "receivable-entry",
+				};
+				const page = ISLAND_PAGE[target.entry_doctype];
+				const defaults = target.defaults || {};
 				if (target.existing_entry) {
-					frappe.set_route("Form", target.entry_doctype, target.existing_entry);
+					if (page) {
+						frappe.set_route(page, target.existing_entry);
+					} else {
+						frappe.set_route("Form", target.entry_doctype, target.existing_entry);
+					}
+					return;
+				}
+				if (page) {
+					// the island reads these in props.query and prefills the new
+					// form; entreprise/exercice/mvt stay server-side
+					const query = {
+						source_doctype: defaults.source_doctype || "",
+						source_name: defaults.source_name || "",
+						date_operation: defaults.date_operation || "",
+						ref_doc: defaults.ref_doc || "",
+						journal: defaults.journal || "",
+					};
+					frappe.set_route(page, "new", query);
 					return;
 				}
 				// route options prefill matching fields on the new form and are
