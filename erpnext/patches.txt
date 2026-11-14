@@ -596,3 +596,4 @@ erpnext.custom_modules.organization.patches.backfill_entreprise_users_summary
 erpnext.custom_modules.organization.patches.seed_operations_tresorerie
 erpnext.custom_modules.entries.patches.clear_tresorerie_links
 erpnext.custom_modules.entries.patches.assign_entreprise_exercice
+erpnext.custom_modules.organization.patches.remove_operation_tresorerie_compte
