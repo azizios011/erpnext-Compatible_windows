@@ -124,6 +124,32 @@ function collect_upload_errors(error) {
 	return messages;
 }
 
+// frappe.xcall rejects with r?.message, which is undefined for server-thrown
+// errors (those are already surfaced by the standard error dialog).
+function extract_error(error) {
+	if (typeof error === "string" && error) return error;
+	if (error && typeof error === "object") {
+		if (error.message) return String(error.message);
+		if (error._server_messages) {
+			try {
+				const messages =
+					typeof error._server_messages === "string"
+						? JSON.parse(error._server_messages)
+						: error._server_messages;
+				const text = (messages || [])
+					.map((m) => (typeof m === "string" ? JSON.parse(m)?.message : m?.message))
+					.filter(Boolean)
+					.join(" · ");
+				if (text) return text;
+			} catch {
+				// fall through
+			}
+		}
+		if (error.exc) return String(error.exc).split("\n").pop();
+	}
+	return __("L'import a échoué — voir le message d'erreur affiché.");
+}
+
 // ── dry run ──────────────────────────────────────────────────────────────────
 async function run_check() {
 	step.value = "checking";
@@ -136,7 +162,7 @@ async function run_check() {
 		});
 		step.value = "summary";
 	} catch (error) {
-		dialog_errors.value = [error?.message || String(error)];
+		dialog_errors.value = [extract_error(error)];
 		step.value = "choose";
 	}
 }
@@ -160,7 +186,7 @@ async function run_import() {
 		emit("imported", final_result.value);
 		step.value = "done";
 	} catch (error) {
-		dialog_errors.value = [error?.message || String(error)];
+		dialog_errors.value = [extract_error(error)];
 		step.value = "summary";
 	}
 }

@@ -21,7 +21,10 @@
   "root_type",
   "account_type",
   "column_break_classification",
-  "disabled"
+  "disabled",
+  "old_parent",
+  "lft",
+  "rgt"
  ],
  "fields": [
   {"fieldname": "account_name", "fieldtype": "Data", "in_list_view": 1, "label": "Libellé", "length": "255", "reqd": 1},
@@ -37,11 +40,14 @@
   {"fieldname": "root_type", "fieldtype": "Select", "in_standard_filter": 1, "label": "Root Type", "options": "\nAsset\nLiability\nIncome\nExpense\nEquity"},
   {"fieldname": "account_type", "fieldtype": "Select", "in_standard_filter": 1, "label": "Account Type", "options": "\nAccumulated Depreciation\nAsset Received But Not Billed\nBank\nCash\nChargeable\nCapital Work in Progress\nCost of Goods Sold\nCurrent Asset\nCurrent Liability\nDepreciation\nDirect Expense\nDirect Income\nEquity\nExpense Account\nExpenses Included In Asset Valuation\nExpenses Included In Valuation\nFixed Asset\nIncome Account\nIndirect Expense\nIndirect Income\nLiability\nPayable\nReceivable\nRound Off\nRound Off for Opening\nStock\nStock Adjustment\nStock Received But Not Billed\nStock Delivered But Not Billed\nService Received But Not Billed\nTax\nTemporary"},
   {"fieldname": "column_break_classification", "fieldtype": "Column Break"},
-  {"fieldname": "disabled", "fieldtype": "Check", "label": "Désactivé"}
+  {"fieldname": "disabled", "fieldtype": "Check", "label": "Désactivé"},
+  {"fieldname": "old_parent", "fieldtype": "Data", "hidden": 1, "label": "Old Parent", "print_hide": 1, "read_only": 1},
+  {"fieldname": "lft", "fieldtype": "Int", "hidden": 1, "label": "Lft", "print_hide": 1, "read_only": 1, "search_index": 1},
+  {"fieldname": "rgt", "fieldtype": "Int", "hidden": 1, "label": "Rgt", "print_hide": 1, "read_only": 1, "search_index": 1}
  ],
  "is_tree": 1,
  "links": [],
- "modified": "2026-11-14 16:30:00.000000",
+ "modified": "2026-11-14 17:30:00.000000",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Chart of Account",

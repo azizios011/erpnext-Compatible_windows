@@ -108,6 +108,32 @@ const number_hints = computed(() => {
 	return hints;
 });
 
+// frappe.xcall rejects with r?.message, which is undefined for server-thrown
+// errors (those are already surfaced by the standard error dialog).
+function extract_error(error) {
+	if (typeof error === "string" && error) return error;
+	if (error && typeof error === "object") {
+		if (error.message) return String(error.message);
+		if (error._server_messages) {
+			try {
+				const messages =
+					typeof error._server_messages === "string"
+						? JSON.parse(error._server_messages)
+						: error._server_messages;
+				const text = (messages || [])
+					.map((m) => (typeof m === "string" ? JSON.parse(m)?.message : m?.message))
+					.filter(Boolean)
+					.join(" · ");
+				if (text) return text;
+			} catch {
+				// fall through
+			}
+		}
+		if (error.exc) return String(error.exc).split("\n").pop();
+	}
+	return __("Une erreur est survenue — voir le message d'erreur affiché.");
+}
+
 // ── loading ──────────────────────────────────────────────────────────────────
 async function load_entreprise_info() {
 	if (!props.entreprise) return;
@@ -158,7 +184,7 @@ async function init() {
 			await load_record(props.recordName);
 		} catch (error) {
 			doc.value = null;
-			form_error.value = [error?.message || String(error)];
+			form_error.value = [extract_error(error)];
 		} finally {
 			loading.value = false;
 		}
@@ -247,7 +273,7 @@ async function save_new() {
 			},
 		});
 	} catch (error) {
-		form_error.value = [error?.message || String(error)];
+		form_error.value = [extract_error(error)];
 		return null;
 	} finally {
 		saving.value = false;
@@ -311,7 +337,7 @@ async function save_edit() {
 		frappe.show_alert({ message: __("Enregistré."), indicator: "green" });
 		await load_record(doc.value.name);
 	} catch (error) {
-		form_error.value = [error?.message || String(error)];
+		form_error.value = [extract_error(error)];
 	} finally {
 		saving.value = false;
 	}
@@ -340,7 +366,7 @@ async function do_unlock() {
 		frappe.show_alert({ message: __("Compte déverrouillé."), indicator: "green" });
 		await load_record(doc.value.name);
 	} catch (error) {
-		form_error.value = [error?.message || String(error)];
+		form_error.value = [extract_error(error)];
 	} finally {
 		unlocking.value = false;
 	}
@@ -364,7 +390,7 @@ async function do_delete() {
 		frappe.show_alert({ message: __("Compte supprimé."), indicator: "green" });
 		emit("deleted", { classe: doc.value.classe });
 	} catch (error) {
-		form_error.value = [error?.message || String(error)];
+		form_error.value = [extract_error(error)];
 	} finally {
 		deleting.value = false;
 	}
