@@ -26,7 +26,7 @@ from openpyxl import load_workbook
 
 from erpnext.custom_modules.organization.context import _accessible_entreprises
 
-MAX_LABEL_LENGTH = 140
+MAX_LABEL_LENGTH = 255
 # commit every ~200 inserts so transactions stay bounded on ~900 accounts
 INSERT_CHUNK = 200
 ERROR_PREVIEW = 50
@@ -249,7 +249,8 @@ def _import_plan_comptable(entreprise: str, file_url: str, dry_run: int) -> dict
 	codes.update({row.account_number: (1 if row.is_group else 0) for row in db_rows if row.account_number})
 
 	# parent of every code: longest proper Regroupement prefix in the file or
-	# the database; a 2+ digit code without one is an error row
+	# the database; a 2+ digit code without one is an error row. One-digit
+	# codes are the class roots and are parent-less by design.
 	parent_of = {}
 	for row in rows:
 		if not row["code"]:
@@ -257,7 +258,7 @@ def _import_plan_comptable(entreprise: str, file_url: str, dry_run: int) -> dict
 		parent_code = resolve_parent(row["code"], codes)
 		if parent_code:
 			parent_of[row["code"]] = parent_code
-		else:
+		elif len(row["code"]) > 1:
 			errors.append(
 				{
 					"sheet": row["sheet"],

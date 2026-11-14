@@ -93,7 +93,9 @@ async function load_counts() {
 	try {
 		const rows = await frappe.xcall("frappe.client.get_list", {
 			doctype: DOCTYPE,
-			fields: ["classe", "count(name) as n"],
+			// this frappe rejects SQL functions as strings in SELECT: counts go
+			// through the dict syntax ({'COUNT': '*', 'as': ...})
+			fields: ["classe", { COUNT: "name", as: "n" }],
 			filters: { entreprise: entreprise.value },
 			group_by: "classe",
 			order_by: "classe asc",
