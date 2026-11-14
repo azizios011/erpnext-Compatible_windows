@@ -754,8 +754,8 @@ watch(
 		/>
 
 		<!-- Delete confirmation -->
-		<Dialog v-model="delete_dialog_open" :options="{ title: __('Supprimer le compte') }">
-			<template #body>
+		<Dialog v-model="delete_dialog_open" :title="__('Supprimer le compte')">
+			<template #default>
 				<p class="text-p-sm text-ink-gray-7">
 					{{
 						__("Supprimer le compte {0} — {1} ? Cette action est définitive.", [

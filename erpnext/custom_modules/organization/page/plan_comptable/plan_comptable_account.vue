@@ -676,8 +676,8 @@ function format_datetime_dmy(val) {
 		</div>
 
 		<!-- Delete confirmation -->
-		<Dialog v-model="delete_dialog" :options="{ title: __('Supprimer le compte') }">
-			<template #body>
+		<Dialog v-model="delete_dialog" :title="__('Supprimer le compte')">
+			<template #default>
 				<p class="text-p-sm text-ink-gray-7">
 					{{
 						__("Supprimer le compte {0} — {1} ? Cette action est définitive.", [
@@ -694,8 +694,8 @@ function format_datetime_dmy(val) {
 		</Dialog>
 
 		<!-- Unlock confirmation -->
-		<Dialog v-model="unlock_dialog" :options="{ title: __('Déverrouiller le compte') }">
-			<template #body>
+		<Dialog v-model="unlock_dialog" :title="__('Déverrouiller le compte')">
+			<template #default>
 				<p class="text-p-sm text-ink-gray-7">
 					{{
 						__("Rendre le compte {0} — {1} modifiable ? Il ne sera plus verrouillé comme compte standard.", [

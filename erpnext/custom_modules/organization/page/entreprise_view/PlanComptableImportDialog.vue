@@ -213,8 +213,8 @@ async function open_plan_comptable() {
 </script>
 
 <template>
-	<Dialog v-model="open" :options="{ title: __('Importer un plan comptable') }">
-		<template #body>
+	<Dialog v-model="open" :title="__('Importer un plan comptable')">
+		<template #default>
 			<p v-if="entreprise" class="mb-4 text-p-sm text-ink-gray-6">
 				{{ __("Entreprise {0}", [entreprise]) }}
 			</p>
