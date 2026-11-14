@@ -13,25 +13,82 @@
   "is_default",
   "cb_jm",
   "match_keyword",
+  "section_lines",
   "lines"
  ],
  "fields": [
-  {"fieldname": "journal", "fieldtype": "Link", "options": "Journal", "reqd": 1, "in_list_view": 1, "label": "Journal"},
-  {"fieldname": "model_name", "fieldtype": "Data", "reqd": 1, "in_list_view": 1, "label": "Model Name"},
-  {"fieldname": "is_default", "fieldtype": "Check", "default": "0", "label": "Is Default"},
-  {"fieldname": "cb_jm", "fieldtype": "Column Break"},
-  {"fieldname": "match_keyword", "fieldtype": "Data", "label": "Match Keyword"},
-  {"fieldname": "lines", "fieldtype": "Table", "options": "Ecriture Ligne", "label": "Lignes"}
+  {
+   "fieldname": "journal",
+   "fieldtype": "Link",
+   "options": "Journal",
+   "reqd": 1,
+   "in_list_view": 1,
+   "label": "Journal"
+  },
+  {
+   "fieldname": "model_name",
+   "fieldtype": "Data",
+   "reqd": 1,
+   "in_list_view": 1,
+   "label": "Model Name"
+  },
+  {
+   "fieldname": "is_default",
+   "fieldtype": "Check",
+   "default": "0",
+   "label": "Is Default"
+  },
+  {
+   "fieldname": "cb_jm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "match_keyword",
+   "fieldtype": "Data",
+   "label": "Match Keyword"
+  },
+  {
+   "fieldname": "section_lines",
+   "fieldtype": "Section Break",
+   "label": "Lignes"
+  },
+  {
+   "fieldname": "lines",
+   "fieldtype": "Table",
+   "options": "Ecriture Ligne"
+  }
  ],
  "links": [],
- "modified": "2026-11-07 22:30:00.000000",
+ "modified": "2026-11-14 19:00:00.000000",
  "modified_by": "Administrator",
  "module": "Entries",
  "name": "Journal Model",
  "owner": "Administrator",
  "permissions": [
-  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Accounts User", "share": 1, "write": 1},
-  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Accounts Manager", "share": 1, "write": 1}
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
+   "write": 1
+  }
  ],
  "sort_field": "journal",
  "sort_order": "ASC",
