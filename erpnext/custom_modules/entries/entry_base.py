@@ -39,6 +39,14 @@ PARTY_RULE_BY_DOCTYPE = {
 	"Receivable Transaction": {"prefix": "411", "side": "Debit", "label": "Client"},
 }
 
+# The island pages (Frappe UI) serving Payable / Receivable: the entries
+# resolver and the Ledger Data report build their routes from these. Treasury
+# / Declaration stay on the classic forms.
+PAGE_BY_ENTRY_DOCTYPE = {
+	"Payable Transaction": "payable",
+	"Receivable Transaction": "receivable",
+}
+
 
 class EntryDocument(Document):
 	"""Common base for the four Entries documents.

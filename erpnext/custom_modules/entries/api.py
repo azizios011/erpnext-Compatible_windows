@@ -12,8 +12,13 @@ import json
 import frappe
 from frappe import _
 
-from erpnext.custom_modules.entries.entry_base import JOURNAL_CODE_BY_DOCTYPE, PARTY_RULE_BY_DOCTYPE
+from erpnext.custom_modules.entries.entry_base import JOURNAL_CODE_BY_DOCTYPE, PAGE_BY_ENTRY_DOCTYPE, PARTY_RULE_BY_DOCTYPE
 from erpnext.custom_modules.facturation.facturation_base import ENTRY_DOCTYPE_BY_DOCTYPE
+from erpnext.custom_modules.organization.context import (
+	context_for_read,
+	require_context,
+	validate_exercice_open,
+)
 
 # Releve Vente Detail field feeding each non-manual amount source
 AMOUNT_SOURCE_FIELD = {
@@ -192,3 +197,125 @@ def save_journal_model(journal: str, model_name: str, lines: str) -> dict:
 	)
 	doc.insert()  # permission-checked
 	return {"name": doc.name}
+
+
+def _can_modify(entry_doctype: str, name: str = "") -> bool:
+	"""Write permission on the entry doctype AND an open context Exercice —
+	the two gates the inspect view needs before offering its Modifier button."""
+	try:
+		context = require_context()
+		validate_exercice_open(context)
+		if name:
+			return bool(frappe.has_permission(entry_doctype, "write", doc=name))
+		return bool(frappe.has_permission(entry_doctype, "write"))
+	except Exception:
+		return False
+
+
+@frappe.whitelist()
+def open_entry(entry_doctype: str = "", mode: str = "auto", name: str = "", source_doctype: str = "", source_name: str = "") -> dict:
+	"""One resolver for every entry point (Facturation pen and form buttons,
+	reports, islands): resolves where an entry opens for the requested mode.
+
+	Input is either a Facturation source (`source_doctype` + `source_name`, the
+	entry doctype resolved through ENTRY_DOCTYPE_BY_DOCTYPE) or an entry
+	(`entry_doctype` + `name`). `mode`: "auto" (the pen: a source with an entry
+	is modified, one without is created), "creation", "modify" or "inspect".
+
+	Returns {"entry_doctype", "mode", "name", "kind", "route", "query",
+	"defaults", "can_modify"}: kind "page" drives the payable / receivable
+	islands (route + query land in the island's props), kind "form" keeps
+	Treasury / Declaration on the classic forms.
+	"""
+	mode = (mode or "auto").strip().lower()
+	if mode not in ("auto", "creation", "modify", "inspect"):
+		frappe.throw(_("Unknown mode: {0}.").format(mode))
+
+	# the source's side must match the entry doctype when both are given
+	source_side = ENTRY_DOCTYPE_BY_DOCTYPE.get(source_doctype) if source_doctype else ""
+	if source_doctype and not source_side:
+		frappe.throw(_("{0} is not a Facturation document").format(source_doctype))
+	if source_side and entry_doctype and source_side != entry_doctype:
+		frappe.throw(
+			_("{0} documents take their entries from {1}, not {2}.").format(source_doctype, source_side, entry_doctype)
+		)
+
+	target = None
+	if mode in ("auto", "creation"):
+		if not (source_doctype and source_name):
+			frappe.throw(_("auto and creation need a source document (source_doctype + source_name)."))
+		# get_entry_target: read permission on the source, require_context(),
+		# validate_source_context() and the prefill defaults — reused as-is
+		target = get_entry_target(source_doctype, source_name)
+		entry_doctype = target["entry_doctype"]
+
+		if mode == "auto":
+			mode = "modify" if target["existing_entry"] else "creation"
+
+		if target["existing_entry"]:
+			# one entry per source: an explicit creation is refused, with the
+			# existing entry named for modify / inspect
+			frappe.throw(
+				_("{0} {1} already has an entry: {2} — modify or inspect it instead.").format(
+					source_doctype, source_name, frappe.bold(target["existing_entry"])
+				)
+			)
+	elif not entry_doctype:
+		frappe.throw(_("entry_doctype is required for modify and inspect."))
+
+	if mode in ("modify", "inspect"):
+		if not name:
+			frappe.throw(_("modify and inspect need an entry name."))
+		if not frappe.db.exists(entry_doctype, name):
+			frappe.throw(_("The entry {0} does not exist.").format(name), frappe.DoesNotExistError)
+		permission_type = "write" if mode == "modify" else "read"
+		if not frappe.has_permission(entry_doctype, permission_type, doc=name):
+			frappe.throw(
+				_("You do not have {0} permission on {1} {2}.").format(permission_type, _(entry_doctype), name),
+				frappe.PermissionError,
+			)
+		# the entry must belong to the user's current Entreprise/Exercice —
+		# inspect stays possible on a closed Exercice (only can_modify gates it)
+		entry_entreprise, entry_exercice = frappe.db.get_value(entry_doctype, name, ["entreprise", "exercice"])
+		entreprise, exercice = context_for_read()
+		if entry_entreprise != entreprise or entry_exercice != exercice:
+			frappe.throw(
+				_("L'ecriture appartient a un autre contexte comptable ({0} · {1}).").format(entry_entreprise, entry_exercice)
+			)
+
+	can_modify = _can_modify(entry_doctype, name if mode != "creation" else "")
+	defaults = (target or {}).get("defaults", {}) or {}
+
+	if entry_doctype in PAGE_BY_ENTRY_DOCTYPE:
+		kind = "page"
+		page = PAGE_BY_ENTRY_DOCTYPE[entry_doctype]
+		if mode == "creation":
+			route = [page, "creation"]
+			query = {
+				"source_doctype": defaults.get("source_doctype", source_doctype),
+				"source_name": defaults.get("source_name", source_name),
+				"date_operation": defaults.get("date_operation", "") or "",
+				"ref_doc": defaults.get("ref_doc", "") or "",
+				"journal": defaults.get("journal", "") or "",
+			}
+		else:
+			route = [page, mode, name]
+			query = {}
+	else:
+		kind = "form"
+		query = {}
+		if mode == "creation":
+			route = [entry_doctype]
+		else:
+			route = ["Form", entry_doctype, name]
+
+	return {
+		"entry_doctype": entry_doctype,
+		"mode": mode,
+		"name": name or (target or {}).get("existing_entry", ""),
+		"kind": kind,
+		"route": route,
+		"query": query,
+		"defaults": defaults,
+		"can_modify": can_modify,
+	}
