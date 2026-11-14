@@ -25,53 +25,60 @@
 	window.erpnext = window.erpnext || {};
 	erpnext.facturation = erpnext.facturation || {};
 
-	erpnext.facturation.open_entry = function (doctype, name) {
+	erpnext.facturation.open_entry = function (doctype, name, mode) {
+		// doctype/name identify the Facturation SOURCE; the entries resolver
+		// resolves the entry doctype, the route and can_modify
 		frappe.call({
-			method: "erpnext.custom_modules.facturation.facturation_base.get_entry_target",
+			method: "erpnext.custom_modules.entries.api.open_entry",
 			args: {
-				doctype: doctype,
-				name: name,
+				source_doctype: doctype,
+				source_name: name || "",
+				mode: mode || "auto",
 			},
 			freeze: true,
 			callback: function (r) {
-				const target = r.message;
-				if (!target || !target.entry_doctype) {
-					return;
-				}
-				// the two tiers entries run on their Frappe UI islands; the
-				// Treasury / Declaration forms stay classic
-				const ISLAND_PAGE = {
-					"Payable Transaction": "payable-entry",
-					"Receivable Transaction": "receivable-entry",
-				};
-				const page = ISLAND_PAGE[target.entry_doctype];
-				const defaults = target.defaults || {};
-				if (target.existing_entry) {
-					if (page) {
-						frappe.set_route(page, target.existing_entry);
-					} else {
-						frappe.set_route("Form", target.entry_doctype, target.existing_entry);
-					}
-					return;
-				}
-				if (page) {
-					// the island reads these in props.query and prefills the new
-					// form; entreprise/exercice/mvt stay server-side
-					const query = {
-						source_doctype: defaults.source_doctype || "",
-						source_name: defaults.source_name || "",
-						date_operation: defaults.date_operation || "",
-						ref_doc: defaults.ref_doc || "",
-						journal: defaults.journal || "",
-					};
-					frappe.set_route(page, "new", query);
-					return;
-				}
-				// route options prefill matching fields on the new form and are
-				// consumed there; the document stays unsaved until reviewed
-				frappe.new_doc(target.entry_doctype, target.defaults || {});
+				erpnext.facturation.navigate_open_entry(r.message);
 			},
 		});
+	};
+
+	erpnext.facturation.view_entry = function (entry_doctype, entry_name) {
+		// "Voir l'ecriture": the linked entry in read-only inspect mode
+		frappe.call({
+			method: "erpnext.custom_modules.entries.api.open_entry",
+			args: {
+				entry_doctype: entry_doctype,
+				name: entry_name || "",
+				mode: "inspect",
+			},
+			freeze: true,
+			callback: function (r) {
+				erpnext.facturation.navigate_open_entry(r.message);
+			},
+		});
+	};
+
+	erpnext.facturation.navigate_open_entry = function (target) {
+		if (!target || !target.route) {
+			return;
+		}
+		if (target.kind === "form") {
+			// Treasury / Declaration: the classic forms, exactly as before
+			if (target.mode === "creation") {
+				frappe.new_doc(target.entry_doctype, target.defaults || {});
+			} else {
+				frappe.set_route(...target.route);
+			}
+			return;
+		}
+		// kind "page": the trailing object becomes the query string the island
+		// receives in props.query (creation only)
+		const route = [...target.route];
+		if (target.mode === "creation" && target.query && Object.keys(target.query).length) {
+			frappe.set_route(...route, target.query);
+		} else {
+			frappe.set_route(...route);
+		}
 	};
 
 	const FACTURATION_DOCTYPES = [
@@ -97,6 +104,11 @@
 				frm.add_custom_button(__("Saisie ecriture"), function () {
 					erpnext.facturation.open_entry(frm.doctype, frm.doc.name);
 				});
+				if (frm.doc.entry && frm.doc.entry_doctype) {
+					frm.add_custom_button(__("Voir l'ecriture"), function () {
+						erpnext.facturation.view_entry(frm.doc.entry_doctype, frm.doc.entry);
+					});
+				}
 			},
 		});
 	});
