@@ -45,6 +45,7 @@ SCOPED_DOCTYPES = (
 )
 
 NO_CONTEXT_MESSAGE = "Choisissez une entreprise et un exercice dans le contexte comptable"
+NO_ENTREPRISE_MESSAGE = "Choisissez une entreprise dans le contexte comptable"
 
 
 def _is_admin() -> bool:
@@ -274,6 +275,20 @@ def context_for_read() -> tuple[str, str]:
 	)
 
 
+def require_entreprise() -> str:
+	"""The Entreprise from the user default only (never client input), for the
+	doctypes scoped by Entreprise alone — Chart of Account: a plan comptable
+	belongs to the Entreprise across all Exercices. Raises the
+	NO_ENTREPRISE_MESSAGE when no Entreprise is set and the no-access message
+	when the user may not use it (same rule as require_context)."""
+	entreprise = frappe.defaults.get_user_default(ENTREPRISE_DEFAULT) or ""
+	if not entreprise:
+		frappe.throw(_(NO_ENTREPRISE_MESSAGE))
+	if entreprise not in {row.name for row in _accessible_entreprises()}:
+		frappe.throw(_("Vous n'avez pas acces a l'entreprise {0}.").format(entreprise))
+	return entreprise
+
+
 def validate_exercice_open(context: dict[str, Any]) -> None:
 	"""An entry or a Facturation document may only be created or modified
 	while its Exercice is Ouvert."""
@@ -350,3 +365,16 @@ def scope_conditions(user: str | None = None, doctype: str = "") -> str:
 		f"({table}.entreprise = {frappe.db.escape(entreprise)} "
 		f"and {table}.exercice = {frappe.db.escape(exercice)})"
 	)
+
+
+def scope_conditions_entreprise(user: str | None = None, doctype: str = "") -> str:
+	"""permission_query_conditions hook for the doctypes scoped by Entreprise
+	only: same rules as scope_conditions, minus the exercice filter — a plan
+	comptable (Chart of Account) belongs to the Entreprise across all
+	Exercices and carries no exercice column. Without a context Entreprise
+	the scope is "1 = 0"."""
+	entreprise, _exercice = context_for_read()
+	if not entreprise or not doctype:
+		return "1 = 0"
+	table = f"`tab{doctype}`"
+	return f"{table}.entreprise = {frappe.db.escape(entreprise)}"

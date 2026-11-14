@@ -397,6 +397,12 @@ permission_query_conditions.update(
 	}
 )
 
+# Chart of Account is scoped by Entreprise only: a plan comptable belongs to
+# the Entreprise across all Exercices and carries no exercice column.
+permission_query_conditions["Chart of Account"] = (
+	"erpnext.custom_modules.organization.context.scope_conditions_entreprise"
+)
+
 has_permission = {
 	"Employee": "erpnext.setup.doctype.employee.employee.has_permission",
 	"Asset Activity": "erpnext.assets.doctype.asset_activity.asset_activity.has_permission",

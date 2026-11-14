@@ -121,6 +121,16 @@ const plan_import_open = ref(false);
 const plan_accounts_count = ref(0);
 const plan_import_hint = __("Enregistrez l'entreprise avant d'importer son plan comptable");
 const plan_import_disabled = computed(() => Boolean(is_new.value || !doc.value?.name));
+
+// Chart of Account is server-scoped to the accounting context Entreprise
+const context_entreprise = () => {
+	const ctx = window.axeane?.context?.get?.() || frappe.boot?.axeane_context || null;
+	return ctx?.entreprise || "";
+};
+const in_context = computed(() => Boolean(doc.value?.name && doc.value.name === context_entreprise()));
+const show_open_plan = computed(
+	() => Boolean(doc.value?.name) && (!in_context.value || plan_accounts_count.value > 0)
+);
 const render_error = ref(null);
 
 // ── Link fields human titles (Part 1) ────────────────────────────────────────
@@ -316,6 +326,19 @@ watch(
 	{ immediate: true }
 );
 
+async function load_plan_accounts_count(name) {
+	// the count is only meaningful when the opened record IS the context
+	// Entreprise (get_count is server-scoped to the context)
+	if (name && name === context_entreprise()) {
+		plan_accounts_count.value = await frappe.xcall("frappe.client.get_count", {
+			doctype: "Chart of Account",
+			filters: { entreprise: name },
+		});
+	} else {
+		plan_accounts_count.value = 0;
+	}
+}
+
 async function load_record(name) {
 	loading_doc.value = true;
 	try {
@@ -323,10 +346,7 @@ async function load_record(name) {
 		if (!Array.isArray(doc.value.documents)) doc.value.documents = [];
 		is_new.value = false;
 		fetch_all_link_titles();
-		plan_accounts_count.value = await frappe.xcall("frappe.client.get_count", {
-			doctype: "Chart of Account",
-			filters: { entreprise: name },
-		});
+		await load_plan_accounts_count(name);
 	} finally {
 		loading_doc.value = false;
 	}
@@ -570,10 +590,16 @@ function clear_plan_comptable() {
 	doc.value.plan_comptable_ajoute_le = null;
 }
 
-function open_plan_comptable() {
-	if (doc.value?.name) {
-		frappe.set_route("plan-comptable", { entreprise: doc.value.name });
+async function open_plan_comptable() {
+	if (!doc.value?.name) return;
+	// the plan comptable follows the accounting context: switch it to this
+	// Entreprise first (no-op when it already matches), then navigate
+	try {
+		await window.axeane?.context?.set?.(doc.value.name, "");
+	} catch {
+		// context unavailable: navigate anyway
 	}
+	frappe.set_route("plan-comptable");
 }
 
 async function on_plan_imported() {
@@ -585,10 +611,7 @@ async function on_plan_imported() {
 		if (!Array.isArray(doc.value.documents)) doc.value.documents = [];
 		is_new.value = false;
 		fetch_all_link_titles();
-		plan_accounts_count.value = await frappe.xcall("frappe.client.get_count", {
-			doctype: "Chart of Account",
-			filters: { entreprise: doc.value.name },
-		});
+		await load_plan_accounts_count(doc.value.name);
 	} catch {
 		// the server message is already surfaced by frappe.call
 	}
@@ -821,18 +844,33 @@ const plan_comptable_preview_value = computed(() => {
 	return count === 1 ? __("1 compte importé") : __("{0} comptes importés", [count]);
 });
 
-const preview_plan_comptable = computed(() => [
-	{
-		label: __("Plan comptable"),
-		value: plan_comptable_preview_value.value,
-		subtitle: doc.value?.plan_comptable_ajoute_le
-			? __("Ajouté le {0}", [format_datetime_dmy(doc.value.plan_comptable_ajoute_le)])
-			: null,
-		reqd: false,
-		onClick: plan_accounts_count.value > 0 ? open_plan_comptable : null,
-		linkLabel: __("Ouvrir le plan comptable"),
-	},
-]);
+const preview_plan_comptable = computed(() => {
+	if (!in_context.value) {
+		// another Entreprise sits in the context: the server-scoped count is
+		// not meaningful here — only the import date
+		return [
+			{
+				label: __("Plan comptable"),
+				value: doc.value?.plan_comptable_ajoute_le
+					? __("Importé le {0}", [format_datetime_dmy(doc.value.plan_comptable_ajoute_le)])
+					: "",
+				reqd: false,
+			},
+		];
+	}
+	return [
+		{
+			label: __("Plan comptable"),
+			value: plan_comptable_preview_value.value,
+			subtitle: doc.value?.plan_comptable_ajoute_le
+				? __("Ajouté le {0}", [format_datetime_dmy(doc.value.plan_comptable_ajoute_le)])
+				: null,
+			reqd: false,
+			onClick: plan_accounts_count.value > 0 ? open_plan_comptable : null,
+			linkLabel: __("Ouvrir le plan comptable"),
+		},
+	];
+});
 
 const valider_disabled = computed(() => {
 	return Boolean(is_new.value || missing_required_fields.value.length > 0 || is_validated.value);
@@ -1185,7 +1223,7 @@ const FIELD_LABELS = {
 											/>
 										</div>
 										<Button
-											v-if="plan_accounts_count > 0"
+											v-if="show_open_plan"
 											variant="subtle"
 											:label="__('Ouvrir le plan comptable')"
 											@click="open_plan_comptable"

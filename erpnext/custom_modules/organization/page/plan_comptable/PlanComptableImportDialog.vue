@@ -199,9 +199,16 @@ const classe_rows = computed(() => {
 	return rows;
 });
 
-function open_plan_comptable() {
+async function open_plan_comptable() {
 	open.value = false;
-	frappe.set_route("plan-comptable", { entreprise: props.entreprise });
+	// the plan comptable follows the accounting context: switch it to the
+	// imported entreprise before navigating (no-op when it already matches)
+	try {
+		await window.axeane?.context?.set?.(props.entreprise, "");
+	} catch {
+		// context unavailable: navigate anyway, the page shows its own state
+	}
+	frappe.set_route("plan-comptable");
 }
 </script>
 

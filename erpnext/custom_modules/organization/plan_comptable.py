@@ -24,6 +24,8 @@ from frappe.utils import now_datetime
 from frappe.utils.nestedset import rebuild_tree
 from openpyxl import load_workbook
 
+from erpnext.custom_modules.organization.context import _accessible_entreprises
+
 MAX_LABEL_LENGTH = 140
 # commit every ~200 inserts so transactions stay bounded on ~900 accounts
 INSERT_CHUNK = 200
@@ -225,6 +227,8 @@ def _import_plan_comptable(entreprise: str, file_url: str, dry_run: int) -> dict
 		frappe.throw(_("Vous n'avez pas le droit de créer des comptes."), frappe.PermissionError)
 	if not frappe.db.exists("Entreprise", entreprise):
 		frappe.throw(_("L'entreprise {0} n'existe pas.").format(entreprise), frappe.DoesNotExistError)
+	if entreprise not in {row.name for row in _accessible_entreprises()}:
+		frappe.throw(_("Vous n'avez pas acces a l'entreprise {0}.").format(entreprise), frappe.PermissionError)
 	if not (file_url or "").lower().endswith(".xlsx"):
 		frappe.throw(_("Le plan comptable doit être un fichier .xlsx."), title=_("Fichier invalide"))
 

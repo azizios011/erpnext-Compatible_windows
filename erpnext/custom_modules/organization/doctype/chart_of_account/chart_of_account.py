@@ -8,6 +8,8 @@ from frappe import _
 from frappe.utils import cint, cstr
 from frappe.utils.nestedset import NestedSet
 
+from erpnext.custom_modules.organization.context import require_entreprise
+
 # Fields frozen on a locked (standard) account. The only allowed change on a
 # locked row is the "unlock" (is_standard 1 -> 0) by an Accounts Manager in a
 # save that changes nothing else — see enforce_standard_lock.
@@ -33,14 +35,20 @@ class ChartofAccount(NestedSet):
 		self.set_standard_flag()
 		self.enforce_standard_lock()
 
+	def before_insert(self):
+		# the hidden Entreprise field has one source: the accounting context
+		# (require_entreprise), like every scoped doctype — the client value is
+		# ignored. Runs before naming: the row name embeds the entreprise.
+		# The xlsx import bypasses this (db_insert with an explicit entreprise
+		# parameter, access already verified there).
+		self.entreprise = require_entreprise()
+
 	def validate_entreprise(self):
-		"""New docs must carry the Entreprise; legacy rows predate the link and
-		are left alone (the field is deliberately not reqd in the JSON)."""
+		"""Belt and braces after before_insert: a new doc always carries the
+		context Entreprise; existing rows keep theirs (frozen by the
+		protected-field rule)."""
 		if self.is_new() and not self.entreprise:
-			frappe.throw(
-				_("L'entreprise est obligatoire pour un compte du plan comptable."),
-				title=_("Entreprise manquante"),
-			)
+			self.entreprise = require_entreprise()
 
 	def normalize_account_number(self):
 		# codes are matched by prefix: whitespace removed, digits only

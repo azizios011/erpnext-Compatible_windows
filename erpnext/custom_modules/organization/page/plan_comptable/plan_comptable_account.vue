@@ -61,6 +61,7 @@ const saving = ref(false);
 const deleting = ref(false);
 const unlocking = ref(false);
 const form_error = ref(null);
+const wrong_entreprise = ref(false); // direct URL to another Entreprise's account
 const delete_dialog = ref(false);
 const unlock_dialog = ref(false);
 
@@ -119,6 +120,13 @@ async function load_entreprise_info() {
 
 async function load_record(name) {
 	doc.value = await frappe.xcall("frappe.client.get", { doctype: DOCTYPE, name });
+	if (props.entreprise && doc.value.entreprise !== props.entreprise) {
+		// direct URL to another Entreprise's account: the error box replaces
+		// the form entirely
+		wrong_entreprise.value = true;
+		return;
+	}
+	wrong_entreprise.value = false;
 	form.value = {
 		parent_chart_of_account: doc.value.parent_chart_of_account || "",
 		account_number: doc.value.account_number || "",
@@ -135,6 +143,7 @@ async function load_record(name) {
 
 async function init() {
 	form_error.value = null;
+	wrong_entreprise.value = false;
 	delete_dialog.value = false;
 	unlock_dialog.value = false;
 	if (props.mode === "new") {
@@ -369,9 +378,8 @@ function go_back() {
 }
 
 function add_sub_account() {
-	const entreprise = doc.value?.entreprise || props.entreprise;
 	const parent = doc.value?.name || form.value.parent_chart_of_account;
-	frappe.set_route("plan-comptable", "new", { entreprise, parent });
+	frappe.set_route("plan-comptable", "new", { parent });
 }
 
 function open_parent() {
@@ -435,7 +443,7 @@ function format_datetime_dmy(val) {
 					</template>
 
 					<!-- Edit mode -->
-					<template v-else-if="doc">
+					<template v-else-if="doc && !wrong_entreprise">
 						<Button
 							v-if="doc.is_group"
 							variant="subtle"
@@ -477,7 +485,7 @@ function format_datetime_dmy(val) {
 
 			<!-- Locked banner -->
 			<div
-				v-if="mode === 'record' && doc?.is_standard"
+				v-if="mode === 'record' && doc?.is_standard && !wrong_entreprise"
 				class="flex items-center gap-2.5 rounded-lg border border-surface-blue-3 bg-surface-blue-1 px-4 py-3 text-p-sm font-semibold text-ink-blue-8"
 			>
 				<svg class="size-5 shrink-0 text-ink-blue-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -487,13 +495,27 @@ function format_datetime_dmy(val) {
 				<span>{{ __("Compte standard — non modifiable") }}</span>
 			</div>
 
-			<!-- No entreprise in the page state -->
+			<!-- No context entreprise -->
 			<div v-if="!entreprise" class="rounded-lg border border-surface-gray-2 bg-surface-white p-6 shadow-xs">
 				<div class="flex flex-col items-center justify-center px-6 py-10 text-center">
-					<h3 class="text-p-base font-semibold text-ink-gray-9">{{ __("Aucune entreprise sélectionnée") }}</h3>
+					<h3 class="text-p-base font-semibold text-ink-gray-9">
+						{{ __("Choisissez une entreprise dans le contexte comptable") }}
+					</h3>
 					<p class="mt-1 text-p-sm text-ink-gray-5">
-						{{ __("Retournez à la liste et choisissez une entreprise.") }}
+						{{ __("Le plan comptable suit l'entreprise définie dans le contexte comptable.") }}
 					</p>
+				</div>
+			</div>
+
+			<!-- Direct URL to another Entreprise's account -->
+			<div v-else-if="wrong_entreprise" class="rounded-lg border border-surface-red-3 bg-surface-red-1 p-4">
+				<div class="flex items-center gap-2 text-p-sm font-semibold text-ink-red-8">
+					<svg class="size-5 shrink-0 text-ink-red-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+						<line x1="12" y1="9" x2="12" y2="13" />
+						<line x1="12" y1="17" x2="12.01" y2="17" />
+					</svg>
+					<span>{{ __("Ce compte appartient à une autre entreprise — changez de contexte comptable") }}</span>
 				</div>
 			</div>
 
@@ -607,7 +629,7 @@ function format_datetime_dmy(val) {
 			</div>
 
 			<!-- Informations card (edit mode) -->
-			<div v-if="mode === 'record' && doc" class="rounded-lg border border-surface-gray-2 bg-surface-white p-6 shadow-xs">
+			<div v-if="mode === 'record' && doc && !wrong_entreprise" class="rounded-lg border border-surface-gray-2 bg-surface-white p-6 shadow-xs">
 				<div class="text-base font-bold text-ink-gray-9">
 					{{ __("Informations") }}
 				</div>

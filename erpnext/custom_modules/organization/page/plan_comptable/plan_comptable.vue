@@ -3,14 +3,16 @@
      Modes from the desk route props (pageview passes the URL below the page as
      `route` and the query string as `query`):
        - /app/plan-comptable                    → accounts of one entreprise
-       - /app/plan-comptable/new                → Task 3 (placeholder "Bientôt")
-       - /app/plan-comptable/<account name>     → Task 3 (placeholder "Bientôt")
+       - /app/plan-comptable/new                → the create form
+       - /app/plan-comptable/<account name>     → the edit panel
+     The Entreprise is the dock's "Contexte comptable" (window.axeane.context,
+     boot backup frappe.boot.axeane_context) — never a selector, never the URL.
      The list renders class tabs (1..7 + "Comptes non attribués") with counts
      from ONE group_by call, a server-filtered/paginated accounts table and
-     generic frappe.client.* calls only (get_list / get_count / delete). The
-     entreprise selector remembers its last value in localStorage. -->
+     generic frappe.client.* calls only (get_list / get_count / delete); the
+     server additionally scopes every query to the context Entreprise. -->
 <script setup>
-import { computed, onErrorCaptured, onMounted, ref, watch } from "vue";
+import { computed, onBeforeUnmount, onErrorCaptured, onMounted, ref, watch } from "vue";
 import { Badge, Button, Dialog, Dropdown, FormControl } from "frappe-ui";
 
 import PlanComptableAccount from "./plan_comptable_account.vue";
@@ -67,82 +69,32 @@ onErrorCaptured((error, instance, info) => {
 	return false;
 });
 
-// ── entreprises & selection ──────────────────────────────────────────────────
-const entreprises = ref([]);
-const entreprises_loading = ref(false);
-const selected_entreprise = ref("");
-
-const entreprise_options = computed(() =>
-	entreprises.value.map((e) => ({
-		label: e.raison_sociale ? `${e.name} — ${e.raison_sociale}` : e.name,
-		value: e.name,
-	}))
-);
-
-const selected_entreprise_obj = computed(() =>
-	entreprises.value.find((e) => e.name === selected_entreprise.value)
-);
-
-function stored_entreprise() {
-	try {
-		return window.localStorage.getItem("plan_comptable_entreprise") || "";
-	} catch {
-		return "";
-	}
+// ── the accounting context is the only source of Entreprise ──────────────────
+function context_entreprise() {
+	const ctx = window.axeane?.context?.get?.() || frappe.boot?.axeane_context || null;
+	return ctx?.entreprise || "";
 }
 
-function remember_entreprise(code) {
-	try {
-		window.localStorage.setItem("plan_comptable_entreprise", code);
-	} catch {
-		// storage unavailable (private mode...): the selector simply forgets
-	}
+function context_entreprise_label() {
+	const ctx = window.axeane?.context?.get?.() || frappe.boot?.axeane_context || null;
+	if (!ctx?.entreprise) return "";
+	return [ctx.entreprise, ctx.entreprise_label].filter(Boolean).join(" · ");
 }
 
-function pick_default_entreprise() {
-	const candidates = [props.query?.entreprise || "", stored_entreprise()].filter(Boolean);
-	for (const candidate of candidates) {
-		if (entreprises.value.some((e) => e.name === candidate)) return candidate;
-	}
-	const first = entreprises.value[0];
-	return first ? first.name : "";
-}
-
-async function load_entreprises() {
-	entreprises_loading.value = true;
-	try {
-		entreprises.value = await frappe.xcall("frappe.client.get_list", {
-			doctype: "Entreprise",
-			fields: ["name", "raison_sociale"],
-			order_by: "code asc",
-			limit_page_length: 0,
-		});
-	} finally {
-		entreprises_loading.value = false;
-	}
-}
-
-// select change: remember the value and reload everything below
-function on_entreprise_change(code) {
-	if (!code || code === selected_entreprise.value) return;
-	remember_entreprise(code);
-	selected_entreprise.value = code;
-	page.value = 1;
-	load_counts();
-	load_rows();
-}
+const entreprise = ref(context_entreprise());
+const entreprise_label = ref(context_entreprise_label());
 
 // ── class counts (one group_by call for all tabs) ────────────────────────────
 const class_counts = ref({});
 const counts_loaded = ref(false);
 
 async function load_counts() {
-	if (!selected_entreprise.value) return;
+	if (!entreprise.value) return;
 	try {
 		const rows = await frappe.xcall("frappe.client.get_list", {
 			doctype: DOCTYPE,
 			fields: ["classe", "count(name) as n"],
-			filters: { entreprise: selected_entreprise.value },
+			filters: { entreprise: entreprise.value },
 			group_by: "classe",
 			order_by: "classe asc",
 			limit_page_length: 0,
@@ -190,7 +142,8 @@ const has_active_filters = computed(
 );
 
 function current_filters() {
-	const filters = { entreprise: selected_entreprise.value };
+	// the explicit entreprise filter rides along with the server scope
+	const filters = { entreprise: entreprise.value };
 	filters.classe =
 		active_tab.value === "other" ? ["not in", ROOT_CLASSES] : active_tab.value;
 	if (code_search.value.trim()) {
@@ -264,7 +217,7 @@ async function fetch_rows(filters) {
 }
 
 async function load_rows() {
-	if (!selected_entreprise.value) return;
+	if (!entreprise.value) return;
 	rows_loading.value = true;
 	try {
 		const filters = current_filters();
@@ -319,14 +272,11 @@ function open_account(row) {
 }
 
 function new_account() {
-	frappe.set_route("plan-comptable", "new", { entreprise: selected_entreprise.value });
+	frappe.set_route("plan-comptable", "new");
 }
 
 function add_sub_account(row) {
-	frappe.set_route("plan-comptable", "new", {
-		entreprise: selected_entreprise.value,
-		parent: row.name,
-	});
+	frappe.set_route("plan-comptable", "new", { parent: row.name });
 }
 
 const delete_target = ref(null);
@@ -392,13 +342,38 @@ function code_indent(row) {
 	return `${12 + depth * 14}px`;
 }
 
-// ── boot & route reactions ───────────────────────────────────────────────────
-onMounted(async () => {
-	await load_entreprises();
-	selected_entreprise.value = pick_default_entreprise();
-	if (selected_entreprise.value) {
+// ── boot & context reactions ─────────────────────────────────────────────────
+function on_context_changed(event, ctx) {
+	const changed = (ctx?.entreprise || context_entreprise()) !== entreprise.value;
+	entreprise.value = ctx?.entreprise || context_entreprise();
+	entreprise_label.value = context_entreprise_label();
+	if (mode.value !== "list") {
+		// an account of another Entreprise may be on screen: back to the list
+		frappe.set_route("plan-comptable", {});
+	}
+	if (changed && entreprise.value) {
+		page.value = 1;
 		load_counts();
 		load_rows();
+	}
+}
+
+onMounted(() => {
+	if (entreprise.value) {
+		load_counts();
+		load_rows();
+	}
+	// the dock's "Contexte comptable" fires this jQuery event on every change
+	const $ = window.jQuery;
+	if ($) {
+		$(document).on("axeane-context-changed", on_context_changed);
+	}
+});
+
+onBeforeUnmount(() => {
+	const $ = window.jQuery;
+	if ($) {
+		$(document).off("axeane-context-changed", on_context_changed);
 	}
 });
 
@@ -425,28 +400,14 @@ function on_account_deleted() {
 	load_rows();
 }
 
-// Navigating between list and the account panel keeps the list state; the
-// watcher only syncs the entreprise when the URL explicitly carries one
+// Navigating between list and the account panel keeps the list state
 watch(
 	() => props.route,
 	(route) => {
 		if (!route?.length) {
 			emit("title", __("Plan comptable"));
-			const wanted = props.query?.entreprise;
-			if (wanted && wanted !== selected_entreprise.value && entreprises.value.some((e) => e.name === wanted)) {
-				remember_entreprise(wanted);
-				selected_entreprise.value = wanted;
-				page.value = 1;
-				load_counts();
-				load_rows();
-			}
 		} else if (route[0] === "new") {
 			emit("title", __("Nouveau compte"));
-			const wanted = props.query?.entreprise;
-			if (wanted && wanted !== selected_entreprise.value && entreprises.value.some((e) => e.name === wanted)) {
-				remember_entreprise(wanted);
-				selected_entreprise.value = wanted;
-			}
 		} else {
 			emit("title", route[0]);
 		}
@@ -472,22 +433,33 @@ watch(
 							{{ __("Plan comptable") }}
 						</h1>
 						<div class="h-4 w-px bg-surface-gray-2" />
-						<div class="w-72">
-							<FormControl
-								type="select"
-								:model-value="selected_entreprise"
-								:options="entreprise_options"
-								:disabled="entreprises_loading"
-								@update:model-value="on_entreprise_change"
-							/>
+						<div
+							v-if="entreprise"
+							class="flex min-w-0 items-center gap-2"
+							:title="__('Défini par le contexte comptable')"
+						>
+							<span class="inline-flex min-w-0 items-center gap-1.5 rounded-md border border-surface-gray-2 bg-surface-gray-1 px-2.5 py-1 text-p-sm font-medium text-ink-gray-7">
+								<svg class="size-3.5 shrink-0 text-ink-gray-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
+									<path d="M9 22v-4h6v4" />
+									<path d="M8 6h.01" />
+									<path d="M16 6h.01" />
+									<path d="M12 10h.01" />
+									<path d="M12 14h.01" />
+									<path d="M16 14h.01" />
+								</svg>
+								<span class="truncate">{{ entreprise_label || entreprise }}</span>
+							</span>
+							<span class="hidden shrink-0 text-xs text-ink-gray-4 lg:inline">
+								{{ __("Défini par le contexte comptable") }}
+							</span>
 						</div>
 					</div>
 
-					<div class="flex items-center gap-2">
+					<div v-if="entreprise" class="flex items-center gap-2">
 						<Button
 							variant="subtle"
 							:label="__('Importer un plan comptable')"
-							:disabled="!selected_entreprise"
 							@click="import_dialog_open = true"
 						/>
 						<Button variant="solid" :label="__('Nouveau compte')" @click="new_account" />
@@ -497,28 +469,30 @@ watch(
 
 			<!-- Content area -->
 			<div class="mx-auto w-full max-w-[1600px] space-y-6 px-6 lg:px-10 py-6 pb-16">
-				<!-- No entreprise yet -->
-				<div v-if="!entreprises_loading && !entreprises.length" class="rounded-lg border border-surface-gray-2 bg-surface-white p-6 shadow-xs">
+				<!-- No context entreprise: nothing to show, the scope would be empty -->
+				<div v-if="!entreprise" class="rounded-lg border border-surface-gray-2 bg-surface-white p-6 shadow-xs">
 					<div class="flex flex-col items-center justify-center px-6 py-12 text-center">
 						<div class="mb-4 flex size-14 items-center justify-center rounded-full bg-surface-gray-2 text-ink-gray-5">
 							<svg class="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-								<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-								<circle cx="9" cy="7" r="4" />
-								<path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-								<path d="M16 3.13a4 4 0 0 1 0 7.75" />
+								<rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
+								<path d="M9 22v-4h6v4" />
+								<path d="M8 6h.01" />
+								<path d="M16 6h.01" />
+								<path d="M12 10h.01" />
+								<path d="M12 14h.01" />
+								<path d="M16 14h.01" />
 							</svg>
 						</div>
-						<h3 class="text-p-base font-semibold text-ink-gray-9">{{ __("Aucune entreprise") }}</h3>
+						<h3 class="text-p-base font-semibold text-ink-gray-9">
+							{{ __("Choisissez une entreprise dans le contexte comptable") }}
+						</h3>
 						<p class="mt-1 max-w-sm text-p-sm text-ink-gray-5">
-							{{ __("Créez une entreprise pour configurer son plan comptable.") }}
+							{{ __("Le plan comptable suit l'entreprise définie dans le contexte comptable.") }}
 						</p>
-						<div class="mt-6">
-							<Button variant="solid" :label="__('Aller aux entreprises')" @click="frappe.set_route('entreprise-view', 'new')" />
-						</div>
 					</div>
 				</div>
 
-				<!-- No plan comptable for the selected entreprise -->
+				<!-- No plan comptable for the context entreprise -->
 				<div v-else-if="counts_loaded && !total_accounts" class="rounded-lg border border-surface-gray-2 bg-surface-white p-6 shadow-xs">
 					<div class="flex flex-col items-center justify-center px-6 py-12 text-center">
 						<div class="mb-4 flex size-14 items-center justify-center rounded-full bg-surface-gray-2 text-ink-gray-5">
@@ -527,7 +501,7 @@ watch(
 							</svg>
 						</div>
 						<h3 class="text-p-base font-semibold text-ink-gray-9">
-							{{ __("Aucun plan comptable pour {0}", [selected_entreprise_obj?.raison_sociale || selected_entreprise]) }}
+							{{ __("Aucun plan comptable pour {0}", [entreprise_label || entreprise]) }}
 						</h3>
 						<p class="mt-1 max-w-sm text-p-sm text-ink-gray-5">
 							{{ __("Importez le plan comptable de l'entreprise ou créez vos premiers comptes à la main.") }}
@@ -772,7 +746,7 @@ watch(
 			v-else
 			:mode="mode"
 			:record-name="mode === 'record' ? props.route?.[0] || '' : ''"
-			:entreprise="selected_entreprise"
+			:entreprise="entreprise"
 			:parent-name="props.query?.parent || ''"
 			@title="on_panel_title"
 			@saved="on_account_saved"
@@ -797,10 +771,10 @@ watch(
 			</template>
 		</Dialog>
 
-		<!-- Import dialog (shared with the Entreprise page) -->
+		<!-- Import dialog (a copy also lives in the Entreprise page folder) -->
 		<PlanComptableImportDialog
 			v-model:open="import_dialog_open"
-			:entreprise="selected_entreprise"
+			:entreprise="entreprise"
 			@imported="on_imported"
 		/>
 	</div>
