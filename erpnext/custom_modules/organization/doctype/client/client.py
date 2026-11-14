@@ -3,6 +3,11 @@
 
 from frappe.model.document import Document
 
+from erpnext.custom_modules.organization.tiers_accounts import validate_tiers_account
+
 
 class Client(Document):
-	pass
+	def validate(self):
+		# a Client can only live on a custom account under 411 (see
+		# organization/tiers_accounts.py for the shared rules)
+		validate_tiers_account(self)

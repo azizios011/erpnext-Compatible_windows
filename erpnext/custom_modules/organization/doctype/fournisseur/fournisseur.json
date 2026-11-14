@@ -5,21 +5,17 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "account",
   "fournisseur_name",
-  "tax_id",
-  "phone",
-  "email",
-  "address"
+  "tax_id"
  ],
  "fields": [
+  {"fieldname": "account", "fieldtype": "Link", "label": "Compte", "options": "Chart of Account", "reqd": 1, "unique": 1, "in_list_view": 1, "set_only_once": 1},
   {"fieldname": "fournisseur_name", "fieldtype": "Data", "reqd": 1, "unique": 1, "in_list_view": 1, "label": "Supplier Name"},
-  {"fieldname": "tax_id", "fieldtype": "Data", "label": "Tax ID"},
-  {"fieldname": "phone", "fieldtype": "Data", "label": "Phone"},
-  {"fieldname": "email", "fieldtype": "Data", "label": "Email"},
-  {"fieldname": "address", "fieldtype": "Small Text", "label": "Address"}
+  {"fieldname": "tax_id", "fieldtype": "Data", "label": "Tax ID"}
  ],
  "links": [],
- "modified": "2026-11-02 00:00:00.000000",
+ "modified": "2026-11-14 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Fournisseur",
