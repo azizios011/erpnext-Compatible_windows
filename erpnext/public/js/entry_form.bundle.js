@@ -278,6 +278,40 @@ Object.assign(erpnext.entries, {
 		});
 	},
 
+	/** Generic entry opener for non-Facturation callers (the Ledger Data
+	 * report): resolves the route through the entries resolver and navigates. */
+	open_entry(options) {
+		frappe.call({
+			method: "erpnext.custom_modules.entries.api.open_entry",
+			args: {
+				entry_doctype: options.entry_doctype || "",
+				name: options.name || "",
+				mode: options.mode || "inspect",
+			},
+			freeze: true,
+			callback(r) {
+				const target = r.message;
+				if (!target || !target.route) {
+					return;
+				}
+				if (target.kind === "form") {
+					if (target.mode === "creation") {
+						frappe.new_doc(target.entry_doctype, target.defaults || {});
+					} else {
+						frappe.set_route(...target.route);
+					}
+					return;
+				}
+				const route = [...target.route];
+				if (target.mode === "creation" && target.query && Object.keys(target.query).length) {
+					frappe.set_route(...route, target.query);
+				} else {
+					frappe.set_route(...route);
+				}
+			},
+		});
+	},
+
 	appel_modele(frm) {
 		if (!frm.doc.journal) {
 			frappe.msgprint({

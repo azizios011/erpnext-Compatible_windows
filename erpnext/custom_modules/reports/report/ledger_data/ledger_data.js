@@ -122,6 +122,23 @@ frappe.query_reports["Ledger Data"] = {
 	],
 
 	formatter(value, row, column, data, default_formatter) {
+		// the MVT of the two island-backed entry doctypes opens the entry in
+		// inspect mode through the entries resolver — in both views. Header,
+		// opening and total rows carry no source_entry and keep the default
+		// formatting.
+		if (
+			column.id === "mvt" &&
+			data &&
+			["Payable Transaction", "Receivable Transaction"].includes(data.source_entry_doctype) &&
+			data.source_entry
+		) {
+			const label = frappe.utils.escape_html(value);
+			return (
+				`<span class="gl-mvt-link" role="button" tabindex="0" style="cursor:pointer; text-decoration:underline; color: var(--ink-gray-7, #384151);"` +
+				` data-entry-doctype="${frappe.utils.escape_html(data.source_entry_doctype)}"` +
+				` data-entry="${frappe.utils.escape_html(data.source_entry)}">${label}</span>`
+			);
+		}
 		if (!data || !data.row_type) {
 			return default_formatter(value);
 		}
@@ -164,6 +181,18 @@ frappe.query_reports["Ledger Data"] = {
 			}
 		};
 		set_title();
+
+		// the island-backed MVT links open the entry in inspect mode
+		$(document)
+			.off("click.gl-mvt-link")
+			.on("click.gl-mvt-link", ".gl-mvt-link", function (event) {
+				event.preventDefault();
+				erpnext.entries.open_entry({
+					entry_doctype: $(this).attr("data-entry-doctype"),
+					name: $(this).attr("data-entry"),
+					mode: "inspect",
+				});
+			});
 
 		// a context switch re-runs the queries (the dock re-renders the
 		// route, but a cached report page would keep its old data)

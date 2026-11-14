@@ -1,4 +1,4 @@
-<!-- Model dialogs shared by the payable-entry and receivable-entry islands
+<!-- Model dialogs shared by the payable and receivable islands
      (identical copies): "Appel Modele" loads a Journal Model's lines into the
      grid, "Enreg. Modele" saves the grid's accounts and sides as a new model.
      The parent opens them through defineExpose and receives the lines through

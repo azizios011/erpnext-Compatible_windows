@@ -1,4 +1,4 @@
-<!-- Totals footer shared by the payable-entry and receivable-entry islands
+<!-- Totals footer shared by the payable and receivable islands
      (identical copies): four cards sticky at the bottom, live-recomputed from
      the grid rows — visible on a new, unsaved entry too. -->
 <script setup>

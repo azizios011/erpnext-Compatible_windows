@@ -1,4 +1,4 @@
-<!-- Lines grid shared by the payable-entry and receivable-entry islands
+<!-- Lines grid shared by the payable and receivable islands
      (identical copies: the island toolchain resolves bare imports only for
      files inside a discovered page directory — commit bd3ffc3cab).
 
