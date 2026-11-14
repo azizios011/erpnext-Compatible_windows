@@ -55,11 +55,11 @@
   {
    "fieldname": "lines",
    "fieldtype": "Table",
-   "options": "Ecriture Ligne"
+   "options": "Journal Model Line"
   }
  ],
  "links": [],
- "modified": "2026-11-14 19:00:00.000000",
+ "modified": "2026-11-14 21:30:00.000000",
  "modified_by": "Administrator",
  "module": "Entries",
  "name": "Journal Model",

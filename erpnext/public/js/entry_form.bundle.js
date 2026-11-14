@@ -39,6 +39,14 @@ Object.assign(erpnext.entries, {
 		if (!field || !field.$wrapper) {
 			return;
 		}
+		// the totals live only inside update_totals: recompute them here so the
+		// cards render on every refresh without a ReferenceError
+		let total_debit = 0;
+		let total_credit = 0;
+		(frm.doc.lines || []).forEach((line) => {
+			total_debit += flt(line.debit);
+			total_credit += flt(line.credit);
+		});
 		const currency = frm.doc.devise || "";
 		const lines = (frm.doc.lines || []).filter((line) => line.account || flt(line.debit) || flt(line.credit)).length;
 		const fmt = (value) =>
@@ -59,13 +67,13 @@ Object.assign(erpnext.entries, {
 		}
 		const card = (label, value, css_class) =>
 			`<div class="totaux-card ${css_class}"><div class="totaux-label">${label}</div>
-				<div class="totaux-value">${fmt(value)}</div></div>`;
+				<div class="totaux-value">${value}</div></div>`;
 		field.$wrapper.html(
 			`<div class="totaux-cards">` +
-				card(__("Mvt Compte"), lines, "mvt-compte") +
-				card(__("Tot Debit"), total_debit, "tot-debit") +
-				card(__("Tot Credit"), total_credit, "tot-credit") +
-				card(__("Solde"), total_debit - total_credit, "tot-solde") +
+				card(__("Mvt Compte"), String(lines), "mvt-compte") +
+				card(__("Tot Debit"), fmt(total_debit), "tot-debit") +
+				card(__("Tot Credit"), fmt(total_credit), "tot-credit") +
+				card(__("Solde"), fmt(total_debit - total_credit), "tot-solde") +
 				`</div>`
 		);
 		// the cards must show on a new, unsaved document too: the layout's
