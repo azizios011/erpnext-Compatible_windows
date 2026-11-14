@@ -7,23 +7,23 @@ SEEDS = [
 	{
 		"titre": "TVA 19%",
 		"sens": "Achat et Vente",
-		"lignes": [{"libelle": "TVA 19%", "type_taxe": "TVA", "mode": "Pourcentage", "taux": 19}],
+		"lignes": [{"libelle": "TVA 19%", "type_taxe": "TVA", "taux": 19}],
 	},
 	{
 		"titre": "TVA 13%",
 		"sens": "Achat et Vente",
-		"lignes": [{"libelle": "TVA 13%", "type_taxe": "TVA", "mode": "Pourcentage", "taux": 13}],
+		"lignes": [{"libelle": "TVA 13%", "type_taxe": "TVA", "taux": 13}],
 	},
 	{
 		"titre": "TVA 7%",
 		"sens": "Achat et Vente",
-		"lignes": [{"libelle": "TVA 7%", "type_taxe": "TVA", "mode": "Pourcentage", "taux": 7}],
+		"lignes": [{"libelle": "TVA 7%", "type_taxe": "TVA", "taux": 7}],
 	},
 	{
 		"titre": "Timbre fiscal",
 		"sens": "Vente",
 		"lignes": [
-			{"libelle": "Timbre fiscal", "type_taxe": "Timbre fiscal", "mode": "Montant fixe", "montant": 1.0}
+			{"libelle": "Timbre fiscal", "type_taxe": "Timbre fiscal", "montant": 1.0}
 		],
 	},
 ]
