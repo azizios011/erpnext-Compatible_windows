@@ -1,9 +1,16 @@
-// Axeane accounting context (dock selector) + search scope.
+// Axeane accounting context (dock selector) + explicit-context UX + search scope.
 //
 // 1. A dock utility button ("Contexte comptable") between the Search and
 //    Notifications utilities, opening a frappe.ui.Dropdown with two nested
 //    side lists (Entreprise / Exercice) backed by frappe.boot.axeane_context.
-// 2. When frappe.boot.axeane_search_scope exists (everyone but
+//    The context is EXPLICIT: nothing is auto-picked — an incomplete context
+//    shows the button with an attention dot and a "choisissez…" tooltip, and
+//    picking an Entreprise asks for the Exercice next.
+// 2. While the context is incomplete, the gated routes (the scoped doctypes'
+//    lists, the Ledger Data / Balance reports, the lettrage / entries /
+//    envoi-multiple pages) carry a warning banner with a Choisir button that
+//    opens the dock selector.
+// 3. When frappe.boot.axeane_search_scope exists (everyone but
 //    Administrator), the awesome-bar sources are filtered to the custom
 //    modules' items. Display filter only — not a permission change: direct
 //    URLs and the sidebar keep working.
@@ -22,7 +29,9 @@
 
 	function apply_context(ctx) {
 		frappe.boot.axeane_context = ctx;
+		if (ctx.has_context) pending_exercice = false;
 		refresh_tooltip();
+		refresh_banner();
 		$(document).trigger("axeane-context-changed", ctx);
 		// open lists pick up route options on re-render; the router's own
 		// render() re-runs the current route in this frappe version
@@ -58,17 +67,31 @@
 				});
 			});
 		},
+		/** Open the dock selector (the banner's Choisir button and any other
+		 * caller that wants the user to pick a context now). */
+		open_selector() {
+			open_selector();
+		},
 	};
 
 	// ── dock utility ─────────────────────────────────────────────────────────
 
 	let context_tooltip = null;
 	let dropdown = null;
+	// set when an Entreprise pick left the context incomplete: the Exercice
+	// row carries the "choose it now" state until both are set
+	let pending_exercice = false;
 
 	function tooltip_text() {
 		const ctx = context() || {};
+		const missing = [];
+		if (!ctx.entreprise) missing.push(__("l'entreprise"));
+		if (!ctx.exercice) missing.push(__("l'exercice"));
+		if (missing.length) {
+			return __("Contexte incomplet — choisissez {0}", [missing.join(" " + __("et") + " ")]);
+		}
 		const parts = [];
-		if (ctx.entreprise) parts.push(ctx.entreprise);
+		if (ctx.entreprise_label) parts.push(ctx.entreprise_label);
 		if (ctx.exercice_label) parts.push(ctx.exercice_label);
 		return parts.length ? parts.join(" · ") : __("Contexte comptable");
 	}
@@ -76,7 +99,30 @@
 	function refresh_tooltip() {
 		const $btn = $("#axeane-context-utility");
 		if (!$btn.length) return;
+		const ctx = context() || {};
+		$btn.toggleClass("axeane-context-incomplete", !ctx.has_context);
 		attach_tooltip($btn);
+	}
+
+	function inject_attention_css() {
+		// the incomplete-context dot on the dock button (frappe's dock has no
+		// attention state of its own)
+		if (frappe.__axeane_context_css) return;
+		frappe.__axeane_context_css = true;
+		$(`<style>
+			.axeane-context-utility { position: relative; }
+			.axeane-context-utility.axeane-context-incomplete::after {
+				content: "";
+				position: absolute;
+				top: 3px;
+				right: 3px;
+				width: 9px;
+				height: 9px;
+				border-radius: 50%;
+				background: var(--bg-orange, #ffd8a8);
+				border: 1px solid var(--text-color);
+			}
+		</style>`).appendTo("head");
 	}
 
 	function attach_tooltip($btn) {
@@ -148,6 +194,8 @@
 				});
 			},
 		});
+		// a freshly inserted button carries the incomplete state right away
+		refresh_tooltip();
 	}
 
 	function menu_options() {
@@ -169,7 +217,10 @@
 				select("exercice", row.name);
 			},
 		}));
-		if (!exercice_rows.length) {
+		if (!ctx.entreprise) {
+			// no Entreprise chosen: the Exercice list waits for it
+			exercice_rows.push({ label: __("Choisissez d'abord une entreprise"), disabled: true });
+		} else if (!exercice_rows.length) {
 			exercice_rows.push({ label: __("Aucun exercice"), disabled: true });
 			exercice_rows.push({
 				label: __("Creer un exercice"),
@@ -182,12 +233,14 @@
 		return [
 			{ group: __("Contexte comptable") },
 			{
-				label: `${__("Entreprise")}: ${ctx.entreprise || "—"}`,
+				label: `${__("Entreprise")}: ${ctx.entreprise_label || ctx.entreprise || __("Choisir...")}`,
 				icon: "building",
 				submenu: entreprise_rows,
 			},
 			{
-				label: `${__("Exercice")}: ${ctx.exercice_label || "—"}`,
+				label: `${__("Exercice")}: ${
+					pending_exercice ? __("Choisir maintenant") : ctx.exercice_label || __("Choisir...")
+				}`,
 				icon: "calendar",
 				submenu: exercice_rows,
 			},
@@ -204,10 +257,27 @@
 			.set(args.entreprise || "", args.exercice || "")
 			.then((ctx) => {
 				if (!ctx) return;
-				frappe.show_alert({
-					message: __("Contexte comptable: {0} · {1}", [ctx.entreprise, ctx.exercice_label]),
-					indicator: "green",
-				});
+				if (kind === "entreprise" && !ctx.has_context) {
+					// the picked Entreprise never carries an Exercice: ask for it now
+					pending_exercice = true;
+					frappe.show_alert({
+						message: __("Contexte comptable: {0}. Choisissez maintenant l'exercice.", [
+							ctx.entreprise_label || ctx.entreprise,
+						]),
+						indicator: "orange",
+					});
+				} else if (ctx.has_context) {
+					pending_exercice = false;
+					frappe.show_alert({
+						message: __("Contexte comptable: {0} · {1}", [ctx.entreprise_label || ctx.entreprise, ctx.exercice_label]),
+						indicator: "green",
+					});
+				} else {
+					frappe.show_alert({
+						message: __("Contexte incomplet — choisissez l'entreprise et l'exercice"),
+						indicator: "orange",
+					});
+				}
 				// the exercice list follows the freshly selected Entreprise
 				if (dropdown) dropdown.set_options(menu_options());
 			});
@@ -301,6 +371,64 @@
 		}
 	}
 
+	// ── banner while the context is missing ─────────────────────────────────
+
+	// the routes that show nothing useful without a context: the scoped
+	// doctypes' lists, the two ledger reports and the full-page tools
+	const BANNER_GATED_PAGES = new Set(["lettrage", "payable", "receivable", "envoi-multiple"]);
+	const BANNER_GATED_REPORTS = new Set(["Ledger Data", "Balance"]);
+
+	function gated_route() {
+		const ctx = context() || {};
+		if (ctx.has_context) return null;
+		const route = frappe.get_route() || [];
+		if (!route.length) return null;
+		if (route[0] === "query-report" && BANNER_GATED_REPORTS.has(route[1])) {
+			return route.join("/");
+		}
+		if (BANNER_GATED_PAGES.has(route[0])) {
+			return route.join("/");
+		}
+		// the lists: /app/<slug of the doctype name>
+		const scoped = (frappe.boot.scoped_doctypes || []).map((doctype) =>
+			frappe.router.slug((doctype || "").toLowerCase())
+		);
+		if (route.some((segment) => scoped.includes(frappe.router.slug((segment || "").toLowerCase())))) {
+			return route.join("/");
+		}
+		return null;
+	}
+
+	function refresh_banner() {
+		const key = gated_route();
+		const $banner = $(".axeane-context-banner");
+		if (!key) {
+			$banner.remove();
+			return;
+		}
+		if ($banner.attr("data-route") === key) return; // already shown for this route
+		$banner.remove();
+		$(`<div class="axeane-context-banner alert alert-warning" data-route="${esc(key)}">
+			${__("Choisissez une entreprise et un exercice dans le contexte comptable")}
+			<button class="btn btn-xs btn-primary axeane-context-banner-choose">${__("Choisir")}</button>
+		</div>`)
+			.prependTo(".layout-main-section")
+			.find(".axeane-context-banner-choose")
+			.on("click", () => open_selector());
+	}
+
+	function open_selector() {
+		// the dock button IS the selector: refresh its options, then open it
+		const $btn = $("#axeane-context-utility");
+		if (!$btn.length) return;
+		if (dropdown) {
+			dropdown.set_options(menu_options());
+			if (!dropdown.is_open) $btn.trigger("click");
+		} else {
+			$btn.trigger("click");
+		}
+	}
+
 	// ── search scope (client) ────────────────────────────────────────────────
 
 	function target_of(result) {
@@ -368,8 +496,12 @@
 	}
 
 	function boot() {
+		inject_attention_css();
 		patch_dock();
 		bind_submenu_search();
+		// the banner follows every page render and every context change
+		$(document).on("page-change", refresh_banner);
+		refresh_banner();
 		// the search utils land with the desk bundle; they are already there
 		// when this bundle loads (app includes come last), but retry briefly
 		// in case the load order changes
