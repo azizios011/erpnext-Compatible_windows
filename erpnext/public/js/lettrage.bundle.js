@@ -51,7 +51,10 @@
 		}
 		state = {
 			$container,
-			page: (opts && opts.page) || null,
+			// the Frappe Page object (the header buttons live on it); the
+			// pagination's current page is `page` below — esbuild warns on a
+			// duplicate key, so the two must never share a name
+			page_obj: (opts && opts.page) || null,
 			category: "Tous",
 			search: "",
 			hide_settled: 1,
@@ -229,7 +232,7 @@
 	// the tool's header buttons live on the page (page.add_inner_button /
 	// page.set_primary_action); they close over the live state
 	function setup_page_buttons() {
-		const page = state.page;
+		const page = state.page_obj;
 		if (!page) return;
 		page.set_primary_action(__("Lettrage automatique"), () => run_auto("lettrage"));
 		page.add_inner_button(__("Delettrage automatique"), () => {
