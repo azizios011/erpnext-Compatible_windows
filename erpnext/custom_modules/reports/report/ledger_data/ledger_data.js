@@ -217,7 +217,7 @@ frappe.query_reports["Ledger Data"] = {
 		const view_state = {
 			active: "list", // the default view on every load
 			containers: {},
-			switcher: null,
+			switcher: {},
 		};
 
 		if (!frappe._ledger_view_css) {
@@ -277,13 +277,14 @@ frappe.query_reports["Ledger Data"] = {
 		const make_switcher = () => {
 			// same markup and behaviour as frappe.views.ListViewSelect: a
 			// custom-btn-group view-switcher with a frappe.ui.Dropdown behind
-			// its frappe.ui.button trigger
+			// its frappe.ui.button trigger. The elements are stored on
+			// view_state.switcher BEFORE set_trigger_content() reads them.
 			const $wrapper = $('<div class="custom-btn-group view-switcher"></div>');
 			const $trigger = frappe.ui.button({ css_class: "ellipsis" });
-			set_trigger_content();
-			$wrapper.append($trigger);
 			view_state.switcher.$wrapper = $wrapper;
 			view_state.switcher.$trigger = $trigger;
+			set_trigger_content();
+			$wrapper.append($trigger);
 			view_state.switcher.dropdown = new frappe.ui.Dropdown({
 				trigger: $trigger,
 				options: () => get_view_options(),
