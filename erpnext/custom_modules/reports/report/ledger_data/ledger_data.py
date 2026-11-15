@@ -9,7 +9,7 @@ balances and running totals) stays here: it will feed the OnlyOffice-based
 PDF and XLSX views later — PDF and XLSX are placeholders in the client.
 """
 
-from datetime import timedelta
+from datetime import date, timedelta
 
 import frappe
 from frappe import _
@@ -17,14 +17,14 @@ from frappe.utils import flt, getdate
 
 from erpnext.custom_modules.organization.context import require_context
 from erpnext.custom_modules.reports.report_common import (
-	_as_list,
-	_check_permission,
-	_exercice_year,
-	_resolve_period,
 	AUX_CLIENT_PREFIX,
 	AUX_FOURNISSEUR_PREFIX,
 	BALANCE_TOLERANCE,
 	REPORT_CURRENCY,
+	as_list,
+	check_ledger_read_permission,
+	exercice_year,
+	resolve_period,
 )
 
 LEDGER_DOCTYPE = "Ecriture Comptable"
@@ -72,9 +72,9 @@ def _ledger_filters(filters: dict, context: dict, from_date: date, to_date: date
 		["exercice", "=", context["exercice"]],
 	]
 	if filters.get("journal"):
-		out.append(["journal", "in", _as_list(filters["journal"])])
+		out.append(["journal", "in", as_list(filters["journal"])])
 	if filters.get("mvt"):
-		out.append(["mvt", "in", _as_list(filters["mvt"])])
+		out.append(["mvt", "in", as_list(filters["mvt"])])
 	if filters.get("devise"):
 		out.append(["devise", "=", filters["devise"]])
 	lettrage = filters.get("lettrage") or "Tous"
@@ -92,8 +92,8 @@ def _ledger_filters(filters: dict, context: dict, from_date: date, to_date: date
 
 
 def _get_rows(filters: dict, context: dict) -> list[dict]:
-	_check_permission()
-	from_date, to_date = _resolve_period(filters, context)
+	check_ledger_read_permission()
+	from_date, to_date = resolve_period(filters, context)
 	rows = frappe.get_all(
 		LEDGER_DOCTYPE,
 		filters=_ledger_filters(filters, context, from_date, to_date),
@@ -198,8 +198,8 @@ def _get_grille_rows(filters: dict, context: dict) -> list[dict]:
 	if not rows:
 		return []
 
-	from_date, to_date = _resolve_period(filters, context)
-	year = _exercice_year(context)
+	from_date, to_date = resolve_period(filters, context)
+	year = exercice_year(context)
 
 	accounts: list[str] = []
 	by_account: dict[str, list] = {}

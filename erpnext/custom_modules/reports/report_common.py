@@ -14,6 +14,10 @@ from frappe.utils import flt, getdate, nowdate
 
 LEDGER_DOCTYPE = "Ecriture Comptable"
 
+# the reports' summary cards carry the base currency (the devise filter
+# only narrows the rows)
+REPORT_CURRENCY = "TND"
+
 # auxiliary ledgers are the client / supplier account-number prefixes
 AUX_CLIENT_PREFIX = "411"
 AUX_FOURNISSEUR_PREFIX = "401"

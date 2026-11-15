@@ -20,11 +20,11 @@ from frappe.utils import flt, getdate
 
 from erpnext.custom_modules.organization.context import require_context
 from erpnext.custom_modules.reports.report_common import (
-	_check_permission,
-	_resolve_period,
 	AUX_CLIENT_PREFIX,
 	AUX_FOURNISSEUR_PREFIX,
 	BALANCE_TOLERANCE,
+	check_ledger_read_permission,
+	resolve_period,
 )
 
 LEDGER_DOCTYPE = "Ecriture Comptable"
@@ -38,16 +38,18 @@ AUX_PREFIX_BY_TYPE = {
 def execute(filters=None) -> tuple:
 	filters = filters or {}
 	context = require_context()
-	_check_permission()
-	from_date, to_date = _resolve_period(filters, context)
+	check_ledger_read_permission()
+	from_date, to_date = resolve_period(filters, context)
 	exercice_debut = getdate(context["date_debut"]) if context.get("date_debut") else None
 	devise = filters.get("devise") or "TND"
 
 	# the account set: balance type (prefix) + the account_from / account_to
-	# number range, resolved against the Entreprise's chart
+	# number range, resolved against the Entreprise's chart. Groups are kept:
+	# an imported Grand Livre can carry class-level numbers (401), and Ledger
+	# Data shows those rows — Balance must not silently drop them
 	chart = frappe.get_all(
 		"Chart of Account",
-		filters={"entreprise": context["entreprise"], "is_group": 0, "disabled": 0},
+		filters={"entreprise": context["entreprise"], "disabled": 0},
 		fields=["name", "account_number", "account_name"],
 	)
 	accounts = _selected_accounts(chart, filters)
@@ -76,7 +78,7 @@ def execute(filters=None) -> tuple:
 		fields=["name", "posting_date", "account", "debit", "credit"],
 	)
 
-	aggregated = _aggregate(rows, accounts, from_date, to_date, chart)
+	aggregated = _aggregate(rows, chart, from_date, to_date)
 	out = _balance_rows(aggregated, filters, devise)
 
 	return get_columns(devise), out, None, None, _movement_summary(out, devise)
@@ -103,16 +105,29 @@ def _selected_accounts(chart: list[dict], filters: dict) -> dict:
 	return selected
 
 
-def _aggregate(rows: list[dict], accounts: dict[str, dict], from_date, to_date) -> dict:
-	"""Per-account opening / movement sums. Rows before the period build the
-	opening side; rows inside it build the movement."""
+def _aggregate(rows: list[dict], chart: list[dict], from_date, to_date) -> dict:
+	"""Per-account opening / movement sums, keyed by account. Rows before the
+	period build the opening side; rows inside it build the movement; the
+	chart fills the number / label the Compte column shows. Accounts without
+	ledger rows never appear (one row per account with rows up to the period
+	end)."""
 	from_date = getdate(from_date)
 	to_date = getdate(to_date)
+	by_name = {row["name"]: row for row in chart}
+	aggregated: dict[str, dict] = {}
 	for row in rows:
-		entry = accounts.setdefault(
-			row.account,
-			{"number": "", "libelle": "", "opening_debit": 0.0, "opening_credit": 0.0, "movement_debit": 0.0, "movement_credit": 0.0},
-		)
+		entry = aggregated.get(row.account)
+		if entry is None:
+			chart_row = by_name.get(row.account) or {}
+			entry = {
+				"number": chart_row.get("account_number") or "",
+				"libelle": chart_row.get("account_name") or "",
+				"opening_debit": 0.0,
+				"opening_credit": 0.0,
+				"movement_debit": 0.0,
+				"movement_credit": 0.0,
+			}
+			aggregated[row.account] = entry
 		posting = getdate(row.posting_date) if row.posting_date else None
 		if posting and posting < from_date:
 			entry["opening_debit"] = flt(entry["opening_debit"] + flt(row.debit), 3)
@@ -120,7 +135,7 @@ def _aggregate(rows: list[dict], accounts: dict[str, dict], from_date, to_date) 
 		else:
 			entry["movement_debit"] = flt(entry["movement_debit"] + flt(row.debit), 3)
 			entry["movement_credit"] = flt(entry["movement_credit"] + flt(row.credit), 3)
-	return accounts
+	return aggregated
 
 
 def _balance_rows(aggregated: dict, filters: dict, devise: str) -> list[dict]:
