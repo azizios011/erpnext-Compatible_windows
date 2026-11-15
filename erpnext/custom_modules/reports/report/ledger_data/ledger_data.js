@@ -240,5 +240,189 @@ frappe.query_reports["Ledger Data"] = {
 				},
 			},
 		});
+
+		setup_import_actions(report);
 	}
 };
+
+// ── Grand Livre xlsx import (Accounts Manager / System Manager) ──────────────
+// The dry run fills the dialog with the counts, the debit/credit totals, the
+// blockers and the warnings; the import only runs once the dry run is clean.
+// Server side everything is re-validated (ledger_import.py), all or nothing.
+
+const GL_IMPORT_METHOD = "erpnext.custom_modules.reports.ledger_import";
+const GL_IMPORT_ROLES = ["Accounts Manager", "System Manager"];
+
+function can_manage_import() {
+	return GL_IMPORT_ROLES.some((role) => frappe.user_roles.includes(role));
+}
+
+function setup_import_actions(report) {
+	if (!can_manage_import()) return;
+	report.page.add_inner_button(__("Importer Grand Livre"), () => open_import_dialog());
+	report.page.add_menu_item(__("Supprimer l'import"), () => delete_import_rows());
+}
+
+function delete_import_rows() {
+	const context = (window.axeane && axeane.context && axeane.context.get()) || {};
+	frappe.confirm(
+		__(
+			"Supprimer les lignes importees du contexte {0} · {1} ? Les lignes des ecritures ne sont pas touchees.",
+			[context.entreprise_label || "—", context.exercice_label || "—"]
+		),
+		() => {
+			frappe.call({
+				method: GL_IMPORT_METHOD + ".delete_import",
+				freeze: true,
+				callback(r) {
+					frappe.show_alert({
+						message: __("Import supprime: {0} ligne(s).", [r.message ? r.message.deleted : 0]),
+						indicator: "green",
+					});
+					frappe.query_report.refresh();
+				},
+			});
+		}
+	);
+}
+
+function open_import_dialog() {
+	const context = (window.axeane && axeane.context && axeane.context.get()) || {};
+	const dialog = new frappe.ui.Dialog({
+		title: [__("Importer Grand Livre"), context.entreprise_label, context.exercice_label]
+			.filter(Boolean)
+			.join(" · "),
+		fields: [
+			{
+				fieldname: "file",
+				fieldtype: "Attach",
+				label: __("Fichier Excel (.xlsx)"),
+				reqd: 1,
+				description: __("Feuille unique: Date | Mvt | Compte | Libellé | Journal | Pièce | Débit | Crédit"),
+			},
+			{
+				fieldname: "verify_html",
+				fieldtype: "HTML",
+				options: `<button class="btn btn-default btn-sm gl-import-verify">${__("Verifier")}</button>`,
+			},
+			{ fieldname: "summary", fieldtype: "HTML", options: "" },
+			{
+				fieldname: "create_journals",
+				fieldtype: "Check",
+				label: __("Creer les journaux manquants"),
+				default: 1,
+			},
+			{
+				fieldname: "replace",
+				fieldtype: "Check",
+				label: __("Remplacer l'import precedent"),
+				default: 0,
+				hidden: 1,
+			},
+		],
+		primary_action_label: __("Importer"),
+		primary_action: () => run_import(dialog),
+	});
+	dialog.show();
+	dialog.disable_primary_action();
+	dialog.$wrapper.find(".gl-import-verify").on("click", () => verify_file(dialog));
+}
+
+function verify_file(dialog) {
+	const file_url = dialog.get_value("file");
+	if (!file_url || !file_url.toLowerCase().endsWith(".xlsx")) {
+		frappe.msgprint({ message: __("Choisissez un fichier Excel .xlsx."), indicator: "red" });
+		return;
+	}
+	dialog.disable_primary_action();
+	frappe.call({
+		method: GL_IMPORT_METHOD + ".validate_grand_livre",
+		args: { file_url },
+		freeze: true,
+		callback(r) {
+			const validation = r.message || {};
+			render_import_summary(dialog, validation);
+			if (!(validation.blockers || []).length) {
+				dialog.enable_primary_action();
+			}
+			// the previous import only matters when the user wants it replaced
+			const replace_field = dialog.get_field("replace");
+			replace_field.df.hidden = (validation.existing_import_rows || 0) === 0;
+			replace_field.refresh();
+		},
+	});
+}
+
+function render_import_summary(dialog, validation) {
+	const $area = dialog.fields_dict.summary.$wrapper;
+	const esc = frappe.utils.escape_html;
+	const blockers = validation.blockers || [];
+	const warnings = validation.warnings || [];
+
+	const stats = [
+		{ label: __("Lignes"), value: validation.rows || 0 },
+		{ label: __("Ecritures"), value: validation.entries || 0 },
+		{ label: __("Comptes"), value: validation.accounts || 0 },
+		{ label: __("Journaux"), value: validation.journals || 0 },
+		{ label: __("Total Debit"), value: format_number(validation.total_debit || 0) },
+		{ label: __("Total Credit"), value: format_number(validation.total_credit || 0) },
+	];
+	if (validation.date_min) {
+		stats.push({ label: __("Periode"), value: `${validation.date_min} → ${validation.date_max}` });
+	}
+	const $stats = $('<div class="report-summary gl-import-stats"></div>');
+	stats.forEach((item) =>
+		$stats.append(
+			frappe.utils.build_summary_item({
+				label: item.label,
+				value: item.value,
+				datatype: "Data",
+			})
+		)
+	);
+
+	const list = (items) => `<ul class="gl-import-list">${items.map((item) => `<li>${esc(item)}</li>`).join("")}</ul>`;
+	let html = $stats.prop("outerHTML");
+	if (blockers.length) {
+		html += `<div class="alert alert-danger" style="margin-top: 8px;">${__("Bloquants")}${list(blockers)}</div>`;
+	} else {
+		html += `<div class="alert alert-success" style="margin-top: 8px;">${__(
+			"Validation reussie: aucune anomalie bloquante."
+		)}</div>`;
+	}
+	if (warnings.length) {
+		html += `<div class="alert alert-warning" style="margin-top: 8px;">${__("Avertissements")}${list(warnings)}</div>`;
+	}
+	$area.html(html);
+}
+
+function run_import(dialog) {
+	const file_url = dialog.get_value("file");
+	if (!file_url) return;
+	return frappe.call({
+		method: GL_IMPORT_METHOD + ".import_grand_livre",
+		args: {
+			file_url,
+			replace: dialog.get_value("replace") ? 1 : 0,
+			create_journals: dialog.get_value("create_journals") ? 1 : 0,
+		},
+		freeze: true,
+		callback(r) {
+			const result = r.message || {};
+			dialog.hide();
+			const journals = (result.journals_created || []).join(", ");
+			frappe.show_alert({
+				message:
+					__("Import termine: {0} ligne(s), {1} ecriture(s), lot {2}.", [
+						result.inserted || 0,
+						result.entries || 0,
+						result.batch || "",
+					]) + (journals ? " " + __("Journaux crees: {0}.", [journals]) : ""),
+				indicator: "green",
+			});
+			// the freshly imported exercice reads best as a whole: Annuelle
+			frappe.query_report.set_filter_value("period_type", "Annuelle");
+			frappe.query_report.refresh();
+		},
+	});
+}

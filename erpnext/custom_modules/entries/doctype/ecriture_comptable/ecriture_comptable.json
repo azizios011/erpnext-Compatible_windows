@@ -34,7 +34,8 @@
   "source_entry",
   "cb_ledger2",
   "source_doctype",
-  "source_name"
+  "source_name",
+  "import_batch"
  ],
  "fields": [
   {"fieldname": "posting_date", "fieldtype": "Date", "reqd": 1, "in_list_view": 1, "label": "Posting Date", "search_index": 1},
@@ -63,10 +64,11 @@
   {"fieldname": "source_entry", "fieldtype": "Dynamic Link", "options": "source_entry_doctype", "label": "Source Entry"},
   {"fieldname": "cb_ledger2", "fieldtype": "Column Break"},
   {"fieldname": "source_doctype", "fieldtype": "Link", "options": "DocType", "label": "Source DocType"},
-  {"fieldname": "source_name", "fieldtype": "Dynamic Link", "options": "source_doctype", "label": "Source Name"}
+  {"fieldname": "source_name", "fieldtype": "Dynamic Link", "options": "source_doctype", "label": "Source Name"},
+  {"fieldname": "import_batch", "fieldtype": "Data", "read_only": 1, "search_index": 1, "label": "Lot d'import", "in_list_view": 0}
  ],
  "links": [],
- "modified": "2026-11-08 23:45:00.000000",
+ "modified": "2026-11-15 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "Entries",
  "name": "Ecriture Comptable",
