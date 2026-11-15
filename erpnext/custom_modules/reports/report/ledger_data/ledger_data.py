@@ -54,7 +54,8 @@ def execute(filters=None) -> tuple:
 		columns = _get_grille_columns()
 		rows = _get_grille_rows(filters, context)
 		# the groups carry their own totals: no datatable total row
-		return columns, rows, None, None, _get_report_summary(_flat_rows(rows)), 1
+		# add_total_row is 0: the datatable never builds a total row anyway
+		return columns, rows, None, None, _get_report_summary(_flat_rows(rows))
 	columns = get_columns()
 	rows = _get_rows(filters, context)
 	return columns, rows, None, None, _get_report_summary(rows)
