@@ -1,9 +1,7 @@
-// Lettrage tool form: the UI is rendered by erpnext.lettrage (the
-// lettrage bundle, loaded via app_include_js) into the ui_html field.
+// The Lettrage tool is a classic Page (frappe.pages["lettrage"]) rendered by
+// erpnext.lettrage — the single doctype form is never shown.
 frappe.ui.form.on("Lettrage", {
-	refresh(frm) {
-		if (window.erpnext && erpnext.lettrage) {
-			erpnext.lettrage.render(frm);
-		}
+	refresh() {
+		frappe.set_route("lettrage");
 	},
 });

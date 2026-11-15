@@ -1,7 +1,10 @@
-// Lettrage — the "Saisie du lettrage" tool UI (Axeane screen), rendered into
-// the Lettrage form's ui_html field. Left panel: account cards by category.
-// Right panel: line table with tabs, filters, selection lettering, pointage
-// and the background auto-lettrage progress. Served as a hashed bundle.
+// Lettrage — the "Saisie du lettrage" tool (Axeane screen), rendered by the
+// classic Page frappe.pages["lettrage"] into the page's main container.
+// Left panel: account cards by category. Right panel: line table with tabs,
+// filters, selection lettering, pointage and the background auto-lettrage
+// progress. Served as a hashed bundle. The page owns the header buttons
+// (page.add_inner_button / set_primary_action); every query is scoped
+// server-side by the dock context, and a context switch re-renders the tool.
 (function () {
 	"use strict";
 
@@ -39,15 +42,16 @@
 		return value === null || value === undefined ? "" : String(value);
 	}
 
-	erpnext.lettrage = { render };
+	erpnext.lettrage = { render, refresh };
 
-	function render(frm) {
-		const wrapper = frm.fields_dict.ui_html && frm.fields_dict.ui_html.$wrapper;
-		if (!wrapper) {
+	function render(opts) {
+		const $container = opts && opts.$container;
+		if (!$container) {
 			return;
 		}
 		state = {
-			frm,
+			$container,
+			page: (opts && opts.page) || null,
 			category: "Tous",
 			search: "",
 			hide_settled: 1,
@@ -68,20 +72,27 @@
 				pointe: 1,
 			},
 		};
-		wrapper.html(shell_html());
-		bind_shell(wrapper);
+		$container.html(shell_html());
+		bind_shell($container);
+		setup_page_buttons();
 		bind_realtime();
-		bind_context_changes(wrapper);
+		bind_context_changes($container);
 		load_accounts();
 	}
 
+	/** The tool's own refresh (page buttons, context switches). */
+	function refresh() {
+		load_accounts();
+		load_lines();
+	}
+
 	/** Every query is scoped server-side by the dock context: a context
-	 * switch simply re-runs them. */
-	function bind_context_changes(wrapper) {
+	 * switch simply re-runs them while the tool is on screen. */
+	function bind_context_changes($container) {
 		$(document)
 			.off("axeane-context-changed.lettrage")
 			.on("axeane-context-changed.lettrage", () => {
-				if (!wrapper.is(":visible") || !$("#lettrage-lines-wrap").length) {
+				if (!$container.is(":visible") || !state || !state.$container.find("#lettrage-lines-wrap").length) {
 					return;
 				}
 				state.selection = {};
@@ -93,8 +104,8 @@
 	function shell_html() {
 		return `
 			<style>
-				.lettrage-tool { display: flex; gap: 12px; align-items: stretch; min-height: 70vh; }
-				.lettrage-left { width: 300px; min-width: 240px; border: 1px solid var(--border-color); border-radius: 8px; display: flex; flex-direction: column; max-height: 78vh; }
+				.lettrage-tool { display: flex; gap: 12px; align-items: stretch; min-height: calc(100vh - 175px); }
+				.lettrage-left { width: 300px; min-width: 240px; border: 1px solid var(--border-color); border-radius: 8px; display: flex; flex-direction: column; max-height: none; }
 				.lettrage-left.collapsed { width: 44px; min-width: 44px; cursor: pointer; }
 				.lettrage-left.collapsed .lettrage-left-body { display: none; }
 				.lettrage-left-body { padding: 10px; overflow-y: auto; flex: 1; }
@@ -155,7 +166,6 @@
 						<div id="lettrage-account-head"></div>
 						<div class="lettrage-stats" id="lettrage-stats"></div>
 					</div>
-					<div id="lettrage-top-actions" style="margin: 6px 0;"></div>
 					<div class="lettrage-progress" id="lettrage-progress"></div>
 					<div class="lettrage-tabs" id="lettrage-line-tabs"></div>
 					<div id="lettrage-lines-wrap"></div>
@@ -166,23 +176,23 @@
 		`;
 	}
 
-	function bind_shell(wrapper) {
-		wrapper.find("#lettrage-left").on("click", (e) => {
+	function bind_shell($container) {
+		$container.find("#lettrage-left").on("click", (e) => {
 			if ($(e.target).closest("input, button, .lettrage-account-card").length) return;
-			wrapper.find("#lettrage-left").toggleClass("collapsed");
+			$container.find("#lettrage-left").toggleClass("collapsed");
 		});
-		wrapper.find("#lettrage-search").on(
+		$container.find("#lettrage-search").on(
 			"input",
 			frappe.utils.debounce(() => {
-				state.search = wrapper.find("#lettrage-search").val();
+				state.search = $container.find("#lettrage-search").val();
 				load_accounts();
 			}, 300)
 		);
-		wrapper.find("#lettrage-hide-settled").on("change", (e) => {
+		$container.find("#lettrage-hide-settled").on("change", (e) => {
 			state.hide_settled = e.target.checked ? 1 : 0;
 			load_accounts();
 		});
-		wrapper.find(".tu-sort").on("click", (e) => {
+		$container.find(".tu-sort").on("click", (e) => {
 			state.sort_by = $(e.currentTarget).data("sort");
 			load_accounts();
 		});
@@ -192,7 +202,7 @@
 		if (realtime_bound) return;
 		realtime_bound = true;
 		frappe.realtime.on("lettrage_progress", (data) => {
-			const $progress = $("#lettrage-progress");
+			const $progress = state && state.$container ? state.$container.find("#lettrage-progress") : $();
 			if (!$progress.length || !data) return;
 			if (data.phase === "run") {
 				$progress.html(
@@ -210,10 +220,27 @@
 						[data.groups || 0, data.lines || 0, data.skipped || 0]
 					)}</div>`
 				);
-				if (state.account) load_lines();
-				load_accounts();
+				if (state && state.account) load_lines();
+				if (state) load_accounts();
 			}
 		});
+	}
+
+	// the tool's header buttons live on the page (page.add_inner_button /
+	// page.set_primary_action); they close over the live state
+	function setup_page_buttons() {
+		const page = state.page;
+		if (!page) return;
+		page.set_primary_action(__("Lettrage automatique"), () => run_auto("lettrage"));
+		page.add_inner_button(__("Delettrage automatique"), () => {
+			frappe.confirm(__("Delettrer tous les groupes automatiques de la selection ?"), () =>
+				run_auto("delettrage")
+			);
+		});
+		page.add_inner_button(__("Suggerer"), () => show_suggestions());
+		page.add_inner_button(__("Filtres"), () => show_filters_dialog());
+		page.add_inner_button(__("Affichage"), () => show_columns_dialog());
+		page.add_inner_button(__("Refresh"), () => refresh());
 	}
 
 	function load_accounts() {
@@ -239,8 +266,9 @@
 			const label = cat === "Debiteurs-Crediteurs" ? __("Debiteurs-Crediteurs") : __(cat);
 			return `<button class="btn btn-xs btn-default ${state.category === cat ? "active" : ""}" data-cat="${esc(cat)}">${label}</button>`;
 		}).join("");
-		$("#lettrage-cats").html(html);
-		$("#lettrage-cats button")
+		state.$container.find("#lettrage-cats").html(html);
+		state.$container
+			.find("#lettrage-cats button")
 			.off("click")
 			.on("click", (e) => {
 				state.category = $(e.currentTarget).data("cat");
@@ -251,13 +279,13 @@
 	}
 
 	function render_overview(totals) {
-		$("#lettrage-overview").html(
+		state.$container.find("#lettrage-overview").html(
 			`<b>${__("Vue d'ensemble")}</b><br>
 			${__("{0} compte(s)", [totals.account_count || 0])} ·
 			${__("total {0} a lettrer", [totals.total_a_lettrer || 0])}
 			${totals.hidden_settled ? ` · ${__("{0} solde(s) masque(s)", [totals.hidden_settled])}` : ""}`
 		);
-		$("#lettrage-left-footer").html(
+		state.$container.find("#lettrage-left-footer").html(
 			`${__(" {0} compte(s)", [totals.account_count || 0])} · ${__(" {0} solde(s) masque(s)", [
 				totals.hidden_settled || 0,
 			])}`
@@ -265,7 +293,7 @@
 	}
 
 	function render_accounts(accounts) {
-		const $wrap = $("#lettrage-accounts");
+		const $wrap = state.$container.find("#lettrage-accounts");
 		if (!accounts.length) {
 			$wrap.html(`<div class="text-muted" style="padding:8px 0;">${__("No account to letter.")}</div>`);
 			return;
@@ -298,15 +326,14 @@
 	}
 
 	function load_lines() {
-		const $head = $("#lettrage-account-head");
+		const $head = state.$container.find("#lettrage-account-head");
 		if (!state.account) {
 			$head.html(`<div class="text-muted" style="padding: 20px 0;">${__("Pick an account on the left.")}</div>`);
-			$("#lettrage-stats").empty();
-			$("#lettrage-line-tabs").empty();
-			$("#lettrage-lines-wrap").empty();
-			$("#lettrage-right-footer").empty();
-			$("#lettrage-selection-bar").empty();
-			$("#lettrage-top-actions").empty();
+			state.$container.find("#lettrage-stats").empty();
+			state.$container.find("#lettrage-line-tabs").empty();
+			state.$container.find("#lettrage-lines-wrap").empty();
+			state.$container.find("#lettrage-right-footer").empty();
+			state.$container.find("#lettrage-selection-bar").empty();
 			return;
 		}
 		frappe.call({
@@ -323,7 +350,6 @@
 				state.total = message.total || 0;
 				render_account_head(message.stats || {});
 				render_tabs();
-				render_top_actions();
 				render_lines(message.rows || []);
 				render_footer(message);
 				render_selection_bar();
@@ -331,17 +357,13 @@
 		});
 	}
 
-	function account_info() {
-		return state.account_info || {};
-	}
-
 	function render_account_head(stats) {
 		const name = state.account ? state.account.split(" - ")[0] : "";
-		$("#lettrage-account-head").html(
+		state.$container.find("#lettrage-account-head").html(
 			`<b style="font-size:13px;">${esc(name)}</b>
 			<span class="jrn-chip">${esc(state.account || "")}</span>`
 		);
-		$("#lettrage-stats").html(
+		state.$container.find("#lettrage-stats").html(
 			`<div class="lettrage-stat"><div class="stat-label">${__("SOLDE")}</div>
 				<div class="stat-value">${fmt(stats.solde || 0)}</div></div>
 			<div class="lettrage-stat"><div class="stat-label">${__("NON LETTRE")}</div>
@@ -352,42 +374,19 @@
 	}
 
 	function render_tabs() {
-		$("#lettrage-line-tabs").html(
+		state.$container.find("#lettrage-line-tabs").html(
 			TABS.map(
 				(tab) =>
 					`<button class="btn btn-xs btn-default ${state.tab === tab ? "active" : ""}" data-tab="${esc(tab)}">${__(tab)}</button>`
 			).join("")
 		);
-		$("#lettrage-line-tabs button")
+		state.$container.find("#lettrage-line-tabs button")
 			.off("click")
 			.on("click", (e) => {
 				state.tab = $(e.currentTarget).data("tab");
 				state.page = 1;
 				load_lines();
 			});
-	}
-
-	function render_top_actions() {
-		$("#lettrage-top-actions").html(
-			`<button class="btn btn-primary btn-sm tu-auto">${__("Lettrage automatique")}</button>
-			<button class="btn btn-sm tu-auto-del" style="border:1px solid var(--text-on-red, #c0392b); color: var(--text-on-red, #c0392b);">${__(
-				"Delettrage automatique"
-			)}</button>
-			<button class="btn btn-default btn-sm tu-suggest">${__("Suggerer")}</button>
-			<button class="btn btn-default btn-sm tu-filters">${__("Filtres")}</button>
-			<button class="btn btn-default btn-sm tu-cols">${__("Affichage")}</button>
-			<button class="btn btn-default btn-sm tu-refresh">${__("Refresh")}</button>`
-		);
-		$("#lettrage-top-actions .tu-auto").on("click", () => run_auto("lettrage"));
-		$("#lettrage-top-actions .tu-auto-del").on("click", () => {
-			frappe.confirm(__("Delettrer tous les groupes automatiques de la selection ?"), () =>
-				run_auto("delettrage")
-			);
-		});
-		$("#lettrage-top-actions .tu-suggest").on("click", show_suggestions);
-		$("#lettrage-top-actions .tu-filters").on("click", show_filters_dialog);
-		$("#lettrage-top-actions .tu-cols").on("click", show_columns_dialog);
-		$("#lettrage-top-actions .tu-refresh").on("click", () => load_lines());
 	}
 
 	function run_auto(kind) {
@@ -443,8 +442,7 @@
 							},
 							callback() {
 								frappe.show_alert({ message: __("Lettrer OK."), indicator: "green" });
-								load_lines();
-								load_accounts();
+								refresh();
 							},
 						});
 					},
@@ -518,7 +516,7 @@
 
 	function render_lines(rows) {
 		const cols = columns_visible();
-		const $wrap = $("#lettrage-lines-wrap");
+		const $wrap = state.$container.find("#lettrage-lines-wrap");
 		if (!state.account) {
 			$wrap.empty();
 			return;
@@ -579,9 +577,8 @@
 		$wrap.find("#lettrage-check-all").on("change", (e) => {
 			const checked = e.target.checked;
 			rows.forEach((row) => {
-				state.selection[row.name] = checked ? row : undefined;
-				delete state.selection[row.name];
 				if (checked) state.selection[row.name] = row;
+				else delete state.selection[row.name];
 			});
 			$wrap.find(".tu-line-check").prop("checked", checked);
 			$wrap.find("tr").toggleClass("selected", checked);
@@ -633,7 +630,7 @@
 	}
 
 	function render_selection_bar() {
-		const $bar = $("#lettrage-selection-bar");
+		const $bar = state.$container.find("#lettrage-selection-bar");
 		const { names, debit, credit, ecart } = selection_totals();
 		if (!names.length) {
 			$bar.empty();
@@ -667,8 +664,7 @@
 				args: { names: JSON.stringify(names) },
 				callback() {
 					state.selection = {};
-					load_lines();
-					load_accounts();
+					refresh();
 				},
 			});
 		});
@@ -689,8 +685,7 @@
 					message: __("Lettre {0}: {1} ligne(s), ecart {2}.", [message.code, message.count, fmt(message.ecart)]),
 					indicator: message.status === "Lettre" ? "green" : "orange",
 				});
-				load_lines();
-				load_accounts();
+				refresh();
 			},
 		});
 	}
@@ -701,21 +696,21 @@
 				`<button class="btn btn-xs btn-default tu-page-size ${state.page_size === size ? "active" : ""}" data-size="${size}">${size}</button>`
 		).join("");
 		const total_pages = Math.max(Math.ceil((message.total || 0) / (message.page_size || state.page_size)), 1);
-		$("#lettrage-right-footer").html(
+		state.$container.find("#lettrage-right-footer").html(
 			`<span>${__(" {0} lignes", [message.total || 0])}</span>
 			<span>${page_size_options}</span>
 			<button class="btn btn-xs btn-default tu-page-prev" ${state.page <= 1 ? "disabled" : ""}>&larr;</button>
 			<span>${__("Page {0} of {1}", [message.page || 1, total_pages])}</span>
 			<button class="btn btn-xs btn-default tu-page-next" ${state.page >= total_pages ? "disabled" : ""}>&rarr;</button>`
 		);
-		$("#lettrage-right-footer .tu-page-size")
+		state.$container.find("#lettrage-right-footer .tu-page-size")
 			.off("click")
 			.on("click", (e) => {
 				state.page_size = $(e.currentTarget).data("size");
 				state.page = 1;
 				load_lines();
 			});
-		$("#lettrage-right-footer .tu-page-prev")
+		state.$container.find("#lettrage-right-footer .tu-page-prev")
 			.off("click")
 			.on("click", () => {
 				if (state.page > 1) {
@@ -723,7 +718,7 @@
 					load_lines();
 				}
 			});
-		$("#lettrage-right-footer .tu-page-next")
+		state.$container.find("#lettrage-right-footer .tu-page-next")
 			.off("click")
 			.on("click", () => {
 				state.page += 1;
