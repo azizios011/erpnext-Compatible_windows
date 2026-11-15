@@ -24,15 +24,6 @@ const GL_MONTHS = [
 	"Decembre",
 ];
 
-// the order the switcher shows
-const LEDGER_VIEW_ORDER = ["pdf", "list", "xlsx"];
-
-const LEDGER_VIEW_META = {
-	pdf: { label: __("PDF View"), icon: "file-text", css_class: "ledger-view-pdf" },
-	list: { label: __("List View"), icon: "list" },
-	xlsx: { label: __("XLSX View"), icon: "table", css_class: "ledger-view-xlsx" },
-};
-
 frappe.query_reports["Ledger Data"] = {
 	filters: [
 		{
@@ -213,165 +204,41 @@ frappe.query_reports["Ledger Data"] = {
 				});
 			});
 
-		// ── the three views: list (native report) / pdf / xlsx ───────────────
-		const view_state = {
-			active: "list", // the default view on every load
-			containers: {},
-			switcher: {},
-		};
-
-		if (!frappe._ledger_view_css) {
-			frappe._ledger_view_css = true;
-			$(`<style>
-				.layout-main-section.ledger-wide { padding: 0; }
-				.ledger-view-pdf, .ledger-view-xlsx {
-					width: 100%;
-					height: calc(100vh - var(--navbar-height, 48px) - var(--page-head-height, 60px));
-					background: var(--bg-color);
-				}
-				.report-summary.ledger-summary-bottom {
-					position: sticky;
-					bottom: 0;
-					z-index: 5;
-					margin: 0;
-					border-radius: 0;
-					border-bottom: none;
-					border-top: 1px solid var(--border-color);
-					background-color: var(--bg-color);
-					width: 100%;
-				}
-			</style>`).appendTo("head");
-		}
-
-		// one wide-open container per non-list view, hidden unless active
-		Object.entries(LEDGER_VIEW_META).forEach(([view, meta]) => {
-			if (!meta.css_class) return;
-			view_state.containers[view] = $(
-				`<div class="${meta.css_class}" style="display: none;"></div>`
-			).appendTo(report.page.main);
+		// the view switcher (PDF / List / XLSX) and the bottom summary bar
+		// are shared with the Balance report (report_views.bundle.js): the
+		// summary moves below the datatable in list view, the pdf / xlsx
+		// placeholders mount with the current filter values, and a dock
+		// context change re-runs the query and re-mounts the active view
+		erpnext.reports.setup_views(report, {
+			report_name: "Ledger Data",
+			views: {
+				pdf: {
+					mount(el) {
+						el.innerHTML = "";
+						el.appendChild(
+							frappe.ui.empty_state({
+								icon: "file-text",
+								title: __("Apercu PDF, bientot disponible"),
+								description: __("The PDF preview will be generated from the XLSX view."),
+							})
+						);
+					},
+					unmount() {},
+				},
+				xlsx: {
+					mount(el) {
+						el.innerHTML = "";
+						el.appendChild(
+							frappe.ui.empty_state({
+								icon: "table",
+								title: __("XLSX view, coming soon"),
+								description: __("The XLSX view will be generated from the same data."),
+							})
+						);
+					},
+					unmount() {},
+				},
+			},
 		});
-
-		const set_trigger_content = () => {
-			frappe.ui.button.dress(view_state.switcher.$trigger, {
-				label: LEDGER_VIEW_META[view_state.active].label,
-				icon: LEDGER_VIEW_META[view_state.active].icon,
-				icon_right: "chevrons-up-down",
-			});
-			view_state.switcher.$trigger
-				.find(".es-button__label")
-				.addClass("hidden-xs custom-btn-group-label");
-			view_state.switcher.$trigger.children("svg").last().addClass("hidden-xs");
-		};
-
-		const get_view_options = () =>
-			LEDGER_VIEW_ORDER.map((view) => {
-				const item = {
-					label: LEDGER_VIEW_META[view].label,
-					icon: LEDGER_VIEW_META[view].icon,
-				};
-				if (view_state.active === view) item.selected = true;
-				else item.onclick = () => set_view(view);
-				return item;
-			});
-
-		const make_switcher = () => {
-			// same markup and behaviour as frappe.views.ListViewSelect: a
-			// custom-btn-group view-switcher with a frappe.ui.Dropdown behind
-			// its frappe.ui.button trigger. The elements are stored on
-			// view_state.switcher BEFORE set_trigger_content() reads them.
-			const $wrapper = $('<div class="custom-btn-group view-switcher"></div>');
-			const $trigger = frappe.ui.button({ css_class: "ellipsis" });
-			view_state.switcher.$wrapper = $wrapper;
-			view_state.switcher.$trigger = $trigger;
-			set_trigger_content();
-			$wrapper.append($trigger);
-			view_state.switcher.dropdown = new frappe.ui.Dropdown({
-				trigger: $trigger,
-				options: () => get_view_options(),
-			});
-			const parent = frappe.is_mobile()
-				? report.page.custom_mobile_actions
-				: report.page.custom_actions;
-			// a re-onload must never duplicate the switcher
-			parent.removeClass("hide").find(".view-switcher").remove();
-			parent.removeClass("hide").append($wrapper);
-		};
-
-		// Frappe renders the summary above the datatable: the List view wants
-		// it at the bottom, sticky so it stays visible over long tables.
-		// Frappe re-shows it after every refresh — the
-		// after_datatable_render hook below re-applies this.
-		const move_summary_below = () => {
-			report.$summary.addClass("ledger-summary-bottom").appendTo(report.page.main);
-			report.$summary.show();
-		};
-
-		const show_list = () => {
-			// restore the native report: filters, datatable, summary at the
-			// bottom — no re-query, the loaded data stays
-			report.page.show_form();
-			report.$report.show();
-			report.page.main.removeClass("ledger-wide");
-			Object.values(view_state.containers).forEach(($container) => $container.hide());
-			move_summary_below();
-		};
-
-		const show_placeholder = (view) => {
-			// hide the native report and mount the placeholder with the
-			// CURRENT filter values
-			report.page.hide_form();
-			report.$report.hide();
-			report.$summary.hide();
-			report.page.main.addClass("ledger-wide");
-			const container = view_state.containers[view];
-			container.show();
-			const mount = frappe.query_reports["Ledger Data"].views[view]?.mount;
-			if (mount) mount(container[0], report.get_filter_values());
-		};
-
-		const set_view = (view) => {
-			if (view_state.active === view) return;
-			const previous = view_state.active;
-			if (previous !== "list") {
-				const unmount = frappe.query_reports["Ledger Data"].views[previous]?.unmount;
-				if (unmount) unmount();
-			}
-			view_state.active = view;
-			if (view === "list") show_list();
-			else show_placeholder(view);
-			set_trigger_content();
-			if (view_state.switcher.dropdown.set_options) {
-				view_state.switcher.dropdown.set_options(get_view_options());
-			}
-		};
-
-		make_switcher();
-
-		// Frappe re-shows the summary (and the datatable) on every refresh:
-		// re-apply the bottom position in list view and re-hide the native
-		// pieces when a placeholder view is active
-		report.report_settings.after_datatable_render = () => {
-			move_summary_below();
-			if (view_state.active !== "list") {
-				report.page.hide_form();
-				report.$report.hide();
-				report.$summary.hide();
-				report.page.main.addClass("ledger-wide");
-			}
-		};
-
-		// a dock context change re-runs the list query and re-mounts the
-		// active placeholder view with the fresh filters
-		$(document)
-			.off("axeane-context-changed.ledger-data")
-			.on("axeane-context-changed.ledger-data", () => {
-				set_title();
-				frappe.query_report.refresh();
-				if (view_state.active !== "list") {
-					show_placeholder(view_state.active);
-				} else {
-					move_summary_below();
-				}
-			});
 	}
 };

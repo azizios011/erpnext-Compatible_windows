@@ -3,45 +3,31 @@
 
 """Ledger Data — Axeane's "Grand Livre" over the Ecriture Comptable ledger.
 
-Two views: the flat list (filters on top) and the Grille (rows grouped per
-account with opening balances and running totals, styled client-side via
-row_type). PDF export will later be a backend service; nothing PDF-like
-lives here.
+The LIST view is the native report page (filters, datatable, bottom
+summary). The Grille builder (rows grouped per account with opening
+balances and running totals) stays here: it will feed the OnlyOffice-based
+PDF and XLSX views later — PDF and XLSX are placeholders in the client.
 """
 
-from datetime import date, timedelta
-from typing import Any
+from datetime import timedelta
 
 import frappe
 from frappe import _
-from frappe.utils import flt, getdate, nowdate
+from frappe.utils import flt, getdate
 
 from erpnext.custom_modules.organization.context import require_context
+from erpnext.custom_modules.reports.report_common import (
+	_as_list,
+	_check_permission,
+	_exercice_year,
+	_resolve_period,
+	AUX_CLIENT_PREFIX,
+	AUX_FOURNISSEUR_PREFIX,
+	BALANCE_TOLERANCE,
+	REPORT_CURRENCY,
+)
 
-# auxiliary ledgers are the client / supplier account-number prefixes
-AUX_CLIENT_PREFIX = "411"
-AUX_FOURNISSEUR_PREFIX = "401"
-
-REPORT_CURRENCY = "TND"
 LEDGER_DOCTYPE = "Ecriture Comptable"
-BALANCE_TOLERANCE = 0.0005
-
-MONTHS_FR = {
-	"Janvier": 1,
-	"Fevrier": 2,
-	"Mars": 3,
-	"Avril": 4,
-	"Mai": 5,
-	"Juin": 6,
-	"Juillet": 7,
-	"Aout": 8,
-	"Septembre": 9,
-	"Octobre": 10,
-	"Novembre": 11,
-	"Decembre": 12,
-}
-
-QUARTER_MONTHS = {"T1": (1, 3), "T2": (4, 6), "T3": (7, 9), "T4": (10, 12)}
 
 
 def execute(filters=None) -> tuple:
@@ -59,50 +45,6 @@ def execute(filters=None) -> tuple:
 	columns = get_columns()
 	rows = _get_rows(filters, context)
 	return columns, rows, None, None, _get_report_summary(rows)
-
-
-def _check_permission() -> None:
-	if not frappe.has_permission(LEDGER_DOCTYPE, "read"):
-		frappe.throw(_("Not permitted to read the ledger"), frappe.PermissionError)
-
-
-def _exercice_year(context: dict) -> int:
-	debut = context.get("date_debut")
-	return getdate(debut).year if debut else int(nowdate()[:4])
-
-
-def _resolve_period(filters: dict, context: dict) -> tuple[date, date]:
-	"""Every period filter resolves to one (from_date, to_date) pair, clamped
-	to the context's Exercice (date_debut..date_fin). The year is the
-	Exercice's, not a filter: the period can never leave the Exercice."""
-	period_type = filters.get("period_type") or "Mensuelle"
-	year = _exercice_year(context)
-	if period_type == "Personnalisee":
-		from_date = getdate(filters.get("from_date"))
-		to_date = getdate(filters.get("to_date"))
-	elif period_type == "Trimestrielle":
-		first, last = QUARTER_MONTHS[filters.get("quarter") or "T1"]
-		from_date = date(year, first, 1)
-		to_date = date(year, last, 31 if last in (1, 3, 7, 8, 10, 12) else 30)
-	elif period_type == "Annuelle":
-		from_date = date(year, 1, 1)
-		to_date = date(year, 12, 31)
-	else:
-		# Mensuelle: default to the Exercice's first month when no month comes
-		# in (the UI sends one, preselected on the Exercice)
-		default_month = getdate(context["date_debut"]).month if context.get("date_debut") else 1
-		month = MONTHS_FR.get(filters.get("month") or "", default_month)
-		next_month = date(year + (month == 12), (month % 12) + 1, 1)
-		from_date = date(year, month, 1)
-		to_date = next_month - timedelta(days=1)
-
-	debut = getdate(context["date_debut"]) if context.get("date_debut") else None
-	fin = getdate(context["date_fin"]) if context.get("date_fin") else None
-	if debut and from_date < debut:
-		from_date = debut
-	if fin and to_date > fin:
-		to_date = fin
-	return from_date, to_date
 
 
 def _account_filter(filters: dict) -> list[str]:
@@ -147,13 +89,6 @@ def _ledger_filters(filters: dict, context: dict, from_date: date, to_date: date
 		# an auxiliary type whose prefix matched no account: nothing to show
 		out.append(["name", "=", ""])
 	return out
-
-
-def _as_list(value: Any) -> list:
-	"""MultiSelectList values arrive as lists or comma-joined strings."""
-	if isinstance(value, (list, tuple)):
-		return [v for v in value if v]
-	return [v.strip() for v in str(value).split(",") if v.strip()]
 
 
 def _get_rows(filters: dict, context: dict) -> list[dict]:
