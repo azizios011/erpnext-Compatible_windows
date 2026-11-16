@@ -13,7 +13,7 @@ from datetime import date, timedelta
 
 import frappe
 from frappe import _
-from frappe.utils import flt, getdate
+from frappe.utils import cint, flt, getdate
 
 from erpnext.custom_modules.organization.context import require_context
 from erpnext.custom_modules.reports.report_common import (
@@ -31,20 +31,82 @@ LEDGER_DOCTYPE = "Ecriture Comptable"
 
 
 def execute(filters=None) -> tuple:
-	"""Standard Script Report entry point: columns, rows, no chart,
-	report summary over ALL filtered rows. Every query is scoped to the
-	dock context's Entreprise and Exercice."""
+	"""Standard Script Report entry point: columns, ONE PAGE of rows, no
+	chart, and the report summary over ALL filtered rows (the totals stay
+	global while the table pages). Every query is scoped to the dock
+	context's Entreprise and Exercice."""
 	filters = filters or {}
 	context = require_context()
 	if filters.get("view") == "Grille":
 		columns = _get_grille_columns()
 		rows = _get_grille_rows(filters, context)
+		summary = _get_report_summary(_flat_rows(rows))
+		rows, message = _paginate_grille(rows, filters)
 		# the groups carry their own totals: no datatable total row
 		# add_total_row is 0: the datatable never builds a total row anyway
-		return columns, rows, None, None, _get_report_summary(_flat_rows(rows))
+		return columns, rows, message, None, summary
 	columns = get_columns()
 	rows = _get_rows(filters, context)
-	return columns, rows, None, None, _get_report_summary(rows)
+	summary = _get_report_summary(rows)
+	rows, message = _paginate(rows, filters)
+	return columns, rows, message, None, summary
+
+
+def _paginate(rows: list[dict], filters: dict) -> tuple[list[dict], str]:
+	"""Server-side paging for the list view: the client renders one page of
+	rows; the summary above stays global over the whole filtered set."""
+	total = len(rows)
+	page_size = cint(filters.get("page_size")) or 500
+	page = max(cint(filters.get("page")), 1)
+	pages = max((total + page_size - 1) // page_size, 1)
+	page = min(page, pages)
+	start = (page - 1) * page_size
+	page_rows = rows[start : start + page_size]
+	if not total:
+		return rows, ""
+	message = _("Showing {0} - {1} of {2} rows (page {3} of {4}).").format(
+		start + 1, start + len(page_rows), total, page, pages
+	)
+	return page_rows, message
+
+
+def _paginate_grille(rows: list[dict], filters: dict) -> tuple[list[dict], str]:
+	"""Server-side paging for the grille: account blocks are packed into
+	pages of ~page_size rows (one account minimum per page — a single grille
+	block can exceed the page size). The summary stays global."""
+	# split the flat grille rows into per-account blocks on the header rows
+	blocks: list[list[dict]] = []
+	for row in rows:
+		if row.get("row_type") == "header" or not blocks:
+			blocks.append([row])
+		else:
+			blocks[-1].append(row)
+	if not blocks:
+		return rows, ""
+
+	page_size = cint(filters.get("page_size")) or 500
+	page = max(cint(filters.get("page")), 1)
+
+	# pack the account blocks into pages bounded by the page size
+	page_rows_list: list[list[dict]] = []
+	current: list[dict] = []
+	current_size = 0
+	for block in blocks:
+		if current and current_size + len(block) > page_size:
+			page_rows_list.append(current)
+			current = []
+			current_size = 0
+		current.extend(block)
+		current_size += len(block)
+	if current:
+		page_rows_list.append(current)
+
+	pages = len(page_rows_list)
+	page = min(page, pages)
+	out = page_rows_list[page - 1]
+	accounts = sum(1 for row in out if row.get("row_type") == "header")
+	message = _("Showing {0} of {1} accounts (page {2} of {3}).").format(accounts, len(blocks), page, pages)
+	return out, message
 
 
 def _account_filter(filters: dict) -> list[str]:

@@ -105,6 +105,21 @@ frappe.query_reports["Ledger Data"] = {
 			reqd: 1,
 		},
 		{
+			fieldname: "page_size",
+			label: __("Lignes par page"),
+			fieldtype: "Select",
+			options: "100\n500\n1000\n5000",
+			default: "500",
+			reqd: 1,
+		},
+		{
+			fieldname: "page",
+			label: __("Page"),
+			fieldtype: "Int",
+			default: 1,
+			reqd: 1,
+		},
+		{
 			fieldname: "mvt",
 			label: __("Piece comptable"),
 			fieldtype: "Data",
@@ -431,8 +446,10 @@ function run_import(dialog) {
 					]) + (journals ? " " + __("Journaux crees: {0}.", [journals]) : ""),
 				indicator: "green",
 			});
-			// the freshly imported exercice reads best as a whole: Annuelle
+			// the freshly imported exercice reads best as a whole: Annuelle,
+			// from the first page
 			frappe.query_report.set_filter_value("period_type", "Annuelle");
+			frappe.query_report.set_filter_value("page", 1);
 			frappe.query_report.refresh();
 		},
 	});
