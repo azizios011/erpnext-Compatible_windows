@@ -204,44 +204,55 @@ frappe.query_reports["Ledger Data"] = {
 				});
 			});
 
+		// the import button comes first: a failure in the optional view
+		// switcher must never hide the required pieces
+		setup_import_actions(report);
+
 		// the view switcher (PDF / List / XLSX) and the bottom summary bar
 		// are shared with the Balance report (report_views.bundle.js): the
 		// summary moves below the datatable in list view, the pdf / xlsx
 		// placeholders mount with the current filter values, and a dock
-		// context change re-runs the query and re-mounts the active view
-		erpnext.reports.setup_views(report, {
-			report_name: "Ledger Data",
-			views: {
-				pdf: {
-					mount(el) {
-						el.innerHTML = "";
-						el.appendChild(
-							frappe.ui.empty_state({
-								icon: "file-text",
-								title: __("Apercu PDF, bientot disponible"),
-								description: __("The PDF preview will be generated from the XLSX view."),
-							})
-						);
+		// context change re-runs the query and re-mounts the active view.
+		// Optional: a failure is logged and surfaced, the report stays
+		try {
+			erpnext.reports.setup_views(report, {
+				report_name: "Ledger Data",
+				views: {
+					pdf: {
+						mount(el) {
+							el.innerHTML = "";
+							el.appendChild(
+								frappe.ui.empty_state({
+									icon: "file-text",
+									title: __("Apercu PDF, bientot disponible"),
+									description: __("The PDF preview will be generated from the XLSX view."),
+								})
+							);
+						},
+						unmount() {},
 					},
-					unmount() {},
-				},
-				xlsx: {
-					mount(el) {
-						el.innerHTML = "";
-						el.appendChild(
-							frappe.ui.empty_state({
-								icon: "table",
-								title: __("XLSX view, coming soon"),
-								description: __("The XLSX view will be generated from the same data."),
-							})
-						);
+					xlsx: {
+						mount(el) {
+							el.innerHTML = "";
+							el.appendChild(
+								frappe.ui.empty_state({
+									icon: "table",
+									title: __("XLSX view, coming soon"),
+									description: __("The XLSX view will be generated from the same data."),
+								})
+							);
+						},
+						unmount() {},
 					},
-					unmount() {},
 				},
-			},
-		});
-
-		setup_import_actions(report);
+			});
+		} catch (error) {
+			console.error("report_views: setup_views failed", error);
+			frappe.show_alert({
+				message: __("Les vues PDF / XLSX n'ont pas pu etre chargees"),
+				indicator: "orange",
+			});
+		}
 	}
 };
 

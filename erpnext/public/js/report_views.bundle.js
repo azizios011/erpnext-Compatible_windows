@@ -27,7 +27,10 @@
 		const view_state = {
 			active: "list", // the default view on every load
 			containers: {},
-			switcher: null,
+			// the $wrapper / $trigger / dropdown elements land here in
+			// make_switcher, which stores them BEFORE set_trigger_content
+			// reads them — a null here would throw on the first property set
+			switcher: {},
 		};
 
 		if (!frappe._report_views_css) {

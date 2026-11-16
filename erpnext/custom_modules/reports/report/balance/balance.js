@@ -117,38 +117,47 @@ frappe.query_reports["Balance"] = {
 				set_title();
 			});
 
-		// the view switcher + the bottom summary (shared with Ledger Data)
-		erpnext.reports.setup_views(report, {
-			report_name: "Balance",
-			views: {
-				pdf: {
-					mount(el) {
-						el.innerHTML = "";
-						el.appendChild(
-							frappe.ui.empty_state({
-								icon: "file-text",
-								title: __("Apercu PDF, bientot disponible"),
-								description: __("The PDF preview will be generated from the XLSX view."),
-							})
-						);
+		// the view switcher + the bottom summary (shared with Ledger Data).
+		// Optional: a failure is logged and surfaced, the report stays
+		try {
+			erpnext.reports.setup_views(report, {
+				report_name: "Balance",
+				views: {
+					pdf: {
+						mount(el) {
+							el.innerHTML = "";
+							el.appendChild(
+								frappe.ui.empty_state({
+									icon: "file-text",
+									title: __("Apercu PDF, bientot disponible"),
+									description: __("The PDF preview will be generated from the XLSX view."),
+								})
+							);
+						},
+						unmount() {},
 					},
-					unmount() {},
-				},
-				xlsx: {
-					mount(el) {
-						el.innerHTML = "";
-						el.appendChild(
-							frappe.ui.empty_state({
-								icon: "table",
-								title: __("XLSX view, coming soon"),
-								description: __("The XLSX view will be generated from the same data."),
-							})
-						);
+					xlsx: {
+						mount(el) {
+							el.innerHTML = "";
+							el.appendChild(
+								frappe.ui.empty_state({
+									icon: "table",
+									title: __("XLSX view, coming soon"),
+									description: __("The XLSX view will be generated from the same data."),
+								})
+							);
+						},
+						unmount() {},
 					},
-					unmount() {},
 				},
-			},
-		});
+			});
+		} catch (error) {
+			console.error("report_views: setup_views failed", error);
+			frappe.show_alert({
+				message: __("Les vues PDF / XLSX n'ont pas pu etre chargees"),
+				indicator: "orange",
+			});
+		}
 	},
 };
 
