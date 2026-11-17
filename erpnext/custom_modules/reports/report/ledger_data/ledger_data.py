@@ -25,7 +25,6 @@ from erpnext.custom_modules.reports.report_common import (
 	REPORT_CURRENCY,
 	as_list,
 	check_ledger_read_permission,
-	exercice_year,
 	resolve_period,
 )
 
@@ -51,6 +50,7 @@ def execute(filters=None) -> tuple:
 	rows = _get_rows(filters, context)
 	summary = _get_report_summary(rows)
 	rows, message = _paginate(rows, filters)
+	_attach_documents(rows)
 	return columns, rows, message, None, summary
 
 
@@ -220,7 +220,36 @@ def get_columns() -> list[dict]:
 		{"label": _("Lettrage"), "fieldname": "lettrage", "fieldtype": "Data", "width": 90},
 		{"label": _("N° Doc"), "fieldname": "ref_doc", "fieldtype": "Data", "width": 120},
 		{"label": _("Piece"), "fieldname": "source_name", "fieldtype": "Dynamic Link", "options": "source_doctype", "width": 150},
+		# narrow action-icon column (document / eye), no header label
+		{"fieldname": "actions", "fieldtype": "Data", "width": 90},
 	]
+
+
+def _attach_documents(rows: list[dict]) -> None:
+	"""Set has_document / document_file (attachment url) / document_file_name
+	(File docname, for the read-only pdf-editor page) on the CURRENT page's
+	rows. ONE query per source_doctype group — never per row."""
+	by_doctype: dict[str, list[str]] = {}
+	for row in rows:
+		if row.get("source_doctype") and row.get("source_name"):
+			by_doctype.setdefault(row["source_doctype"], []).append(row["source_name"])
+
+	files: dict[tuple[str, str], dict] = {}
+	for doctype, names in by_doctype.items():
+		for file_row in frappe.get_all(
+			"File",
+			filters={"attached_to_doctype": doctype, "attached_to_name": ("in", names)},
+			fields=["name", "attached_to_name", "file_url"],
+			order_by="creation desc",
+		):
+			key = (doctype, file_row.attached_to_name)
+			files.setdefault(key, file_row)  # the latest attachment wins
+
+	for row in rows:
+		file_row = files.get((row.get("source_doctype") or "", row.get("source_name") or ""))
+		row["has_document"] = 1 if file_row else 0
+		row["document_file"] = file_row.file_url if file_row else ""
+		row["document_file_name"] = file_row.name if file_row else ""
 
 
 def _get_grille_columns() -> list[dict]:
@@ -262,8 +291,7 @@ def _get_grille_rows(filters: dict, context: dict) -> list[dict]:
 	if not rows:
 		return []
 
-	from_date, to_date = resolve_period(filters, context)
-	year = exercice_year(context)
+	from_date, _to_date = resolve_period(filters, context)
 
 	accounts: list[str] = []
 	by_account: dict[str, list] = {}

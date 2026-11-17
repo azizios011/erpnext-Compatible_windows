@@ -164,6 +164,48 @@ function gl_filter_changed(report) {
 	report.refresh(true);
 }
 
+// ── Row action icons (document / eye) ────────────────────────────────────────
+// the narrow last column carries two small icon buttons per row: the
+// document icon opens the attached file read-only (bundled pdf-editor page
+// when the attachment is a File, new-tab fallback otherwise) and is enabled
+// only when the transaction was entered with a Facturation document
+// (source_doctype + source_name + an attachment); the eye icon opens the
+// source entry in the Entries workspace in inspect mode. Both live in the
+// page's dict (has_document / document_file / document_file_name /
+// source_entry_doctype / source_entry) — resolved server-side in ONE
+// batched query per source_doctype group.
+
+function gl_row_actions(data) {
+	const esc = frappe.utils.escape_html;
+	const doc_enabled = data.has_document && (data.document_file_name || data.document_file);
+	const entry_enabled = data.source_entry_doctype && data.source_entry;
+	const document_button = `<button type="button" class="btn btn-xs gl-row-action gl-doc-open${
+		doc_enabled ? "" : " gl-action-disabled"
+	}" title="${__("Voir le document")}"${doc_enabled ? "" : " disabled"} data-file-name="${esc(
+		data.document_file_name || ""
+	)}" data-file-url="${esc(data.document_file || "")}">
+		${frappe.utils.icon("file", "xs")}
+	</button>`;
+	const entry_button = `<button type="button" class="btn btn-xs gl-row-action gl-entry-open${
+		entry_enabled ? "" : " gl-action-disabled"
+	}" title="${__("Ouvrir l'ecriture")}"${entry_enabled ? "" : " disabled"} data-entry-doctype="${esc(
+		data.source_entry_doctype || ""
+	)}" data-entry="${esc(data.source_entry || "")}">
+		${frappe.utils.icon("eye", "xs")}
+	</button>`;
+	return `<span class="gl-row-actions">${document_button}${entry_button}</span>`;
+}
+
+function gl_open_document(file_name, file_url) {
+	// the bundled pdf-editor page on the File doc, read-only; the raw url in
+	// a new tab when there is no File docname to hand over
+	if (file_name) {
+		window.open(`/app/pdf-editor?file=${encodeURIComponent(file_name)}`, "_blank");
+		return;
+	}
+	if (file_url) window.open(file_url, "_blank");
+}
+
 function gl_doc_filters() {
 	return JSON.stringify(frappe.query_report.get_filter_values() || {});
 }
@@ -688,6 +730,11 @@ frappe.query_reports["Ledger Data"] = {
 				data.source_entry_doctype
 			)}" data-entry="${frappe.utils.escape_html(data.source_entry)}">${frappe.utils.escape_html(value)}</a>`;
 		}
+		if (column.id === "actions" && data) {
+			// the narrow action-icon column: document / eye, greyed when the
+			// row carries no attachment / no source entry
+			return gl_row_actions(data);
+		}
 		return default_formatter(value, row, column, data);
 	},
 
@@ -727,6 +774,29 @@ frappe.query_reports["Ledger Data"] = {
 			.on("click.gl-mvt-link", ".gl-mvt-link", function (event) {
 				event.preventDefault();
 				event.stopPropagation();
+				erpnext.entries.open_entry({
+					entry_doctype: $(this).attr("data-entry-doctype"),
+					name: $(this).attr("data-entry"),
+					mode: "inspect",
+				});
+			});
+
+		// the row action icons (delegated: the datatable re-renders cells;
+		// disabled buttons carry the gl-action-disabled class and never fire)
+		report.$report
+			.off("click.gl-doc-open")
+			.on("click.gl-doc-open", ".gl-doc-open", function (event) {
+				event.preventDefault();
+				event.stopPropagation();
+				if (this.disabled) return;
+				gl_open_document($(this).attr("data-file-name"), $(this).attr("data-file-url"));
+			});
+		report.$report
+			.off("click.gl-entry-open")
+			.on("click.gl-entry-open", ".gl-entry-open", function (event) {
+				event.preventDefault();
+				event.stopPropagation();
+				if (this.disabled) return;
 				erpnext.entries.open_entry({
 					entry_doctype: $(this).attr("data-entry-doctype"),
 					name: $(this).attr("data-entry"),

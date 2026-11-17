@@ -119,6 +119,38 @@
 					flex: 1 1 auto;
 					overflow: auto;
 				}
+				/* row action icons (Ledger Data list only): a small
+				   round-cornered icon button group, centered in the narrow
+				   last column — enabled icons carry the accent color, the
+				   greyed ones are not clickable */
+				.gl-row-actions {
+					display: inline-flex;
+					width: 100%;
+					align-items: center;
+					justify-content: center;
+					gap: 4px;
+				}
+				.gl-row-actions .gl-row-action {
+					width: 26px;
+					height: 26px;
+					padding: 0;
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					border-radius: 6px;
+					color: var(--primary);
+					background: transparent;
+					border: 1px solid var(--border-color, #d1d8dd);
+				}
+				.gl-row-actions .gl-row-action:hover:not(.gl-action-disabled) {
+					background: var(--control-bg, #f3f3f3);
+					color: var(--primary);
+				}
+				.gl-row-actions .gl-row-action.gl-action-disabled {
+					color: var(--text-muted, #8d99ae);
+					opacity: 0.45;
+					cursor: not-allowed;
+				}
 			</style>`).appendTo("head");
 		}
 
