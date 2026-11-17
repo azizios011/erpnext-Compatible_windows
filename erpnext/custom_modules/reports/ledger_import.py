@@ -27,6 +27,7 @@ from frappe import _
 from frappe.utils import cint, cstr, flt, getdate, now_datetime
 
 from erpnext.custom_modules.organization.context import require_context, validate_exercice_open
+from erpnext.custom_modules.reports.imported_entries import delete_imported_entries, flagged_linked_rows
 
 LEDGER_DOCTYPE = "Ecriture Comptable"
 IMPORT_ROLES = ("Accounts Manager", "System Manager")
@@ -385,8 +386,10 @@ def import_grand_livre(file_url: str, replace: int = 0, create_journals: int = 1
 				title=_("Import Grand Livre"),
 			)
 
-		# replace: drop the previous import (only the import_batch rows)
+		# replace: drop the previous import (only the import_batch rows) AND
+		# the entries materialized from it, so nothing is left behind
 		replaced = 0
+		entries_deleted = 0
 		if replace and analysis["existing_import_rows"]:
 			imported_names = frappe.get_all(
 				LEDGER_DOCTYPE,
@@ -398,6 +401,7 @@ def import_grand_livre(file_url: str, replace: int = 0, create_journals: int = 1
 				pluck="name",
 			)
 			frappe.db.delete(LEDGER_DOCTYPE, {"name": ("in", imported_names)})
+			entries_deleted = delete_imported_entries(context)
 			replaced = len(imported_names)
 
 		# the missing journals, created globally (name = the code)
@@ -483,12 +487,26 @@ def import_grand_livre(file_url: str, replace: int = 0, create_journals: int = 1
 				)
 			)
 		frappe.db.bulk_insert(LEDGER_DOCTYPE, fields=fields, values=values, chunk_size=1000)
+		if values:
+			# every imported movement becomes a real Entry (materialized as
+			# already posted, no new ledger rows): the run is a background job
+			# after the import's own commit
+			frappe.enqueue(
+				"erpnext.custom_modules.reports.imported_entries.materialize_imported_entries_job",
+				queue="long",
+				timeout=3600,
+				job_id=f"gl_materialize_{context['entreprise']}_{context['exercice']}",
+				deduplicate=True,
+				enqueue_after_commit=True,
+			)
 		return {
 			"inserted": len(values),
 			"entries": analysis["entries"],
 			"batch": batch,
 			"journals_created": journals_created,
 			"replaced": replaced,
+			"entries_deleted": entries_deleted,
+			"materialize_enqueued": 1 if values else 0,
 		}
 	except frappe.exceptions.ValidationError:
 		# the expected refusals: re-raised as-is, nothing to roll back yet
@@ -501,8 +519,9 @@ def import_grand_livre(file_url: str, replace: int = 0, create_journals: int = 1
 
 @frappe.whitelist()
 def delete_import() -> dict:
-	"""Delete this context's imported rows (import_batch set). Refused while
-	any of them is lettree or pointee."""
+	"""Delete this context's imported rows (import_batch set) AND the entries
+	materialized from them (only those flagged imported), including the rows a
+	re-save re-posted. Refused while any of them is lettree or pointee."""
 	_check_import_roles()
 	context = require_context()
 	validate_exercice_open(context)
@@ -515,21 +534,24 @@ def delete_import() -> dict:
 		},
 		pluck="name",
 	)
-	if not imported_names:
-		return {"deleted": 0}
 	flagged = _flagged_import_rows(context)
 	if flagged:
 		frappe.throw(
 			_("Impossible de supprimer: {0} ligne(s) lettrees ou pointees (delettrer d'abord).").format(len(flagged)),
 			title=_("Supprimer l'import"),
 		)
+	if not imported_names:
+		return {"deleted": 0, "entries_deleted": 0}
 	frappe.db.delete(LEDGER_DOCTYPE, {"name": ("in", imported_names)})
-	return {"deleted": len(imported_names)}
+	entries_deleted = delete_imported_entries(context)
+	return {"deleted": len(imported_names), "entries_deleted": entries_deleted}
 
 
 def _flagged_import_rows(context: dict) -> list[str]:
-	"""The imported rows of this context that are lettree or pointee."""
-	return frappe.get_all(
+	"""The imported rows of this context that are lettree or pointee: the
+	import_batch rows, plus the rows a re-save of an imported entry re-posted
+	(no import_batch anymore, but still linked to a materialized entry)."""
+	flagged = frappe.get_all(
 		LEDGER_DOCTYPE,
 		filters={
 			"entreprise": context["entreprise"],
@@ -542,3 +564,5 @@ def _flagged_import_rows(context: dict) -> list[str]:
 		],
 		pluck="name",
 	)
+	linked = [name for name in flagged_linked_rows(context) if name not in flagged]
+	return flagged + linked

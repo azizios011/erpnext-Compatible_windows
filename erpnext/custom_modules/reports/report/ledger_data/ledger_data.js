@@ -889,6 +889,8 @@ frappe.query_reports["Ledger Data"] = {
 // Server side everything is re-validated (ledger_import.py), all or nothing.
 
 const GL_IMPORT_METHOD = "erpnext.custom_modules.reports.ledger_import";
+const GL_MATERIALIZE_METHOD = "erpnext.custom_modules.reports.imported_entries";
+const GL_MATERIALIZE_EVENT = "grand_livre_materialize_progress";
 const GL_IMPORT_ROLES = ["Accounts Manager", "System Manager"];
 
 function can_manage_import() {
@@ -898,14 +900,24 @@ function can_manage_import() {
 function setup_import_actions(report) {
 	if (!can_manage_import()) return;
 	report.page.add_inner_button(__("Importer Grand Livre"), () => open_import_dialog());
+	report.page.add_menu_item(__("Generer les ecritures de l'import"), () => open_materialize_dialog());
 	report.page.add_menu_item(__("Supprimer l'import"), () => delete_import_rows());
+
+	// the materialize job's progress toasts: one persistent listener, no
+	// stacking on re-onload
+	frappe.realtime.off(GL_MATERIALIZE_EVENT);
+	frappe.realtime.on(GL_MATERIALIZE_EVENT, (event) => {
+		if (event && event.progress) {
+			frappe.show_alert({ message: event.progress, indicator: "blue" });
+		}
+	});
 }
 
 function delete_import_rows() {
 	const context = (window.axeane && axeane.context && axeane.context.get()) || {};
 	frappe.confirm(
 		__(
-			"Supprimer les lignes importees du contexte {0} · {1} ? Les lignes des ecritures ne sont pas touchees.",
+			"Supprimer les lignes importees du contexte {0} · {1} ? Les ecritures generees de l'import sont supprimees aussi.",
 			[context.entreprise_label || "—", context.exercice_label || "—"]
 		),
 		() => {
@@ -913,8 +925,12 @@ function delete_import_rows() {
 				method: GL_IMPORT_METHOD + ".delete_import",
 				freeze: true,
 				callback(r) {
+					const result = r.message || {};
 					frappe.show_alert({
-						message: __("Import supprime: {0} ligne(s).", [r.message ? r.message.deleted : 0]),
+						message: __("Import supprime: {0} ligne(s), {1} ecriture(s).", [
+							result.deleted || 0,
+							result.entries_deleted || 0,
+						]),
 						indicator: "green",
 					});
 					frappe.query_report.refresh();
@@ -922,6 +938,94 @@ function delete_import_rows() {
 			});
 		}
 	);
+}
+
+// ── Generer les ecritures de l'import ────────────────────────────────────────
+// every imported movement becomes one transaction in the Entries workspace:
+// the dry run shows the counts per doctype / per journal / unclassified
+// first, and the real run goes through a long background job (progress via
+// realtime toasts). Idempotent: rows already linked are skipped.
+
+function open_materialize_dialog() {
+	const context = (window.axeane && axeane.context && axeane.context.get()) || {};
+	frappe.call({
+		method: GL_MATERIALIZE_METHOD + ".materialize_imported_entries",
+		args: { dry_run: 1 },
+		freeze: true,
+		freeze_message: __("Analyse des mouvements importes..."),
+	})
+		.then((r) => {
+			const result = r.message || {};
+			frappe.confirm(
+				render_materialize_summary(result, context),
+				() => enqueue_materialize(),
+				() => {}
+			);
+		})
+		.catch(() => frappe.msgprint({ message: __("L'analyse a echoue."), indicator: "red" }));
+}
+
+function render_materialize_summary(result, context) {
+	const esc = frappe.utils.escape_html;
+	const stats = [
+		{ label: __("Mouvements a traiter"), value: result.groups_total || 0 },
+		{ label: __("Lignes non liees"), value: result.rows_total || 0 },
+		{ label: __("Lignes deja liees"), value: result.rows_already_linked || 0 },
+		{ label: __("Payable Transaction"), value: (result.created || {})["Payable Transaction"] || 0 },
+		{ label: __("Receivable Transaction"), value: (result.created || {})["Receivable Transaction"] || 0 },
+		{ label: __("Non classes"), value: result.unclassified_groups || 0 },
+		{ label: __("Conflits de nom"), value: result.skipped_name_conflict || 0 },
+	];
+	const $stats = $('<div class="report-summary gl-import-stats"></div>');
+	stats.forEach((item) =>
+		$stats.append(frappe.utils.build_summary_item({ label: item.label, value: item.value, datatype: "Data" }))
+	);
+
+	const rows = Object.entries(result.per_journal || {})
+		.map(
+			([journal, counts]) =>
+				`<tr><td>${esc(journal)}</td><td>${counts["Payable Transaction"] || 0}</td><td>${
+					counts["Receivable Transaction"] || 0
+				}</td><td>${counts.unclassified || 0}</td></tr>`
+		)
+		.join("");
+	const table = `
+		<table class="table table-bordered" style="margin-top: 8px;">
+			<thead><tr><th>${__("Journal")}</th><th>${__("Payable")}</th><th>${__("Receivable")}</th><th>${__("Non classe")}</th></tr></thead>
+			<tbody>${rows}</tbody>
+		</table>`;
+	const note = result.unclassified_groups
+		? `<div class="alert alert-warning" style="margin-top: 8px;">${__(
+				"{0} groupe(s) sans ligne auxiliaire (soldes d'ouverture, banque, taxes...) restent non lies.",
+				[result.unclassified_groups]
+			)}</div>`
+		: "";
+	return (
+		`<h5>${__("Generer les ecritures de l'import")} · ${esc(
+			[context.entreprise_label, context.exercice_label].filter(Boolean).join(" · ") || ""
+		)}</h5>` +
+		$stats.prop("outerHTML") +
+		table +
+		note
+	);
+}
+
+function enqueue_materialize() {
+	frappe.call({
+		method: GL_MATERIALIZE_METHOD + ".enqueue_materialize_imported_entries",
+		type: "POST",
+		callback(r) {
+			const result = r.message || {};
+			if (result.error) {
+				frappe.msgprint({ message: result.error, indicator: "red" });
+				return;
+			}
+			frappe.show_alert({
+				message: __("Generation des ecritures lancee en tache de fond (progression en notification)."),
+				indicator: "blue",
+			});
+		},
+	});
 }
 
 function open_import_dialog() {
@@ -1058,6 +1162,12 @@ function run_import(dialog) {
 					]) + (journals ? " " + __("Journaux crees: {0}.", [journals]) : ""),
 				indicator: "green",
 			});
+			if (result.materialize_enqueued) {
+				frappe.show_alert({
+					message: __("Generation des ecritures de l'import lancee en tache de fond."),
+					indicator: "blue",
+				});
+			}
 			// the freshly imported exercice reads best as a whole: Annuelle,
 			// from the first page
 			frappe.query_report.set_filter_value("period_type", "Annuelle");

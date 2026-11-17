@@ -12,15 +12,20 @@ import frappe
 from frappe import _
 from frappe.utils import flt, getdate, nowdate
 
+from erpnext.custom_modules.reports.imported_entries_logic import (
+    AUX_CLIENT_PREFIX,
+    AUX_FOURNISSEUR_PREFIX,
+)
+
 LEDGER_DOCTYPE = "Ecriture Comptable"
 
 # the reports' summary cards carry the base currency (the devise filter
 # only narrows the rows)
 REPORT_CURRENCY = "TND"
 
-# auxiliary ledgers are the client / supplier account-number prefixes
-AUX_CLIENT_PREFIX = "411"
-AUX_FOURNISSEUR_PREFIX = "401"
+# auxiliary ledgers are the client / supplier account-number prefixes —
+# defined in imported_entries_logic.py (the frappe-free single source) and
+# re-exported here for the reports
 
 BALANCE_TOLERANCE = 0.0005
 
