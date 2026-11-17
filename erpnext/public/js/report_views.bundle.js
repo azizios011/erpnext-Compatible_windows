@@ -54,7 +54,8 @@
 					width: 100%;
 				}
 				/* opt-in bottom bar (opts.pagination): the sticky area under the
-				   datatable carries the summary cards AND the pagination */
+				   datatable carries the pagination; with opts.summary_position
+				   "top" the summary cards live in their own bar instead */
 				.report-bottom-bar {
 					display: flex;
 					align-items: center;
@@ -83,6 +84,36 @@
 				.report-pagination .gl-showing {
 					font-size: 12px;
 					white-space: nowrap;
+				}
+				/* opt-in top summary (opts.summary_position = "top"): the cards
+				   sit directly under the filter bar, above the table, persistent
+				   across refreshes (values updated in place, dimmed while the
+				   query runs) and sticky under the header if the page scrolls */
+				.report-summary-top {
+					position: sticky;
+					top: 0;
+					z-index: 5;
+					flex-shrink: 0;
+					border-bottom: 1px solid var(--border-color);
+					background-color: var(--bg-color);
+					width: 100%;
+					transition: opacity 0.2s ease;
+				}
+				.report-summary-top.gl-summary-loading {
+					opacity: 0.45;
+				}
+				.report-summary-top .report-summary {
+					margin: 0;
+					padding: 6px 15px;
+					justify-content: flex-start;
+					gap: 4px;
+				}
+				.report-summary-top .report-summary .summary-item {
+					padding: 4px 14px;
+					border-right: 1px solid var(--border-color);
+				}
+				.report-summary-top .report-summary .summary-item:last-child {
+					border-right: none;
 				}
 				/* opt-in full-height list (the report page sets report-gl-fill):
 				   the section becomes a flex column — filters, datatable, bottom
@@ -170,6 +201,79 @@
 			$bottom_bar = $(`<div class="report-bottom-bar"></div>`);
 			$pagination_area = $(`<div class="report-pagination"></div>`).appendTo($bottom_bar);
 			$bottom_bar.appendTo(report.page.main);
+		}
+
+		// opt-in top summary (opts.summary_position = "top"): the cards sit
+		// directly under the filter bar, ABOVE the table, in a bar built once
+		// and persistent — frappe empties + rebuilds report.$summary on every
+		// refresh, so render_summary is patched to update the card values IN
+		// PLACE (same synchronous tick as the wipe: no visible flash, no
+		// layout jump) and the bar is dimmed while a query runs. The numbers
+		// stay global over all filtered rows (they come from the server's
+		// report_summary, computed over the whole filtered set).
+		const summary_on_top = opts.summary_position === "top";
+		let $summary_bar = null;
+		if (summary_on_top) {
+			$summary_bar = $(`<div class="report-summary-top"></div>`);
+			if (report.page.page_form && report.page.page_form.length) {
+				report.page.page_form.after($summary_bar);
+			} else {
+				$summary_bar.prependTo(report.page.main);
+			}
+			report.$summary.addClass("report-summary-in-top-bar").appendTo($summary_bar);
+			report.$summary.removeClass("report-summary-bottom");
+
+			const render_summary_original = report.render_summary;
+			report.render_summary = function (data) {
+				if (!Array.isArray(data)) {
+					return render_summary_original.call(this, data);
+				}
+				const existing = {};
+				this.$summary.find(".summary-item").each(function () {
+					existing[$(this).find(".summary-label").text().trim()] = $(this);
+				});
+				const seen = new Set();
+				data.forEach((item) => {
+					seen.add(__(item.label));
+					const $card = existing[__(item.label)];
+					if (!$card) {
+						this.$summary.append(frappe.utils.build_summary_item(item));
+						return;
+					}
+					// update the value + indicator in place, no rebuild flash
+					const df = { fieldtype: item.datatype };
+					let doc = null;
+					if (item.datatype === "Currency") {
+						df.options = "currency";
+						doc = { currency: item.currency };
+					}
+					const value = frappe.format(item.value, df, { only_value: true }, doc);
+					const color = item.indicator ? String(item.indicator).toLowerCase() : "";
+					const $value = $card.find(".summary-value");
+					$value.removeClass().addClass(`summary-value ${color}`).html(value);
+				});
+				// cards the server no longer sends go away (e.g. empty run)
+				this.$summary.find(".summary-item").each(function () {
+					if (!seen.has($(this).find(".summary-label").text().trim())) {
+						$(this).remove();
+					}
+				});
+				this.$summary.show();
+				if ($summary_bar) $summary_bar.removeClass("gl-summary-loading");
+			};
+
+			// dim the cards while a query runs (last values stay visible),
+			// undimmed by render_summary above or by after_refresh on errors
+			const refresh_original = report.refresh;
+			report.refresh = function () {
+				if ($summary_bar) $summary_bar.addClass("gl-summary-loading");
+				return refresh_original.apply(this, arguments);
+			};
+			const previous_after_refresh = report.report_settings.after_refresh;
+			report.report_settings.after_refresh = () => {
+				$summary_bar.removeClass("gl-summary-loading");
+				if (previous_after_refresh) previous_after_refresh();
+			};
 		}
 
 		// opt-in full-height list (opts.fill_datatable, set with the
@@ -280,12 +384,29 @@
 		};
 
 		// Frappe renders the summary above the datatable: the List view wants
-		// it at the bottom, sticky so it stays visible over long tables.
-		// Frappe re-shows it after every refresh — the
-		// after_datatable_render hook below re-applies this. With the opt-in
-		// pagination the summary joins the bottom bar and the pagination
-		// controls re-render next to it.
+		// it either directly under the filters (opts.summary_position = "top",
+		// persistent bar) or at the bottom next to the pagination. Frappe
+		// re-shows it after every refresh — the after_datatable_render hook
+		// below re-applies the placement.
 		const move_summary_below = () => {
+			if (summary_on_top) {
+				// the cards bar stays under the filters; re-place defensively
+				// (frappe never moves report.$summary, but re-onload could)
+				if (!$.contains(report.page.main[0], $summary_bar[0])) {
+					if (report.page.page_form && report.page.page_form.length) {
+						report.page.page_form.after($summary_bar);
+					} else {
+						$summary_bar.prependTo(report.page.main);
+					}
+				}
+				$summary_bar.show();
+				report.$summary.show();
+				if ($bottom_bar) {
+					$bottom_bar.show();
+					if (pagination.render) pagination.render($pagination_area);
+				}
+				return;
+			}
 			if ($bottom_bar) {
 				report.$summary.addClass("report-summary-bottom").prependTo($bottom_bar);
 				report.$summary.show();
@@ -318,6 +439,7 @@
 			}
 			report.$report.hide();
 			report.$summary.hide();
+			if ($summary_bar) $summary_bar.hide();
 			if ($bottom_bar) $bottom_bar.hide();
 			report.page.main.addClass("report-wide");
 			const container = view_state.containers[view];

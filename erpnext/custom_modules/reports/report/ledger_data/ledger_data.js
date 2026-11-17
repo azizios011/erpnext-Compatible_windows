@@ -841,6 +841,7 @@ frappe.query_reports["Ledger Data"] = {
 				keep_filters: true,
 				pagination: GL_PAGINATION,
 				fill_datatable: true,
+				summary_position: "top",
 			});
 			GL_PAGINATION.$area = report.page.main.find(".report-pagination");
 		} catch (error) {
