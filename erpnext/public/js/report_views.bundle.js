@@ -129,6 +129,23 @@
 					padding-top: 10px;
 					padding-bottom: 6px;
 				}
+				/* the Filtres toggle: in the document views the whole filter
+				   section is hidden (the document fills the screen); the toggle
+				   slides it down as an overlay panel above everything */
+				.report-gl-fill.gl-filters-open .page-form.hide {
+					display: flex !important;
+					position: absolute;
+					top: 0;
+					left: 0;
+					right: 0;
+					z-index: 40;
+					background-color: var(--bg-color);
+					border-bottom: 1px solid var(--border-color);
+					box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
+					max-height: 60vh;
+					overflow: auto;
+					padding: 10px 15px 8px;
+				}
 				.report-gl-fill .report-wrapper {
 					flex: 1 1 auto;
 					min-height: 0;
@@ -421,7 +438,7 @@
 		const show_list = () => {
 			// restore the native report: filters, datatable, summary at the
 			// bottom — no re-query, the loaded data stays
-			report.page.show_form();
+			show_report_chrome();
 			report.$report.show();
 			report.page.main.removeClass("report-wide");
 			Object.values(view_state.containers).forEach(($container) => $container.hide());
@@ -429,10 +446,29 @@
 			if (fit_datatable) fit_datatable(); // the wrapper just became visible
 		};
 
+		// opts.hide_filters_in_doc (the Ledger Data document views): the
+		// filter section, summary cards, pagination bar and the report hint /
+		// execution-time footer all hide, so the document fills the screen
+		// under the page header; the host provides a Filtres toggle that
+		// slides the filter panel down as an overlay (gl-filters-open)
+		const hide_filters_in_doc = !!opts.hide_filters_in_doc;
+		const hide_report_chrome = () => {
+			if (hide_filters_in_doc) report.page.hide_form();
+			else if (!opts.keep_filters) report.page.hide_form();
+			if (report.$report_footer) report.$report_footer.hide();
+		};
+		const show_report_chrome = () => {
+			report.page.main.removeClass("gl-filters-open"); // a left-open overlay never leaks
+			report.page.show_form();
+			if (report.$report_footer) report.$report_footer.show();
+		};
+
 		const show_placeholder = (view) => {
 			// hide the native report and mount the placeholder with the
 			// CURRENT filter values
-			if (!opts.keep_filters) {
+			if (hide_filters_in_doc) {
+				hide_report_chrome();
+			} else if (!opts.keep_filters) {
 				report.page.hide_form();
 			} else {
 				report.page.show_form();
@@ -441,6 +477,7 @@
 			report.$summary.hide();
 			if ($summary_bar) $summary_bar.hide();
 			if ($bottom_bar) $bottom_bar.hide();
+			if (hide_filters_in_doc && report.$report_footer) report.$report_footer.hide();
 			report.page.main.addClass("report-wide");
 			const container = view_state.containers[view];
 			container.show();
@@ -473,9 +510,11 @@
 		report.report_settings.after_datatable_render = () => {
 			move_summary_below();
 			if (view_state.active !== "list") {
-				if (!opts.keep_filters) report.page.hide_form();
+				hide_report_chrome();
+				if (!hide_filters_in_doc && opts.keep_filters) report.page.show_form();
 				report.$report.hide();
 				report.$summary.hide();
+				if (report.$report_footer) report.$report_footer.hide();
 				report.page.main.addClass("report-wide");
 			} else if (fit_datatable) {
 				// setDimensions just stripped the body's inline height: re-fit
@@ -492,10 +531,12 @@
 			.on("axeane-context-changed.report-views-" + (opts.report_name || "default"), () => {
 				frappe.query_report.refresh();
 				if (view_state.active !== "list") {
-					if (!opts.keep_filters) report.page.hide_form();
+					hide_report_chrome();
+					if (!hide_filters_in_doc && opts.keep_filters) report.page.show_form();
 					report.$report.hide();
 					report.$summary.hide();
 					if ($bottom_bar) $bottom_bar.hide();
+					if (report.$report_footer) report.$report_footer.hide();
 					report.page.main.addClass("report-wide");
 					const mount = views[view_state.active] && views[view_state.active].mount;
 					if (mount) mount(view_state.containers[view_state.active][0], report.get_filter_values());

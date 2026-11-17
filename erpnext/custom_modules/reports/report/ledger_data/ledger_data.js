@@ -232,15 +232,14 @@ function gl_trigger_download(result, kind) {
 
 function gl_view_toolbar(kind, status_html, with_cancel) {
 	const esc = frappe.utils.escape_html;
+	// downloads / print live in the page header (gl_doc_header_controls);
+	// the in-view toolbar carries only the status line and the Cancel
 	return `
 		<div class="gl-doc-toolbar" style="
 			display: flex; align-items: center; gap: 8px;
 			padding: 8px 10px; border-bottom: 1px solid var(--border-color, #d1d8dd);
 			background: var(--bg-color, #fff);
 		">
-			<button class="btn btn-xs btn-default gl-doc-download" data-kind="${kind}">
-				${__("Telecharger")} ${kind === "xlsx" ? ".xlsx" : ".pdf"}
-			</button>
 			<span class="gl-doc-status text-muted" style="font-size: 12px;">${esc(status_html)}</span>
 			<span style="flex: 1;"></span>
 			<button class="btn btn-xs btn-default gl-doc-cancel"${with_cancel ? "" : " style=\"display: none;\""}>
@@ -249,9 +248,78 @@ function gl_view_toolbar(kind, status_html, with_cancel) {
 		</div>`;
 }
 
+// ── document-view header controls (Filtres / Pages / progress / downloads) ──
+// built once per mount, removed on unmount (the buttons' listeners die with
+// the node — no leaked iframes or listeners across view switches)
+
+function gl_doc_header_controls(kind) {
+	const $group = $(`
+		<div class="btn-group gl-doc-controls" role="group" style="margin-right: 8px;">
+			<button type="button" class="btn btn-default btn-sm gl-filters-toggle">${__("Filtres")}</button>
+			<span class="gl-doc-pages btn btn-default btn-sm disabled" style="display: none;"></span>
+			<span class="gl-doc-progress text-muted small" style="padding: 0 8px; align-self: center;"></span>
+			<button type="button" class="btn btn-default btn-sm gl-download-xlsx">${__("Telecharger .xlsx")}</button>
+			<button type="button" class="btn btn-default btn-sm gl-download-pdf">${__("Telecharger .pdf")}</button>
+			${kind === "pdf" ? `<button type="button" class="btn btn-default btn-sm gl-print-pdf">${__("Imprimer")}</button>` : ""}
+		</div>`);
+	$group.find(".gl-filters-toggle").on("click", () => {
+		const open = report_page_main().toggleClass("gl-filters-open").hasClass("gl-filters-open");
+		$group.find(".gl-filters-toggle").toggleClass("btn-primary", open);
+	});
+	$group.find(".gl-download-xlsx").on("click", () => gl_download_document("xlsx"));
+	$group.find(".gl-download-pdf").on("click", () => gl_download_document("pdf"));
+	$group.find(".gl-print-pdf").on("click", () => {
+		// print the SAME document the view renders (same-origin editor iframe)
+		const el = GL_VIEW_STATE.el;
+		const iframe = el && el.querySelector("iframe");
+		try {
+			iframe && iframe.contentWindow && iframe.contentWindow.print();
+		} catch (error) {
+			console.error("ledger_data: print failed", error);
+			frappe.msgprint({ message: __("L'impression n'est pas disponible ici."), indicator: "red" });
+		}
+	});
+	return $group;
+}
+
+function report_page_main() {
+	const qr = frappe.query_report;
+	return qr && qr.page && qr.page.main ? qr.page.main : $();
+}
+
+function gl_doc_header_mount(kind) {
+	const main = report_page_main();
+	if (!main.length) return;
+	main.find(".custom-actions").find(".gl-doc-controls").remove();
+	const $group = gl_doc_header_controls(kind);
+	// before the view switcher, at the left edge of the header actions
+	main.find(".custom-actions").find(".view-switcher").before($group);
+}
+
+function gl_doc_header_unmount() {
+	const main = report_page_main();
+	main.find(".custom-actions").find(".gl-doc-controls").remove();
+	main.removeClass("gl-filters-open"); // a left-open overlay never leaks
+}
+
+function gl_doc_header_pages(pages) {
+	const main = report_page_main();
+	const $badge = main.find(".gl-doc-controls .gl-doc-pages");
+	if ($badge.length) {
+		$badge.text(`${__("Pages")}: ${pages}`).show();
+	}
+}
+
+function gl_doc_header_progress(text) {
+	const main = report_page_main();
+	const $span = main.find(".gl-doc-controls .gl-doc-progress");
+	if ($span.length) $span.text(text || "");
+}
+
 function gl_doc_set_status(el, text) {
 	const $status = el.querySelector(".gl-doc-status");
 	if ($status) $status.textContent = text;
+	gl_doc_header_progress(text);
 }
 
 function gl_doc_set_cancel(el, visible) {
@@ -343,6 +411,7 @@ function gl_doc_error_panel(el, kind, message, with_xlsx_fallback) {
 	const esc = frappe.utils.escape_html;
 	const area = el.querySelector(".gl-doc-frame-area");
 	gl_doc_set_cancel(el, false);
+	gl_doc_header_progress(message);
 	if (!area) return;
 	area.innerHTML = `
 		<div style="position: absolute; inset: 0; display: flex; flex-direction: column;
@@ -365,6 +434,9 @@ function gl_doc_too_large_panel(el, kind, result) {
 	const esc = frappe.utils.escape_html;
 	const area = el.querySelector(".gl-doc-frame-area");
 	gl_doc_set_cancel(el, false);
+	gl_doc_header_progress(
+		__("{0} lignes (~{1} pages): choisissez un mois ou un compte.", [result.rows, result.pages])
+	);
 	if (!area) return;
 	area.innerHTML = `
 		<div class="alert alert-warning" style="position: absolute; top: 20px; left: 20px; right: 20px;
@@ -395,6 +467,8 @@ function gl_mount_sheets_editor(area, file_docname) {
 				csrfToken: frappe.csrf_token,
 				fullName: frappe.user_info(frappe.session.user).fullname,
 				readonly: true,
+				// grid only: no ribbon, no formula bar, no sheet tabs, no save
+				mode: "preview",
 			},
 			window.location.origin
 		);
@@ -404,24 +478,39 @@ function gl_mount_sheets_editor(area, file_docname) {
 	iframe.src = "/assets/print_designer/editors/sheets/index.html";
 }
 
-function gl_mount_pdf_viewer(area, file_url) {
+function gl_mount_pdf_editor(area, file_docname) {
+	// the bundled pdf editor page in read-only preview mode: page canvas,
+	// scroll, zoom and the page indicator only — no toolbar, sidebars,
+	// search or save. Same-origin: Print (header control) reaches it.
 	const iframe = document.createElement("iframe");
 	iframe.title = __("Grand Livre PDF");
 	iframe.style.cssText = "border: 0; width: 100%; height: 100%; display: block;";
-	iframe.src = file_url + (file_url.includes("?") ? "&" : "?") + "v=" + Date.now();
+	iframe.src =
+		`/app/pdf-editor?file=${encodeURIComponent(file_docname)}&mode=preview` +
+		"&r=" + Date.now();
 	area.appendChild(iframe);
 }
 
 function gl_doc_mount_result(el, kind, result) {
 	// done: show the page count and mount the viewer / editor
 	gl_doc_set_cancel(el, false);
+	const pages_text = `${__("Pages")}: ${result.pages || "?"}`;
 	const status = el.querySelector(".gl-doc-status");
-	if (status) status.textContent = __("Pages") + ": " + (result.pages || "?");
+	if (status) status.textContent = pages_text;
+	gl_doc_header_pages(result.pages || "?");
+	gl_doc_header_progress("");
 	const area = el.querySelector(".gl-doc-frame-area");
 	if (!area) return;
 	area.innerHTML = "";
-	if (kind === "xlsx") gl_mount_sheets_editor(area, result.file);
-	else gl_mount_pdf_viewer(area, result.file_url);
+	if (kind === "xlsx") {
+		gl_mount_sheets_editor(area, result.file);
+	} else if (result.file) {
+		// the bundled pdf editor in read-only PREVIEW mode (never a plain
+		// browser PDF iframe): full screen under the page header
+		gl_mount_pdf_editor(area, result.file);
+	} else {
+		gl_doc_error_panel(el, kind, __("Le document n'a pas de fichier associe."), false);
+	}
 }
 
 function gl_doc_poll(el, kind, generation, cache_key) {
@@ -496,7 +585,7 @@ function gl_mount_document(el, kind, force) {
 				">${__("Generation du Grand Livre...")}</div>
 			</div>
 		</div>`;
-	el.querySelector(".gl-doc-download").addEventListener("click", () => gl_download_document(kind));
+	gl_doc_header_mount(kind);
 	el.querySelector(".gl-doc-cancel").addEventListener("click", () => {
 		const poll = GL_VIEW_STATE.poll;
 		if (!poll) return;
@@ -546,6 +635,7 @@ function gl_mount_document(el, kind, force) {
 
 function gl_unmount_document() {
 	GL_VIEW_STATE.active = "list";
+	gl_doc_header_unmount();
 	if (GL_VIEW_STATE.el) {
 		GL_VIEW_STATE.el.innerHTML = "";
 		GL_VIEW_STATE.el = null;
@@ -842,6 +932,7 @@ frappe.query_reports["Ledger Data"] = {
 				pagination: GL_PAGINATION,
 				fill_datatable: true,
 				summary_position: "top",
+				hide_filters_in_doc: true,
 			});
 			GL_PAGINATION.$area = report.page.main.find(".report-pagination");
 		} catch (error) {
