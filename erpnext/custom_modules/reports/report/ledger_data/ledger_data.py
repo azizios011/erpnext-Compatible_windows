@@ -300,7 +300,7 @@ def _get_grille_rows(filters: dict, context: dict) -> list[dict]:
 		display = account_rows[0].get("compte_comptable") or account
 		solde = openings.get(account, 0.0)
 		total_debit = total_credit = 0.0
-		out.append({"row_type": "header", "date": display})
+		out.append({"row_type": "header", "date": display, "account": account})
 		if openings:
 			out.append(
 				{
@@ -318,6 +318,7 @@ def _get_grille_rows(filters: dict, context: dict) -> list[dict]:
 			out.append(
 				{
 					"row_type": "entry",
+					"account": account,
 					"date": getdate(row.posting_date).strftime("%d/%m/%Y"),
 					"mvt": row.mvt,
 					"libelle": row.libelle,
@@ -336,6 +337,7 @@ def _get_grille_rows(filters: dict, context: dict) -> list[dict]:
 		out.append(
 			{
 				"row_type": "total",
+				"account": account,
 				"date": _("Totaux {0}").format(display),
 				"debit": total_debit,
 				"credit": total_credit,
