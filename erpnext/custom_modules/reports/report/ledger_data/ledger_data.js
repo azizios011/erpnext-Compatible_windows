@@ -41,6 +41,105 @@ const GL_DOCS = {
 
 const GL_VIEW_STATE = { active: "list", el: null, timer: null, generation: 0 };
 
+// ── List view pagination (server-side paging, client state) ─────────────────
+// The page number and the FIXED page size live in two HIDDEN filters: they
+// stay part of the report's filter set so get_filter_values() sends them to
+// the server on every run, while the filter bar shows nothing of them. Any
+// real filter change resets to page 1 (on_change on every visible filter);
+// the refresh button keeps the current page because it never touches these
+// values. The server message ("Showing X - Y of N rows (page P of M).") is
+// the only channel that carries the paging numbers — show_report_message is
+// intercepted below: the numbers feed the bottom bar and the native
+// form-message above the table never shows (no duplicate text).
+
+const GL_PAGE_SIZE = 500;
+
+const GL_PAGINATION = {
+	state: { page: 1, pages: 1, total: 0, start: 0, end: 0 },
+
+	// read the 5 integers positionally from the server message: the wording
+	// may be translated, the number order is not
+	update_from_message(message) {
+		const numbers = (message || "").match(/\d+/g) || [];
+		if (numbers.length !== 5) return false;
+		const [start, end, total, page, pages] = numbers.map(Number);
+		this.state = { start, end, total, page, pages: Math.max(pages, 1) };
+		return true;
+	},
+
+	set_hidden_filter(fieldname, value) {
+		// hidden filters have no visible input: get_filter_values() reads
+		// f.value for them, so write the value straight on the control
+		const field = frappe.query_report.get_filter(fieldname, false);
+		if (field) field.value = value;
+	},
+
+	reset_page() {
+		this.set_hidden_filter("page", 1);
+		this.state.page = 1;
+	},
+
+	goto(page) {
+		const pages = this.state.pages || 1;
+		const target = Math.max(1, Math.min(Math.floor(page) || 1, pages));
+		this.set_hidden_filter("page", target);
+		this.state.page = target;
+		frappe.query_report.refresh();
+	},
+
+	page_buttons(current, pages) {
+		// up to 5 page numbers around the current page, "…" outside the window
+		const window_start = Math.max(1, Math.min(current - 2, pages - 4));
+		const window_end = Math.min(pages, window_start + 4);
+		const out = [];
+		if (window_start > 1) out.push(1, "…");
+		for (let p = window_start; p <= window_end; p++) out.push(p);
+		if (window_end < pages) out.push("…", pages);
+		return out;
+	},
+
+	render($area) {
+		if (!$area || !$area.length) return;
+		const { page, pages, start, end, total } = this.state;
+		if (!total) {
+			$area.empty();
+			return;
+		}
+		const button = (attrs, label, disabled, primary) =>
+			`<button type="button" class="btn btn-xs ${primary ? "btn-primary" : "btn-default"}"${
+				disabled ? " disabled" : ""
+			}${attrs}>${__(label)}</button>`;
+		const buttons = [];
+		buttons.push(button(' data-gl-page="first"', __("Premier"), page <= 1));
+		buttons.push(button(' data-gl-page="prev"', __("Précédent"), page <= 1));
+		this.page_buttons(page, pages).forEach((item) => {
+			if (item === "…") {
+				buttons.push(`<button type="button" class="btn btn-xs btn-default" disabled>…</button>`);
+			} else {
+				buttons.push(button(` data-gl-page="${item}"`, String(item), false, item === page));
+			}
+		});
+		buttons.push(button(' data-gl-page="next"', __("Suivant"), page >= pages));
+		buttons.push(button(' data-gl-page="last"', __("Dernier"), page >= pages));
+		$area.html(
+			`<div class="btn-group gl-pages" role="group">${buttons.join("")}</div>` +
+				`<span class="text-muted gl-showing">${__("Showing {0} - {1} of {2} rows", [
+					start,
+					end,
+					total,
+				])}</span>`
+		);
+	},
+};
+
+// any real filter change restarts the pagination at page 1 (df.on_change
+// replaces frappe's default auto-refresh; the values-compare upstream keeps
+// no-op changes from firing)
+function gl_filter_changed(report) {
+	GL_PAGINATION.reset_page();
+	report.refresh(true);
+}
+
 function gl_view_toolbar(kind, status_html) {
 	const esc = frappe.utils.escape_html;
 	return `
@@ -235,6 +334,7 @@ frappe.query_reports["Ledger Data"] = {
 			options: "General\nAuxiliaire Client\nAuxiliaire Fournisseur",
 			default: "General",
 			reqd: 1,
+			on_change: gl_filter_changed,
 		},
 		{
 			fieldname: "journal",
@@ -244,6 +344,7 @@ frappe.query_reports["Ledger Data"] = {
 			get_data(txt) {
 				return frappe.db.get_link_options("Journal", txt);
 			},
+			on_change: gl_filter_changed,
 		},
 		{
 			fieldname: "period_type",
@@ -252,6 +353,7 @@ frappe.query_reports["Ledger Data"] = {
 			options: "Mensuelle\nTrimestrielle\nAnnuelle\nPersonnalisee",
 			default: "Mensuelle",
 			reqd: 1,
+			on_change: gl_filter_changed,
 		},
 		{
 			fieldname: "month",
@@ -261,6 +363,7 @@ frappe.query_reports["Ledger Data"] = {
 			default: "Janvier",
 			reqd: 1,
 			depends_on: "eval:doc.period_type == 'Mensuelle'",
+			on_change: gl_filter_changed,
 		},
 		{
 			fieldname: "quarter",
@@ -269,6 +372,7 @@ frappe.query_reports["Ledger Data"] = {
 			options: "T1\nT2\nT3\nT4",
 			default: "T1",
 			depends_on: "eval:doc.period_type == 'Trimestrielle'",
+			on_change: gl_filter_changed,
 		},
 		{
 			fieldname: "from_date",
@@ -276,6 +380,7 @@ frappe.query_reports["Ledger Data"] = {
 			fieldtype: "Date",
 			default: frappe.datetime.year_start(),
 			depends_on: "eval:doc.period_type == 'Personnalisee'",
+			on_change: gl_filter_changed,
 		},
 		{
 			fieldname: "to_date",
@@ -283,6 +388,7 @@ frappe.query_reports["Ledger Data"] = {
 			fieldtype: "Date",
 			default: frappe.datetime.get_today(),
 			depends_on: "eval:doc.period_type == 'Personnalisee'",
+			on_change: gl_filter_changed,
 		},
 		{
 			fieldname: "devise",
@@ -290,6 +396,7 @@ frappe.query_reports["Ledger Data"] = {
 			fieldtype: "Link",
 			options: "Currency",
 			default: "TND",
+			on_change: gl_filter_changed,
 		},
 		{
 			fieldname: "lettrage",
@@ -297,6 +404,7 @@ frappe.query_reports["Ledger Data"] = {
 			fieldtype: "Select",
 			options: "Tous\nLettre\nNon lettre",
 			default: "Tous",
+			on_change: gl_filter_changed,
 		},
 		{
 			fieldname: "extract_type",
@@ -305,27 +413,31 @@ frappe.query_reports["Ledger Data"] = {
 			options: "Tous les comptes\nComptes mouvementes\nComptes non soldes",
 			default: "Tous les comptes",
 			reqd: 1,
+			on_change: gl_filter_changed,
 		},
+		// pagination lives in client state: the page number and the FIXED
+		// page size are hidden filters — never shown in the bar, still sent
+		// to the server with every run (see GL_PAGINATION above)
 		{
 			fieldname: "page_size",
 			label: __("Lignes par page"),
-			fieldtype: "Select",
-			options: "100\n500\n1000\n5000",
-			default: "500",
-			reqd: 1,
+			fieldtype: "Int",
+			default: GL_PAGE_SIZE,
+			hidden: 1,
 		},
 		{
 			fieldname: "page",
 			label: __("Page"),
 			fieldtype: "Int",
 			default: 1,
-			reqd: 1,
+			hidden: 1,
 		},
 		{
 			fieldname: "mvt",
 			label: __("Piece comptable"),
 			fieldtype: "Data",
 			description: __("One or several MVT numbers, comma-separated"),
+			on_change: gl_filter_changed,
 		},
 	],
 
@@ -410,7 +522,9 @@ frappe.query_reports["Ledger Data"] = {
 				report_name: "Ledger Data",
 				views: GL_DOCUMENT_VIEWS,
 				keep_filters: true,
+				pagination: GL_PAGINATION,
 			});
+			GL_PAGINATION.$area = report.page.main.find(".report-pagination");
 		} catch (error) {
 			console.error("report_views: setup_views failed", error);
 			frappe.show_alert({
@@ -418,6 +532,42 @@ frappe.query_reports["Ledger Data"] = {
 				indicator: "orange",
 			});
 		}
+
+		// the list fills the screen: the page section becomes a flex column
+		// (filters / datatable / bottom bar), the datatable lays its columns
+		// out fluid across the full width and the scrollable body takes the
+		// height the flex chain leaves it — see the report-gl-fill CSS in
+		// report_views.bundle.js. Scoped to this report: Balance is untouched.
+		report.page.main.addClass("report-gl-fill");
+		report.report_settings.get_datatable_options = (options) =>
+			Object.assign({}, options, { layout: "fluid" });
+
+		// the server message feeds the bottom bar pagination and never shows
+		// above the table (no duplicate text); the empty-run case shows no
+		// message at all, so the bar simply clears
+		report.show_report_message = (message) => {
+			if (GL_PAGINATION.update_from_message(message)) {
+				GL_PAGINATION.render(GL_PAGINATION.$area);
+			}
+			report.$report_message.hide();
+		};
+
+		// the pagination buttons go through one delegated handler (they are
+		// re-rendered on every server message, the binding survives)
+		report.page.main
+			.off("click.gl-pagination", ".gl-pages button")
+			.on("click.gl-pagination", ".gl-pages button", function (event) {
+				event.preventDefault();
+				if ($(this).hasClass("disabled") || this.disabled) return;
+				const target = $(this).attr("data-gl-page");
+				if (!target) return;
+				const { page, pages } = GL_PAGINATION.state;
+				if (target === "first") GL_PAGINATION.goto(1);
+				else if (target === "prev") GL_PAGINATION.goto(page - 1);
+				else if (target === "next") GL_PAGINATION.goto(page + 1);
+				else if (target === "last") GL_PAGINATION.goto(pages);
+				else GL_PAGINATION.goto(parseInt(target, 10));
+			});
 
 		// the document views regenerate on refresh: a filter change while the
 		// PDF / XLSX view is active re-mounts it with the new filter values
@@ -614,7 +764,7 @@ function run_import(dialog) {
 			// the freshly imported exercice reads best as a whole: Annuelle,
 			// from the first page
 			frappe.query_report.set_filter_value("period_type", "Annuelle");
-			frappe.query_report.set_filter_value("page", 1);
+			GL_PAGINATION.reset_page();
 			frappe.query_report.refresh();
 		},
 	});
