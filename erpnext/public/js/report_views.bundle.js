@@ -132,7 +132,11 @@
 		const show_placeholder = (view) => {
 			// hide the native report and mount the placeholder with the
 			// CURRENT filter values
-			report.page.hide_form();
+			if (!opts.keep_filters) {
+				report.page.hide_form();
+			} else {
+				report.page.show_form();
+			}
 			report.$report.hide();
 			report.$summary.hide();
 			report.page.main.addClass("report-wide");
@@ -166,7 +170,7 @@
 		report.report_settings.after_datatable_render = () => {
 			move_summary_below();
 			if (view_state.active !== "list") {
-				report.page.hide_form();
+				if (!opts.keep_filters) report.page.hide_form();
 				report.$report.hide();
 				report.$summary.hide();
 				report.page.main.addClass("report-wide");
@@ -180,7 +184,7 @@
 			.on("axeane-context-changed.report-views-" + (opts.report_name || "default"), () => {
 				frappe.query_report.refresh();
 				if (view_state.active !== "list") {
-					report.page.hide_form();
+					if (!opts.keep_filters) report.page.hide_form();
 					report.$report.hide();
 					report.$summary.hide();
 					report.page.main.addClass("report-wide");

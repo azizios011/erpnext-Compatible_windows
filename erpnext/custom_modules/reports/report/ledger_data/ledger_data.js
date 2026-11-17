@@ -24,6 +24,208 @@ const GL_MONTHS = [
 	"Decembre",
 ];
 
+// ── Grand Livre document views (XLSX / PDF) ──────────────────────────────────
+// Both views render the SAME generated document: the PDF is always converted
+// from the xlsx (print_designer.api.ledger_documents). The xlsx view embeds
+// the bundled GenOffice Sheets editor (print_designer/editors/sheets) over
+// the same iframe + postMessage handshake the /app/sheets-editor desk page
+// uses, with readonly: true — posted ledger data must not be editable and the
+// adapter refuses saves anyway. The pdf view uses the browser's viewer on the
+// private File url. Filters stay in the report's filter section: every
+// (re)mount regenerates the document for the CURRENT filter values.
+
+const GL_DOCS = {
+	generate_xlsx: "print_designer.api.ledger_documents.generate_grand_livre_xlsx",
+	generate_pdf: "print_designer.api.ledger_documents.generate_grand_livre_pdf",
+};
+
+const GL_VIEW_STATE = { active: "list", el: null, timer: null, generation: 0 };
+
+function gl_view_toolbar(kind, status_html) {
+	const esc = frappe.utils.escape_html;
+	return `
+		<div class="gl-doc-toolbar" style="
+			display: flex; align-items: center; gap: 8px;
+			padding: 8px 10px; border-bottom: 1px solid var(--border-color, #d1d8dd);
+			background: var(--bg-color, #fff);
+		">
+			<button class="btn btn-xs btn-default gl-doc-download" data-kind="${kind}">
+				${__("Telecharger")} ${kind === "xlsx" ? ".xlsx" : ".pdf"}
+			</button>
+			<span class="gl-doc-status text-muted" style="font-size: 12px;">${esc(status_html)}</span>
+		</div>`;
+}
+
+function gl_download_document(kind) {
+	const method = kind === "xlsx" ? GL_DOCS.generate_xlsx : GL_DOCS.generate_pdf;
+	const filters = JSON.stringify(frappe.query_report.get_filter_values() || {});
+	frappe.call({
+		method,
+		args: { filters },
+		freeze: true,
+		freeze_message: __("Generation du document..."),
+		callback(r) {
+			const result = r.message || {};
+			if (!result.file_url) return;
+			const anchor = document.createElement("a");
+			anchor.href = result.file_url + (result.file_url.includes("?") ? "&" : "?") + "v=" + Date.now();
+			anchor.download = result.name || "grand-livre." + kind;
+			document.body.appendChild(anchor);
+			anchor.click();
+			anchor.remove();
+		},
+	});
+}
+
+function gl_mount_error(el, message) {
+	const area = el.querySelector(".gl-doc-frame-area");
+	if (area) {
+		area.innerHTML = `<div class="gl-doc-loading text-muted" style="
+			position: absolute; inset: 0; display: flex;
+			align-items: center; justify-content: center; text-align: center; padding: 20px;
+		">${frappe.utils.escape_html(message)}</div>`;
+	}
+}
+
+function gl_mount_sheets_editor(area, file_docname) {
+	const iframe = document.createElement("iframe");
+	iframe.title = __("Grand Livre XLSX");
+	iframe.style.cssText = "border: 0; width: 100%; height: 100%; display: block;";
+	area.appendChild(iframe);
+	const on_message = (ev) => {
+		if (ev.source !== iframe.contentWindow) return;
+		const data = ev.data || {};
+		if (data.type !== "sheets-editor-ready") return;
+		iframe.contentWindow.postMessage(
+			{
+				type: "sheets-editor-init",
+				file: file_docname,
+				lang: frappe.boot.lang || "en",
+				csrfToken: frappe.csrf_token,
+				fullName: frappe.user_info(frappe.session.user).fullname,
+				readonly: true,
+			},
+			window.location.origin
+		);
+	};
+	window.addEventListener("message", on_message);
+	GL_VIEW_STATE.cleanup = () => window.removeEventListener("message", on_message);
+	iframe.src = "/assets/print_designer/editors/sheets/index.html";
+}
+
+function gl_mount_pdf_viewer(area, file_url) {
+	const iframe = document.createElement("iframe");
+	iframe.title = __("Grand Livre PDF");
+	iframe.style.cssText = "border: 0; width: 100%; height: 100%; display: block;";
+	iframe.src = file_url + (file_url.includes("?") ? "&" : "?") + "v=" + Date.now();
+	area.appendChild(iframe);
+}
+
+function gl_mount_document(el, kind) {
+	// one generation at a time; stale callbacks never mount
+	const generation = ++GL_VIEW_STATE.generation;
+	GL_VIEW_STATE.active = kind;
+	GL_VIEW_STATE.el = el;
+	if (GL_VIEW_STATE.cleanup) {
+		GL_VIEW_STATE.cleanup();
+		GL_VIEW_STATE.cleanup = null;
+	}
+	el.innerHTML = `
+		<div class="gl-doc-view" style="
+			display: flex; flex-direction: column; width: 100%; height: 100%;
+		">
+			${gl_view_toolbar(kind, __("Generation en cours..."))}
+			<div class="gl-doc-frame-area" style="flex: 1; position: relative; min-height: 0;">
+				<div class="gl-doc-loading text-muted" style="
+					position: absolute; inset: 0; display: flex;
+					align-items: center; justify-content: center;
+				">${__("Generation du Grand Livre...")}</div>
+			</div>
+		</div>`;
+	el.querySelector(".gl-doc-download").addEventListener("click", () => gl_download_document(kind));
+
+	frappe.call({
+		method: kind === "xlsx" ? GL_DOCS.generate_xlsx : GL_DOCS.generate_pdf,
+		args: { filters: JSON.stringify(frappe.query_report.get_filter_values() || {}) },
+		callback(r) {
+			if (generation !== GL_VIEW_STATE.generation || GL_VIEW_STATE.active !== kind) return;
+			const result = r.message || {};
+			if (!result.file_url) {
+				gl_mount_error(el, __("La generation n'a rien produit"));
+				frappe.show_alert({
+					message: __("La generation n'a rien produit"),
+					indicator: "red",
+				});
+				return;
+			}
+			const $status = el.querySelector(".gl-doc-status");
+			if ($status) $status.textContent = __("Pages") + ": " + (result.pages || "?");
+			const area = el.querySelector(".gl-doc-frame-area");
+			area.innerHTML = "";
+			if (kind === "xlsx") gl_mount_sheets_editor(area, result.file);
+			else gl_mount_pdf_viewer(area, result.file_url);
+		},
+		error(r) {
+			if (generation !== GL_VIEW_STATE.generation) return;
+			const msg = (r && r.message) || __("La generation a echoue");
+			gl_mount_error(el, msg);
+			frappe.show_alert({
+				message: msg,
+				indicator: "red",
+			});
+		},
+	});
+}
+
+function gl_unmount_document() {
+	GL_VIEW_STATE.active = "list";
+	if (GL_VIEW_STATE.el) {
+		GL_VIEW_STATE.el.innerHTML = "";
+		GL_VIEW_STATE.el = null;
+	}
+	GL_VIEW_STATE.generation += 1; // a stale callback never mounts
+	if (GL_VIEW_STATE.cleanup) {
+		GL_VIEW_STATE.cleanup();
+		GL_VIEW_STATE.cleanup = null;
+	}
+	if (GL_VIEW_STATE.timer) {
+		clearTimeout(GL_VIEW_STATE.timer);
+		GL_VIEW_STATE.timer = null;
+	}
+}
+
+function gl_remount_after_refresh() {
+	// filters changed and the report refreshed: regenerate the document view
+	// for the NEW filter values (debounced, loading state)
+	if (GL_VIEW_STATE.active === "list" || !GL_VIEW_STATE.el) return;
+	if (GL_VIEW_STATE.timer) clearTimeout(GL_VIEW_STATE.timer);
+	GL_VIEW_STATE.timer = setTimeout(() => {
+		GL_VIEW_STATE.timer = null;
+		const el = GL_VIEW_STATE.el;
+		const kind = GL_VIEW_STATE.active;
+		if (el && kind !== "list") gl_mount_document(el, kind);
+	}, 800);
+}
+
+const GL_DOCUMENT_VIEWS = {
+	pdf: {
+		mount(el) {
+			gl_mount_document(el, "pdf");
+		},
+		unmount() {
+			gl_unmount_document();
+		},
+	},
+	xlsx: {
+		mount(el) {
+			gl_mount_document(el, "xlsx");
+		},
+		unmount() {
+			gl_unmount_document();
+		},
+	},
+};
+
 frappe.query_reports["Ledger Data"] = {
 	filters: [
 		{
@@ -130,34 +332,8 @@ frappe.query_reports["Ledger Data"] = {
 	// the PDF / XLSX mounts the switcher calls: el = the wide-open container,
 	// filters = the CURRENT filter values (report.get_filter_values()). The
 	// real previews are built later on this contract.
-	views: {
-		pdf: {
-			mount(el, filters) {
-				el.innerHTML = "";
-				el.appendChild(
-					frappe.ui.empty_state({
-						icon: "file-text",
-						title: __("Apercu PDF, bientot disponible"),
-						description: __("The PDF preview will be generated from the XLSX view."),
-					})
-				);
-			},
-			unmount() {},
-		},
-		xlsx: {
-			mount(el, filters) {
-				el.innerHTML = "";
-				el.appendChild(
-					frappe.ui.empty_state({
-						icon: "table",
-						title: __("XLSX view, coming soon"),
-						description: __("The XLSX view will be generated from the same data."),
-					})
-				);
-			},
-			unmount() {},
-		},
-	},
+	views: GL_DOCUMENT_VIEWS,
+
 
 	formatter(value, row, column, data, default_formatter) {
 		// the MVT of the two island-backed entry doctypes opens the entry in
@@ -232,34 +408,8 @@ frappe.query_reports["Ledger Data"] = {
 		try {
 			erpnext.reports.setup_views(report, {
 				report_name: "Ledger Data",
-				views: {
-					pdf: {
-						mount(el) {
-							el.innerHTML = "";
-							el.appendChild(
-								frappe.ui.empty_state({
-									icon: "file-text",
-									title: __("Apercu PDF, bientot disponible"),
-									description: __("The PDF preview will be generated from the XLSX view."),
-								})
-							);
-						},
-						unmount() {},
-					},
-					xlsx: {
-						mount(el) {
-							el.innerHTML = "";
-							el.appendChild(
-								frappe.ui.empty_state({
-									icon: "table",
-									title: __("XLSX view, coming soon"),
-									description: __("The XLSX view will be generated from the same data."),
-								})
-							);
-						},
-						unmount() {},
-					},
-				},
+				views: GL_DOCUMENT_VIEWS,
+				keep_filters: true,
 			});
 		} catch (error) {
 			console.error("report_views: setup_views failed", error);
@@ -268,6 +418,21 @@ frappe.query_reports["Ledger Data"] = {
 				indicator: "orange",
 			});
 		}
+
+		// the document views regenerate on refresh: a filter change while the
+		// PDF / XLSX view is active re-mounts it with the new filter values
+		// (gl_remount_after_refresh debounces; the mount shows the loading
+		// state). The list view keeps the native refresh below.
+		const previous_after_render = report.report_settings.after_datatable_render;
+		report.report_settings.after_datatable_render = () => {
+			if (previous_after_render) previous_after_render();
+			gl_remount_after_refresh();
+		};
+
+		// downloads are available in every view (menu items; the document
+		// views also carry their own toolbar button)
+		report.page.add_menu_item(__("Telecharger XLSX"), () => gl_download_document("xlsx"));
+		report.page.add_menu_item(__("Telecharger PDF"), () => gl_download_document("pdf"));
 	}
 };
 

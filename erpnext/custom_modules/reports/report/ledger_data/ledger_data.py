@@ -5,8 +5,10 @@
 
 The LIST view is the native report page (filters, datatable, bottom
 summary). The Grille builder (rows grouped per account with opening
-balances and running totals) stays here: it will feed the OnlyOffice-based
-PDF and XLSX views later — PDF and XLSX are placeholders in the client.
+balances and running totals) feeds the document views: the XLSX view embeds
+the bundled GenOffice Sheets editor read-only on the generated workbook
+(print_designer.api.ledger_documents), and the PDF view shows the PDF
+converted from that same xlsx.
 """
 
 from datetime import date, timedelta
