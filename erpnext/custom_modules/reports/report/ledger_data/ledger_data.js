@@ -33,13 +33,37 @@ const GL_MONTHS = [
 // adapter refuses saves anyway. The pdf view uses the browser's viewer on the
 // private File url. Filters stay in the report's filter section: every
 // (re)mount regenerates the document for the CURRENT filter values.
+//
+// Nothing runs synchronously: at Annuelle scale the Grand Livre is ~32k rows
+// / ~1,000 pages and the build takes minutes — a synchronous request can
+// never survive it (that is what hung the views on "Generation du Grand
+// Livre..."). The client calls the prepare endpoint (cache hit / size guard
+// / background job start) and then POLLS the status endpoint until the job
+// reports done / failed / cancelled; frappe.publish_realtime events only
+// accelerate the progress text (polling is the fallback, a hard timeout the
+// last resort). Every failure path renders an explicit error — the view can
+// never spin forever.
 
-const GL_DOCS = {
-	generate_xlsx: "print_designer.api.ledger_documents.generate_grand_livre_xlsx",
-	generate_pdf: "print_designer.api.ledger_documents.generate_grand_livre_pdf",
+const GL_DOC_API = {
+	prepare: "print_designer.api.ledger_documents.prepare_grand_livre_document",
+	status: "print_designer.api.ledger_documents.get_grand_livre_document_status",
+	cancel: "print_designer.api.ledger_documents.cancel_grand_livre_document",
+};
+const GL_DOC_EVENT_PROGRESS = "grand_livre_document_progress";
+
+const GL_VIEW_STATE = {
+	active: "list",
+	el: null,
+	timer: null,
+	generation: 0,
+	cleanup: null,
+	// the active generation: { kind, cache_key, started_at }
+	poll: null,
 };
 
-const GL_VIEW_STATE = { active: "list", el: null, timer: null, generation: 0 };
+// generous hard cap (measured: ~9 min of build at 32k rows + conversion)
+const GL_DOC_HARD_TIMEOUT_MS = 30 * 60 * 1000;
+const GL_DOC_POLL_MS = 1500;
 
 // ── List view pagination (server-side paging, client state) ─────────────────
 // The page number and the FIXED page size live in two HIDDEN filters: they
@@ -140,7 +164,31 @@ function gl_filter_changed(report) {
 	report.refresh(true);
 }
 
-function gl_view_toolbar(kind, status_html) {
+function gl_doc_filters() {
+	return JSON.stringify(frappe.query_report.get_filter_values() || {});
+}
+
+function gl_doc_call(method, args) {
+	// one place for the POST whitelisted calls; resolves the payload
+	return new Promise((resolve, reject) => {
+		frappe
+			.call({ method, args, type: "POST" })
+			.then((r) => resolve(r.message || {}))
+			.catch((err) => reject(err));
+	});
+}
+
+function gl_trigger_download(result, kind) {
+	if (!result || !result.file_url) return;
+	const anchor = document.createElement("a");
+	anchor.href = result.file_url + (result.file_url.includes("?") ? "&" : "?") + "v=" + Date.now();
+	anchor.download = result.name || "grand-livre." + kind;
+	document.body.appendChild(anchor);
+	anchor.click();
+	anchor.remove();
+}
+
+function gl_view_toolbar(kind, status_html, with_cancel) {
 	const esc = frappe.utils.escape_html;
 	return `
 		<div class="gl-doc-toolbar" style="
@@ -152,38 +200,140 @@ function gl_view_toolbar(kind, status_html) {
 				${__("Telecharger")} ${kind === "xlsx" ? ".xlsx" : ".pdf"}
 			</button>
 			<span class="gl-doc-status text-muted" style="font-size: 12px;">${esc(status_html)}</span>
+			<span style="flex: 1;"></span>
+			<button class="btn btn-xs btn-default gl-doc-cancel"${with_cancel ? "" : " style=\"display: none;\""}>
+				${__("Annuler")}
+			</button>
 		</div>`;
 }
 
-function gl_download_document(kind) {
-	const method = kind === "xlsx" ? GL_DOCS.generate_xlsx : GL_DOCS.generate_pdf;
-	const filters = JSON.stringify(frappe.query_report.get_filter_values() || {});
-	frappe.call({
-		method,
-		args: { filters },
-		freeze: true,
-		freeze_message: __("Generation du document..."),
-		callback(r) {
-			const result = r.message || {};
-			if (!result.file_url) return;
-			const anchor = document.createElement("a");
-			anchor.href = result.file_url + (result.file_url.includes("?") ? "&" : "?") + "v=" + Date.now();
-			anchor.download = result.name || "grand-livre." + kind;
-			document.body.appendChild(anchor);
-			anchor.click();
-			anchor.remove();
-		},
-	});
+function gl_doc_set_status(el, text) {
+	const $status = el.querySelector(".gl-doc-status");
+	if ($status) $status.textContent = text;
 }
 
-function gl_mount_error(el, message) {
+function gl_doc_set_cancel(el, visible) {
+	const button = el.querySelector(".gl-doc-cancel");
+	if (button) button.style.display = visible ? "" : "none";
+}
+
+function gl_download_document(kind) {
+	// menu / toolbar download: same background job, then the browser saves
+	// the file as soon as the state reports done
+	const filters = gl_doc_filters();
+	gl_doc_call(GL_DOC_API.prepare, { filters, kind, force: 1 })
+		.then((result) => {
+			if (result.status === "done" && result.file_url) {
+				gl_trigger_download(result, kind);
+				return;
+			}
+			if (result.status === "error") {
+				frappe.msgprint({ message: result.error, indicator: "red" });
+				return;
+			}
+			if (result.status === "too_large") {
+				frappe.msgprint({
+					message: __("{0} lignes (~{1} pages): choisissez un mois ou un compte.", [
+						result.rows,
+						result.pages,
+					]),
+					indicator: "orange",
+				});
+				return;
+			}
+			// queued: poll with a progress dialog (no freeze — the job takes
+			// minutes and the dialog stays cancelable-by-browser-tab)
+			const started_at = Date.now();
+			frappe.show_progress(__("Grand Livre"), 20, 300, __("Generation en tache de fond..."));
+			const tick = () => {
+				gl_doc_call(GL_DOC_API.status, { cache_key: result.cache_key, kind })
+					.then((state) => {
+						if (state.status === "done" && state.file_url) {
+							frappe.hide_progress();
+							gl_trigger_download(state, kind);
+							return;
+						}
+						if (["failed", "unknown", "cancelled"].includes(state.status)) {
+							frappe.hide_progress();
+							frappe.msgprint({
+								message:
+									state.error ||
+									__(
+										"La generation a ete annulee ou perdue: reessayez."
+									),
+								indicator: "red",
+							});
+							return;
+						}
+						if (Date.now() - started_at > GL_DOC_HARD_TIMEOUT_MS) {
+							frappe.hide_progress();
+							frappe.msgprint({ message: gl_doc_timeout_message(), indicator: "red" });
+							return;
+						}
+						if (state.progress) frappe.show_progress(__("Grand Livre"), 20, 300, state.progress);
+						setTimeout(tick, GL_DOC_POLL_MS);
+					})
+					.catch(() => {
+						// transient network error: keep polling until the hard cap
+						if (Date.now() - started_at > GL_DOC_HARD_TIMEOUT_MS) {
+							frappe.hide_progress();
+							frappe.msgprint({ message: gl_doc_timeout_message(), indicator: "red" });
+							return;
+						}
+						setTimeout(tick, GL_DOC_POLL_MS);
+					});
+			};
+			setTimeout(tick, GL_DOC_POLL_MS);
+		})
+		.catch(() => frappe.msgprint({ message: __("La generation a echoue. Reessayez."), indicator: "red" }));
+}
+
+function gl_doc_timeout_message() {
+	return __(
+		"La generation depasse {0} minutes: reessayez ou reduisez la periode.",
+		[Math.round(GL_DOC_HARD_TIMEOUT_MS / 60000)]
+	);
+}
+
+function gl_doc_error_panel(el, kind, message, with_xlsx_fallback) {
+	// every failure path lands here: message + Retry (+ .xlsx fallback on
+	// the PDF view when LibreOffice is missing) — never a silent loading
+	const esc = frappe.utils.escape_html;
 	const area = el.querySelector(".gl-doc-frame-area");
-	if (area) {
-		area.innerHTML = `<div class="gl-doc-loading text-muted" style="
-			position: absolute; inset: 0; display: flex;
-			align-items: center; justify-content: center; text-align: center; padding: 20px;
-		">${frappe.utils.escape_html(message)}</div>`;
-	}
+	gl_doc_set_cancel(el, false);
+	if (!area) return;
+	area.innerHTML = `
+		<div style="position: absolute; inset: 0; display: flex; flex-direction: column;
+			align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 20px;">
+			<div class="text-muted" style="max-width: 480px;">${esc(message)}</div>
+			<div style="display: flex; gap: 8px;">
+				<button class="btn btn-sm btn-primary gl-doc-retry">${__("Reessayer")}</button>
+				${with_xlsx_fallback ? `<button class="btn btn-sm btn-default gl-doc-fallback-xlsx">${__("Telecharger .xlsx")}</button>` : ""}
+			</div>
+		</div>`;
+	const retry = area.querySelector(".gl-doc-retry");
+	if (retry) retry.addEventListener("click", () => gl_mount_document(el, kind));
+	const fallback = area.querySelector(".gl-doc-fallback-xlsx");
+	if (fallback) fallback.addEventListener("click", () => gl_download_document("xlsx"));
+}
+
+function gl_doc_too_large_panel(el, kind, result) {
+	// the size guard: do NOT auto-generate a huge document — the banner
+	// offers the explicit override instead
+	const esc = frappe.utils.escape_html;
+	const area = el.querySelector(".gl-doc-frame-area");
+	gl_doc_set_cancel(el, false);
+	if (!area) return;
+	area.innerHTML = `
+		<div class="alert alert-warning" style="position: absolute; top: 20px; left: 20px; right: 20px;
+			display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+			<span>${esc(
+				__("{0} lignes (~{1} pages): choisissez un mois ou un compte.", [result.rows, result.pages])
+			)}</span>
+			<button class="btn btn-sm btn-warning gl-doc-force">${__("Generer quand meme")}</button>
+		</div>`;
+	const force = area.querySelector(".gl-doc-force");
+	if (force) force.addEventListener("click", () => gl_mount_document(el, kind, 1));
 }
 
 function gl_mount_sheets_editor(area, file_docname) {
@@ -220,20 +370,83 @@ function gl_mount_pdf_viewer(area, file_url) {
 	area.appendChild(iframe);
 }
 
-function gl_mount_document(el, kind) {
+function gl_doc_mount_result(el, kind, result) {
+	// done: show the page count and mount the viewer / editor
+	gl_doc_set_cancel(el, false);
+	const status = el.querySelector(".gl-doc-status");
+	if (status) status.textContent = __("Pages") + ": " + (result.pages || "?");
+	const area = el.querySelector(".gl-doc-frame-area");
+	if (!area) return;
+	area.innerHTML = "";
+	if (kind === "xlsx") gl_mount_sheets_editor(area, result.file);
+	else gl_mount_pdf_viewer(area, result.file_url);
+}
+
+function gl_doc_poll(el, kind, generation, cache_key) {
+	// the polling loop: never trust a single realtime event, never wait
+	// forever — the hard timeout ends the wait with a clear error
+	const state = GL_VIEW_STATE;
+	const tick = () => {
+		if (generation !== state.generation || state.active !== kind) return; // unmounted / remounted
+		gl_doc_call(GL_DOC_API.status, { cache_key, kind })
+			.then((result) => {
+				if (generation !== state.generation || state.active !== kind) return;
+				if (result.status === "done" && result.file_url) {
+					gl_doc_mount_result(el, kind, result);
+					return;
+				}
+				if (result.status === "failed") {
+					gl_doc_error_panel(el, kind, result.error || __("La generation a echoue. Reessayez."), kind === "pdf");
+					return;
+				}
+				if (result.status === "cancelled") {
+					gl_doc_error_panel(el, kind, __("Generation annulee."), false);
+					return;
+				}
+				if (result.status === "unknown") {
+					// the cache entry is gone (redis flushed): retry cleanly
+					gl_doc_error_panel(el, kind, __("La generation a ete perdue: reessayez."), false);
+					return;
+				}
+				if (Date.now() - state.poll.started_at > GL_DOC_HARD_TIMEOUT_MS) {
+					gl_doc_error_panel(el, kind, gl_doc_timeout_message(), false);
+					return;
+				}
+				if (result.progress) gl_doc_set_status(el, result.progress);
+				state.timer = setTimeout(tick, GL_DOC_POLL_MS);
+			})
+			.catch(() => {
+				// transient network error: keep polling until the hard cap
+				if (generation !== state.generation || state.active !== kind) return;
+				if (Date.now() - state.poll.started_at > GL_DOC_HARD_TIMEOUT_MS) {
+					gl_doc_error_panel(el, kind, gl_doc_timeout_message(), false);
+					return;
+				}
+				state.timer = setTimeout(tick, GL_DOC_POLL_MS);
+			});
+	};
+	state.timer = setTimeout(tick, GL_DOC_POLL_MS);
+}
+
+function gl_mount_document(el, kind, force) {
 	// one generation at a time; stale callbacks never mount
 	const generation = ++GL_VIEW_STATE.generation;
 	GL_VIEW_STATE.active = kind;
 	GL_VIEW_STATE.el = el;
+	GL_VIEW_STATE.poll = null;
 	if (GL_VIEW_STATE.cleanup) {
 		GL_VIEW_STATE.cleanup();
 		GL_VIEW_STATE.cleanup = null;
+	}
+	if (GL_VIEW_STATE.timer) {
+		clearTimeout(GL_VIEW_STATE.timer);
+		GL_VIEW_STATE.timer = null;
 	}
 	el.innerHTML = `
 		<div class="gl-doc-view" style="
 			display: flex; flex-direction: column; width: 100%; height: 100%;
 		">
-			${gl_view_toolbar(kind, __("Generation en cours..."))}
+			${gl_view_toolbar(kind, __("Generation en cours..."), false)}
 			<div class="gl-doc-frame-area" style="flex: 1; position: relative; min-height: 0;">
 				<div class="gl-doc-loading text-muted" style="
 					position: absolute; inset: 0; display: flex;
@@ -242,38 +455,51 @@ function gl_mount_document(el, kind) {
 			</div>
 		</div>`;
 	el.querySelector(".gl-doc-download").addEventListener("click", () => gl_download_document(kind));
+	el.querySelector(".gl-doc-cancel").addEventListener("click", () => {
+		const poll = GL_VIEW_STATE.poll;
+		if (!poll) return;
+		gl_doc_call(GL_DOC_API.cancel, { cache_key: poll.cache_key, kind }).catch(() => {});
+		gl_doc_error_panel(el, kind, __("Generation annulee."), false);
+	});
 
-	frappe.call({
-		method: kind === "xlsx" ? GL_DOCS.generate_xlsx : GL_DOCS.generate_pdf,
-		args: { filters: JSON.stringify(frappe.query_report.get_filter_values() || {}) },
-		callback(r) {
+	gl_doc_call(GL_DOC_API.prepare, { filters: gl_doc_filters(), kind, force: force ? 1 : 0 })
+		.then((result) => {
 			if (generation !== GL_VIEW_STATE.generation || GL_VIEW_STATE.active !== kind) return;
-			const result = r.message || {};
-			if (!result.file_url) {
-				gl_mount_error(el, __("La generation n'a rien produit"));
-				frappe.show_alert({
-					message: __("La generation n'a rien produit"),
-					indicator: "red",
-				});
+			if (result.status === "done" && result.file_url) {
+				gl_doc_mount_result(el, kind, result);
 				return;
 			}
-			const $status = el.querySelector(".gl-doc-status");
-			if ($status) $status.textContent = __("Pages") + ": " + (result.pages || "?");
-			const area = el.querySelector(".gl-doc-frame-area");
-			area.innerHTML = "";
-			if (kind === "xlsx") gl_mount_sheets_editor(area, result.file);
-			else gl_mount_pdf_viewer(area, result.file_url);
-		},
-		error(r) {
-			if (generation !== GL_VIEW_STATE.generation) return;
-			const msg = (r && r.message) || __("La generation a echoue");
-			gl_mount_error(el, msg);
-			frappe.show_alert({
-				message: msg,
-				indicator: "red",
-			});
-		},
-	});
+			if (result.status === "error") {
+				gl_doc_error_panel(el, kind, result.error, kind === "pdf");
+				return;
+			}
+			if (result.status === "too_large") {
+				gl_doc_too_large_panel(el, kind, result);
+				return;
+			}
+			// queued / running: poll the status endpoint; the realtime
+			// progress events only refresh the text faster (fallback = poll)
+			GL_VIEW_STATE.poll = { kind, cache_key: result.cache_key, started_at: Date.now() };
+			gl_doc_set_cancel(el, true);
+			gl_doc_set_status(el, result.progress || __("Generation en tache de fond..."));
+			const on_progress = (event) => {
+				if (
+					event &&
+					event.cache_key === result.cache_key &&
+					generation === GL_VIEW_STATE.generation &&
+					GL_VIEW_STATE.active === kind
+				) {
+					gl_doc_set_status(el, event.progress || "");
+				}
+			};
+			frappe.realtime.on(GL_DOC_EVENT_PROGRESS, on_progress);
+			GL_VIEW_STATE.cleanup = () => frappe.realtime.off(GL_DOC_EVENT_PROGRESS, on_progress);
+			gl_doc_poll(el, kind, generation, result.cache_key);
+		})
+		.catch(() => {
+			if (generation !== GL_VIEW_STATE.generation || GL_VIEW_STATE.active !== kind) return;
+			gl_doc_error_panel(el, kind, __("La generation a echoue. Reessayez."), false);
+		});
 }
 
 function gl_unmount_document() {
@@ -283,6 +509,7 @@ function gl_unmount_document() {
 		GL_VIEW_STATE.el = null;
 	}
 	GL_VIEW_STATE.generation += 1; // a stale callback never mounts
+	GL_VIEW_STATE.poll = null;
 	if (GL_VIEW_STATE.cleanup) {
 		GL_VIEW_STATE.cleanup();
 		GL_VIEW_STATE.cleanup = null;
