@@ -349,7 +349,7 @@ frappe.query_reports["Ledger Data"] = {
 				data.source_entry_doctype
 			)}" data-entry="${frappe.utils.escape_html(data.source_entry)}">${frappe.utils.escape_html(value)}</a>`;
 		}
-		return default_formatter(value);
+		return default_formatter(value, row, column, data);
 	},
 
 	onload(report) {
