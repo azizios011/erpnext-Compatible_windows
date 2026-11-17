@@ -717,25 +717,45 @@ frappe.query_reports["Ledger Data"] = {
 
 
 	formatter(value, row, column, data, default_formatter) {
-		// the MVT of the two island-backed entry doctypes opens the entry in
-		// inspect mode through erpnext.entries.open_entry — in both views.
-		// Header, opening and total rows carry no source_entry: default.
-		if (
-			column.id === "mvt" &&
-			data &&
-			data.source_entry &&
-			["Payable Transaction", "Receivable Transaction"].includes(data.source_entry_doctype)
-		) {
-			return `<a href="#" class="gl-mvt-link" data-entry-doctype="${frappe.utils.escape_html(
-				data.source_entry_doctype
-			)}" data-entry="${frappe.utils.escape_html(data.source_entry)}">${frappe.utils.escape_html(value)}</a>`;
+		// the whole body is wrapped: ONE bad cell must never blank the table
+		// (a throw inside a cell formatter aborts the virtual scroller's
+		// chunk render). On error: log the column + row, fall back to the
+		// default formatter, then to the escaped plain value.
+		try {
+			// the MVT of the two island-backed entry doctypes opens the entry in
+			// inspect mode through erpnext.entries.open_entry — in both views.
+			// Header, opening and total rows carry no source_entry: default.
+			if (
+				column.id === "mvt" &&
+				data &&
+				data.source_entry &&
+				["Payable Transaction", "Receivable Transaction"].includes(data.source_entry_doctype)
+			) {
+				return `<a href="#" class="gl-mvt-link" data-entry-doctype="${frappe.utils.escape_html(
+					data.source_entry_doctype
+				)}" data-entry="${frappe.utils.escape_html(data.source_entry)}">${frappe.utils.escape_html(value)}</a>`;
+			}
+			if (column.id === "actions" && data) {
+				// the narrow action-icon column: document / eye, greyed when the
+				// row carries no attachment / no source entry
+				return gl_row_actions(data);
+			}
+			return default_formatter(value, row, column, data);
+		} catch (error) {
+			console.error(
+				"ledger_data: cell formatter failed for column",
+				column && column.id,
+				"row",
+				row && row.meta ? row.meta.rowIndex : row,
+				error
+			);
+			try {
+				return default_formatter(value, row, column, data);
+			} catch (fallback_error) {
+				console.error("ledger_data: default formatter failed too", fallback_error);
+				return frappe.utils.escape_html(value == null ? "" : String(value));
+			}
 		}
-		if (column.id === "actions" && data) {
-			// the narrow action-icon column: document / eye, greyed when the
-			// row carries no attachment / no source entry
-			return gl_row_actions(data);
-		}
-		return default_formatter(value, row, column, data);
 	},
 
 	onload(report) {
@@ -820,6 +840,7 @@ frappe.query_reports["Ledger Data"] = {
 				views: GL_DOCUMENT_VIEWS,
 				keep_filters: true,
 				pagination: GL_PAGINATION,
+				fill_datatable: true,
 			});
 			GL_PAGINATION.$area = report.page.main.find(".report-pagination");
 		} catch (error) {
@@ -838,6 +859,30 @@ frappe.query_reports["Ledger Data"] = {
 		report.page.main.addClass("report-gl-fill");
 		report.report_settings.get_datatable_options = (options) =>
 			Object.assign({}, options, { layout: "fluid" });
+
+		// a render that throws must be VISIBLE, not a silent blank table: the
+		// patched render_datatable surfaces the error inline (red banner at
+		// the top of the report body) and re-raises so frappe's promise chain
+		// still runs its cleanup
+		const gl_show_render_error = (error) => {
+			const text = frappe.utils.escape_html(String((error && error.message) || error || "unknown error"));
+			console.error("ledger_data: datatable render failed", error);
+			report.$report.show();
+			report.$report.html(
+				`<div class="alert alert-danger gl-render-error" style="margin: 15px;">${__(
+					"Le rendu du tableau a echoue"
+				)}: <code>${text}</code></div>`
+			);
+		};
+		const render_datatable_original = report.render_datatable;
+		report.render_datatable = function () {
+			try {
+				render_datatable_original.apply(this, arguments);
+			} catch (error) {
+				gl_show_render_error(error);
+				throw error;
+			}
+		};
 
 		// the server message feeds the bottom bar pagination and never shows
 		// above the table (no duplicate text); the empty-run case shows no
@@ -869,11 +914,17 @@ frappe.query_reports["Ledger Data"] = {
 		// the document views regenerate on refresh: a filter change while the
 		// PDF / XLSX view is active re-mounts it with the new filter values
 		// (gl_remount_after_refresh debounces; the mount shows the loading
-		// state). The list view keeps the native refresh below.
+		// state). The list view keeps the native refresh below. The whole
+		// chain is guarded: a throw here would abort the refresh promise.
 		const previous_after_render = report.report_settings.after_datatable_render;
 		report.report_settings.after_datatable_render = () => {
-			if (previous_after_render) previous_after_render();
-			gl_remount_after_refresh();
+			try {
+				if (previous_after_render) previous_after_render();
+				gl_remount_after_refresh();
+			} catch (error) {
+				console.error("ledger_data: after_datatable_render failed", error);
+				gl_show_render_error(error);
+			}
 		};
 
 		// downloads are available in every view (menu items; the document

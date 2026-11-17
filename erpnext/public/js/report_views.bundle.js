@@ -116,6 +116,12 @@
 				}
 				.report-gl-fill .report-wrapper .dt-scrollable {
 					height: auto;
+					/* the virtual scroller reads clientHeight at every render and
+					   is sticky about it: a degenerate (0) measure renders zero
+					   rows forever — the floor guarantees a renderable window no
+					   matter the flex/layout timing; the exact pixel height is
+					   re-asserted from JS after every render (see fit_datatable) */
+					min-height: 240px;
 					flex: 1 1 auto;
 					overflow: auto;
 				}
@@ -164,6 +170,59 @@
 			$bottom_bar = $(`<div class="report-bottom-bar"></div>`);
 			$pagination_area = $(`<div class="report-pagination"></div>`).appendTo($bottom_bar);
 			$bottom_bar.appendTo(report.page.main);
+		}
+
+		// opt-in full-height list (opts.fill_datatable, set with the
+		// report-gl-fill class): the datatable body is a virtual scroller
+		// whose visible window is computed from clientHeight AT RENDER TIME
+		// and cached (HyperList repaints only on scroll changes) — a render
+		// that happens while the container has no height yet renders ZERO
+		// rows and never heals by itself. So: the CSS floor (min-height)
+		// keeps every render renderable, and this fit helper re-asserts the
+		// exact pixel height + re-renders the body after every render, view
+		// switch, page change and window resize.
+		let fit_datatable = null;
+		if (opts.fill_datatable) {
+			const throttled_fit = (() => {
+				let timer = null;
+				return () => {
+					if (timer) return;
+					timer = setTimeout(() => {
+						timer = null;
+						fit_datatable_body();
+					}, 150);
+				};
+			})();
+			function fit_datatable_body() {
+				if (view_state.active !== "list") return;
+				const datatable = report.datatable;
+				if (!datatable || !datatable.bodyScrollable || !report.$report || !report.$report.length) return;
+				const wrapper = report.$report[0];
+				if (!wrapper.offsetParent) return; // hidden: nothing to measure
+				const body = datatable.bodyScrollable;
+				const header = datatable.header;
+				const bar = $bottom_bar && $bottom_bar.is(":visible") ? $bottom_bar.outerHeight(true) : 0;
+				const available = Math.max(window.innerHeight - wrapper.getBoundingClientRect().top - bar - 8, 180);
+				const header_height = header ? header.getBoundingClientRect().height : 0;
+				const height = Math.max(Math.floor(available - header_height), 180);
+				const previous = parseFloat(body.style.height) || 0;
+				body.style.height = height + "px";
+				// (re)render the body against the fresh container size — heals
+				// any stale or degenerate virtual-render window
+				if (Math.abs(previous - height) > 1 || previous === 0) {
+					if (datatable.rowmanager && datatable.rowmanager.showAllRows) {
+						try {
+							datatable.rowmanager.showAllRows();
+						} catch (error) {
+							console.error("report_views: body re-render failed", error);
+						}
+					}
+				}
+			}
+			fit_datatable = fit_datatable_body;
+			$(window)
+				.off("resize.report-views-fill")
+				.on("resize.report-views-fill", throttled_fit);
 		}
 
 		// one wide-open container per non-list view, hidden unless active
@@ -246,6 +305,7 @@
 			report.page.main.removeClass("report-wide");
 			Object.values(view_state.containers).forEach(($container) => $container.hide());
 			move_summary_below();
+			if (fit_datatable) fit_datatable(); // the wrapper just became visible
 		};
 
 		const show_placeholder = (view) => {
@@ -285,8 +345,9 @@
 		make_switcher();
 
 		// Frappe re-shows the summary (and the datatable) on every refresh:
-		// re-apply the bottom position in list view and re-hide the native
-		// pieces when a placeholder view is active
+		// re-apply the bottom position in list view, re-assert the datatable
+		// body height, and re-hide the native pieces when a placeholder view
+		// is active
 		report.report_settings.after_datatable_render = () => {
 			move_summary_below();
 			if (view_state.active !== "list") {
@@ -294,6 +355,11 @@
 				report.$report.hide();
 				report.$summary.hide();
 				report.page.main.addClass("report-wide");
+			} else if (fit_datatable) {
+				// setDimensions just stripped the body's inline height: re-fit
+				// AFTER every render so the virtual scroller's window matches
+				// the real layout (its measure is sticky)
+				fit_datatable();
 			}
 		};
 
@@ -313,6 +379,7 @@
 					if (mount) mount(view_state.containers[view_state.active][0], report.get_filter_values());
 				} else {
 					move_summary_below();
+					if (fit_datatable) fit_datatable();
 				}
 			});
 };
