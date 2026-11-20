@@ -27,6 +27,36 @@
   },
   {
    "type": "Card Break",
+   "label": "Payable",
+   "icon": "truck",
+   "hidden": 0,
+   "link_type": "DocType",
+   "link_to": ""
+  },
+  {
+   "type": "Link",
+   "label": "Payable Print Format",
+   "link_type": "DocType",
+   "link_to": "Payable Print Format",
+   "hidden": 0
+  },
+  {
+   "type": "Card Break",
+   "label": "Receivable",
+   "icon": "users",
+   "hidden": 0,
+   "link_type": "DocType",
+   "link_to": ""
+  },
+  {
+   "type": "Link",
+   "label": "Receivable Print Format",
+   "link_type": "DocType",
+   "link_to": "Receivable Print Format",
+   "hidden": 0
+  },
+  {
+   "type": "Card Break",
    "label": "Treasury",
    "icon": "landmark",
    "hidden": 0,
@@ -38,6 +68,13 @@
    "label": "Versement Espece",
    "link_type": "DocType",
    "link_to": "Versement Espece",
+   "hidden": 0
+  },
+  {
+   "type": "Link",
+   "label": "Treasury Print Format",
+   "link_type": "DocType",
+   "link_to": "Treasury Print Format",
    "hidden": 0
   },
   {
@@ -54,9 +91,16 @@
    "link_type": "DocType",
    "link_to": "Mensuelle",
    "hidden": 0
+  },
+  {
+   "type": "Link",
+   "label": "Declaration Print Format",
+   "link_type": "DocType",
+   "link_to": "Declaration Print Format",
+   "hidden": 0
   }
  ],
- "modified": "2026-11-08 16:45:00.000000",
+ "modified": "2026-11-20 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "Facturation",
  "name": "Facturation",
