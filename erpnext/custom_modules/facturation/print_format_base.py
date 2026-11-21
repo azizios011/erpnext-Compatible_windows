@@ -15,6 +15,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
+from erpnext.custom_modules.facturation.template_validators.base import hash_editor_contents
 from print_designer.tunisian_univer_engine.template_system.contract import (
 	slugify,
 	validate_layout_rule,
@@ -61,7 +62,31 @@ class PrintFormatDocument(Document):
 		self.validate_category()
 		self.validate_layout()
 		self.validate_owner()
+		self.validate_validation_state()
 		self.reject_duplicate()
+
+	def code_hash(self) -> str:
+		"""sha256 of the editor contents, the exact value the validator API
+		stamps at validation time."""
+		return hash_editor_contents(
+			self.editor_mode, self.html_code, self.css_code, self.python_code
+		)
+
+	def validate_validation_state(self) -> None:
+		"""Editing any code field invalidates the last validation; the Active
+		status requires a passed validation of the exact current contents."""
+		current = self.code_hash()
+		if self.validated_hash and self.validated_hash != current:
+			self.validation_status = "Not Validated"
+		if self.status == "Active":
+			if not self.validated_hash:
+				frappe.throw(_("Only a passed validation can be Active; validate the template first."))
+			if self.validated_hash != current:
+				frappe.throw(
+					_("The code changed since the last validation; validate again before activating.")
+				)
+			if not (self.validation_status or "").startswith("Passed"):
+				frappe.throw(_("Only a passed validation can be Active; validate the template first."))
 
 	def validate_category(self) -> None:
 		if self.category not in self.CATEGORY_OPTIONS:

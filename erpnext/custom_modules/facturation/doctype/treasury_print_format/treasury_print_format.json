@@ -16,30 +16,149 @@
   "editor_mode",
   "html_code",
   "css_code",
-  "python_code"
+  "python_code",
+  "validation_status",
+  "validation_log",
+  "extraction_schema",
+  "validated_hash",
+  "validated_on"
  ],
  "fields": [
-  {"fieldname": "category", "fieldtype": "Select", "label": "Category", "options": "Releve Bancaire\nRemise de Cheque\nVersement Espece", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
-  {"fieldname": "bank", "fieldtype": "Link", "label": "Bank", "options": "Bank", "reqd": 1, "in_list_view": 1},
-  {"fieldname": "beneficiary", "fieldtype": "Data", "label": "Beneficiaire", "depends_on": "eval:doc.category=='Remise de Cheque'||doc.category=='Versement Espece'", "mandatory_depends_on": "eval:doc.category=='Remise de Cheque'||doc.category=='Versement Espece'"},
-  {"fieldname": "layout_id", "fieldtype": "Data", "label": "Layout ID", "default": "default", "in_list_view": 1},
-  {"fieldname": "template_title", "fieldtype": "Data", "label": "Title"},
-  {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Draft\nActive\nArchived", "default": "Draft", "in_list_view": 1, "in_standard_filter": 1},
-  {"fieldname": "editor_section", "fieldtype": "Section Break", "label": "Template Editor"},
-  {"fieldname": "editor_mode", "fieldtype": "Select", "label": "Editor", "options": "HTML/CSS\nPython", "default": "HTML/CSS", "reqd": 1},
-  {"fieldname": "html_code", "fieldtype": "Code", "label": "HTML", "options": "HTML", "depends_on": "eval:doc.editor_mode=='HTML/CSS'"},
-  {"fieldname": "css_code", "fieldtype": "Code", "label": "CSS", "options": "CSS", "depends_on": "eval:doc.editor_mode=='HTML/CSS'"},
-  {"fieldname": "python_code", "fieldtype": "Code", "label": "Python", "options": "Python", "depends_on": "eval:doc.editor_mode=='Python'"}
+  {
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "label": "Category",
+   "options": "Releve Bancaire\nRemise de Cheque\nVersement Espece",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "bank",
+   "fieldtype": "Link",
+   "label": "Bank",
+   "options": "Bank",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "beneficiary",
+   "fieldtype": "Data",
+   "label": "Beneficiaire",
+   "depends_on": "eval:doc.category=='Remise de Cheque'||doc.category=='Versement Espece'",
+   "mandatory_depends_on": "eval:doc.category=='Remise de Cheque'||doc.category=='Versement Espece'"
+  },
+  {
+   "fieldname": "layout_id",
+   "fieldtype": "Data",
+   "label": "Layout ID",
+   "default": "default",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "template_title",
+   "fieldtype": "Data",
+   "label": "Title"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nActive\nArchived",
+   "default": "Draft",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "editor_section",
+   "fieldtype": "Section Break",
+   "label": "Template Editor"
+  },
+  {
+   "fieldname": "editor_mode",
+   "fieldtype": "Select",
+   "label": "Editor",
+   "options": "HTML/CSS\nPython",
+   "default": "HTML/CSS",
+   "reqd": 1
+  },
+  {
+   "fieldname": "html_code",
+   "fieldtype": "Code",
+   "label": "HTML",
+   "options": "HTML",
+   "depends_on": "eval:doc.editor_mode=='HTML/CSS'"
+  },
+  {
+   "fieldname": "css_code",
+   "fieldtype": "Code",
+   "label": "CSS",
+   "options": "CSS",
+   "depends_on": "eval:doc.editor_mode=='HTML/CSS'"
+  },
+  {
+   "fieldname": "python_code",
+   "fieldtype": "Code",
+   "label": "Python",
+   "options": "Python",
+   "depends_on": "eval:doc.editor_mode=='Python'"
+  },
+  {
+   "fieldname": "validation_status",
+   "fieldtype": "Select",
+   "label": "Validation Status",
+   "options": "Not Validated\nPassed\nPassed With Warnings\nFailed",
+   "default": "Not Validated",
+   "read_only": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "validation_log",
+   "fieldtype": "Code",
+   "label": "Validation Log",
+   "options": "Text",
+   "read_only": 1
+  },
+  {
+   "fieldname": "extraction_schema",
+   "fieldtype": "Code",
+   "label": "Extraction Schema",
+   "options": "JSON",
+   "read_only": 1
+  },
+  {
+   "fieldname": "validated_hash",
+   "fieldtype": "Data",
+   "label": "Validated Hash",
+   "read_only": 1
+  },
+  {
+   "fieldname": "validated_on",
+   "fieldtype": "Datetime",
+   "label": "Validated On",
+   "read_only": 1
+  }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-21 00:00:00.000000",
+ "modified": "2026-11-22 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "Facturation",
  "name": "Treasury Print Format",
  "owner": "Administrator",
  "permissions": [
-  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1}
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
  ],
  "sort_field": "modified",
  "sort_order": "DESC",

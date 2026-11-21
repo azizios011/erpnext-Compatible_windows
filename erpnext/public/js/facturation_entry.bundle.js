@@ -112,6 +112,204 @@
 			},
 		});
 	});
+
+	// ── Facturation Print Format forms ────────────────────────────────────────
+// The four "<Section> Print Format" doctypes opt into a sidebar visible on
+// NEW records (generic frappe.form_sidebar.visible_on_new hook) and share
+// one form handler: Validate / Preview on the CURRENT editor contents and
+// the prompt dropdown next to the print icon.
+const PRINT_FORMAT_DOCTYPES = [
+	"Payable Print Format",
+	"Receivable Print Format",
+	"Treasury Print Format",
+	"Declaration Print Format",
+];
+
+frappe.form_sidebar = frappe.form_sidebar || {};
+frappe.form_sidebar.visible_on_new = function (frm) {
+	return PRINT_FORMAT_DOCTYPES.indexOf(frm.doctype) !== -1;
+};
+
+function prompt_filename(category) {
+	// mirrors the server-side filename rule: uppercased, spaces -> "_",
+	// accents stripped, only A-Z 0-9 _ kept
+	return (
+		(category || "template")
+			.normalize("NFD")
+			.replace(/[\u0300-\u036f]/g, "")
+			.toUpperCase()
+			.replace(/ /g, "_")
+			.replace(/[^A-Z0-9_]/g, "") + ".md"
+	);
+}
+
+function call_print_format_api(method, args) {
+	// quiet server calls: the rejection carries the server's message so the
+	// caller can toast it (no msgprint dialog)
+	return new Promise((resolve, reject) => {
+		frappe.call({
+			type: "POST",
+			method: method,
+			args: args,
+			silent: true,
+			callback: (r) => resolve(r.message),
+			error: (r) => {
+				let message = null;
+				try {
+					const messages = JSON.parse((r && r._server_messages) || "[]");
+					if (messages.length) {
+						const first = typeof messages[0] === "string" ? JSON.parse(messages[0]) : messages[0];
+						message = first.message || first;
+					}
+				} catch (e) {
+					message = null;
+				}
+				reject(message || (r && r._error_message) || __("The request failed."));
+			},
+		});
+	});
+}
+
+function prompt_error_toast(category) {
+	const link = "/app/template-prompt/new?document_type=" + encodeURIComponent(category);
+	frappe.show_alert({
+		message:
+			__("No enabled Template Prompt for {0}.", [category]) +
+			' <a class="alert-link" href="' +
+			link +
+			'">' +
+			__("Create it in Axeane Settings") +
+			"</a>",
+		indicator: "orange",
+	});
+}
+
+function fetch_prompt(category) {
+	return new Promise((resolve, reject) => {
+		frappe.call({
+			type: "GET",
+			method: "frappe.custom_modules.axeane_settings.api.get_template_prompt",
+			args: { document_type: category },
+			silent: true,
+			callback: (r) => resolve(r.message),
+			error: () => reject(new Error("no prompt")),
+		});
+	});
+}
+
+function download_prompt(frm) {
+	const category = frm.doc.category;
+	fetch_prompt(category)
+		.then((r) => {
+			const blob = new Blob([r.content || ""], { type: "text/markdown" });
+			const url = URL.createObjectURL(blob);
+			const link = document.createElement("a");
+			link.href = url;
+			link.download = r.filename || prompt_filename(category);
+			document.body.appendChild(link);
+			link.click();
+			link.remove();
+			URL.revokeObjectURL(url);
+		})
+		.catch(() => prompt_error_toast(category));
+}
+
+function copy_prompt(frm) {
+	fetch_prompt(frm.doc.category)
+		.then((r) => {
+			navigator.clipboard.writeText(r.content || "").then(() => {
+				frappe.show_alert({
+					message: __("Prompt copied to the clipboard."),
+					indicator: "green",
+				});
+			});
+		})
+		.catch(() => prompt_error_toast(frm.doc.category));
+}
+
+function add_prompt_dropdown(frm) {
+	const sidebar = frm.sidebar && frm.sidebar.sidebar;
+	if (!sidebar || sidebar.find(".template-prompt-btn").length) return;
+	const btn = frm.page.add_action_icon("file-text", () => {}, "", __("Template prompt"));
+	btn.addClass("template-prompt-btn");
+	btn.css("background-color", "transparent");
+	// right next to the print icon in the sidebar title row
+	sidebar.find(".form-print").append(btn);
+	new frappe.ui.Dropdown({
+		trigger: btn,
+		align: "end",
+		options: () => [
+			{
+				label: __("Download {0}", [prompt_filename(frm.doc.category)]),
+				icon: "download",
+				onclick: () => download_prompt(frm),
+			},
+			{
+				label: __("Copy prompt"),
+				icon: "copy",
+				onclick: () => copy_prompt(frm),
+			},
+		],
+	});
+}
+
+function print_format_args(frm) {
+	return {
+		template: frm.doc.name && !frm.doc.__islocal ? frm.doc.name : "",
+		template_doctype: frm.doctype,
+		category: frm.doc.category || "",
+		editor_mode: frm.doc.editor_mode || "HTML/CSS",
+		html_code: frm.doc.html_code || "",
+		css_code: frm.doc.css_code || "",
+		python_code: frm.doc.python_code || "",
+	};
+}
+
+function run_print_format_action(frm, method) {
+	if (!frm.doc.category) {
+		frappe.show_alert({ message: __("Select a Category first."), indicator: "orange" });
+		return;
+	}
+	call_print_format_api(method, print_format_args(frm))
+		.then((r) => {
+			if (method.indexOf("validate_print_format") !== -1) {
+				frm.set_value("validation_status", r.status);
+				frm.set_value("validation_log", r.log);
+				frm.set_value("extraction_schema", r.schema);
+				frm.set_value("validated_hash", r.validated_hash);
+				frm.set_value("validated_on", r.validated_on);
+				frappe.show_alert({
+					message: r.status,
+					indicator: r.status === "Failed" ? "red" : "green",
+				});
+			} else if (r && r.file_url) {
+				window.open(r.file_url, "_blank");
+			}
+		})
+		.catch((message) => {
+			// e.g. "No validator for Facture Achat yet."
+			frappe.show_alert({ message: message, indicator: "red" });
+		});
+}
+
+erpnext.facturation.print_format_form = function (frm) {
+	if (!frm.__print_format_buttons) {
+		frm.__print_format_buttons = true;
+		frm.add_custom_button(__("Validate"), () => {
+			run_print_format_action(
+				frm,
+				"erpnext.custom_modules.facturation.print_format_api.validate_print_format"
+			);
+		});
+		frm.add_custom_button(__("Preview"), () => {
+			run_print_format_action(
+				frm,
+				"erpnext.custom_modules.facturation.print_format_api.preview_print_format"
+			);
+		});
+	}
+	add_prompt_dropdown(frm);
+};
 	// ── Facturation list views ───────────────────────────────────────────────────
 // Every Facturation upload doctype shares one listview_settings factory
 // (erpnext.facturation.list_settings). The top bar is reduced to the
