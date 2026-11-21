@@ -3,12 +3,11 @@
 
 """Shared controller for the four Facturation "Print Format" parent doctypes.
 
-They wrap the Document Template engine (print_designer's template_system)
-per Facturation sidebar section: one record holds the admin-uploaded template
-versions for one applies_to document of one party. The doctypes never touch
-Frappe's core Print Format; the 3-file contract, version numbering and the
-private storage layout are Document Template's, driven with the parent
-doctype's own name."""
+One record is a named layout (layout_id + title + status) for the documents
+of one Facturation sidebar section, edited as HTML/CSS or Python in the
+Template Editor section. The template engine, versions and rendering arrive
+in a later stage; the engine category lives here only as a plain Python
+constant, not as a doctype field."""
 
 import re
 
@@ -22,32 +21,53 @@ from print_designer.tunisian_univer_engine.template_system.contract import (
 )
 
 _SLUG_PATTERN = re.compile(r"^[0-9A-Za-z_-]+$")
-# one layout per owner: the engine restricts vente; "other" (Declaration)
-# follows the same rule at the doctype level, the contract leaves it free
-_SINGLE_LAYOUT_CATEGORIES = ("vente", "other")
 
 
 class PrintFormatDocument(Document):
-	# the template-system category and the Facturation doctypes of the one
-	# sidebar section the doctype serves; set by each subclass
+	# plain-Python constants for the later engine stage; not doctype fields
 	CATEGORY: str = ""
-	APPLIES_TO: tuple[str, ...] = ()
+	# one layout per owner: Receivable / Declaration only allow "default"
+	SINGLE_LAYOUT: bool = False
+	# allowed values of the category Select (the section's own documents)
+	CATEGORY_OPTIONS: tuple[str, ...] = ()
+	# owner fieldname(s) forming the uniqueness tuple with category and
+	# layout; the fields that do not apply to the record's category drop out
+	# of both the record name and the duplicate filters
+	OWNER_FIELDS: tuple[str, ...] = ()
+	# Payable / Receivable only: the party field that the Releve category
+	# swaps for a party table, and the table's shape
+	RELEVE_CATEGORY: str = ""
+	RELEVE_TABLE: str = ""
+	RELEVE_CHILD_DOCTYPE: str = ""
+	RELEVE_CHILD_FIELD: str = ""
+
+	def applicable_owner_fields(self) -> tuple[str, ...]:
+		"""The owner fields that apply to the record's category; the form
+		hides the others (depends_on) and validate clears them."""
+		if self.RELEVE_CATEGORY and self.category == self.RELEVE_CATEGORY:
+			return ()
+		return self.OWNER_FIELDS
 
 	def autoname(self) -> None:
-		# "<applies_to slug>-<owner_slug>-<layout_id>"; computed here because
-		# naming runs before validate fills the slug fields
-		layout_id = slugify(self.layout_id or "default")
-		self.name = f"{slugify(self.applies_to)}-{slugify(self.owner_party)}-{layout_id}"
+		# computed here because naming runs before validate clears the
+		# owner fields that do not apply to the record's category
+		layout = slugify(self.layout_id or "default")
+		parts = [self.category]
+		parts += [self.get(fieldname) for fieldname in self.applicable_owner_fields() if self.get(fieldname)]
+		parts.append(layout)
+		self.name = "-".join(slugify(str(part)) for part in parts)
 
 	def validate(self) -> None:
-		if self.applies_to not in self.APPLIES_TO:
-			frappe.throw(_("applies_to must be one of: {0}").format(", ".join(self.APPLIES_TO)))
-		self.category = self.CATEGORY
-		if not self.owner_party:
-			frappe.throw(_("Owner party is required."))
-		self.owner_slug = slugify(self.owner_party)
-		if not _SLUG_PATTERN.match(self.owner_slug):
-			frappe.throw(_("Owner party produces an invalid slug: {0}").format(self.owner_slug))
+		self.validate_category()
+		self.validate_layout()
+		self.validate_owner()
+		self.reject_duplicate()
+
+	def validate_category(self) -> None:
+		if self.category not in self.CATEGORY_OPTIONS:
+			frappe.throw(_("category must be one of: {0}").format(", ".join(self.CATEGORY_OPTIONS)))
+
+	def validate_layout(self) -> None:
 		if not self.layout_id:
 			self.layout_id = "default"
 		self.layout_id = slugify(self.layout_id)
@@ -58,24 +78,94 @@ class PrintFormatDocument(Document):
 		except ValueError as error:
 			# the engine raises ValueError; surface it as a proper ValidationError
 			frappe.throw(str(error))
-		if self.CATEGORY in _SINGLE_LAYOUT_CATEGORIES and self.layout_id != "default":
+		if self.SINGLE_LAYOUT and self.layout_id != "default":
 			frappe.throw(_('This section keeps one layout per owner: layout_id must be "default".'))
+
+	def validate_owner(self) -> None:
+		"""Mandatory + clearing rules of sections 2-4, enforced server side:
+		owner fields that do not apply to the record's category are cleared,
+		the Releve category swaps the party field for the party table."""
+		applicable = self.applicable_owner_fields()
+		for fieldname in self.OWNER_FIELDS:
+			if fieldname not in applicable:
+				self.set(fieldname, None)
+		if self.RELEVE_CATEGORY:
+			if self.category == self.RELEVE_CATEGORY:
+				self.validate_releve_table()
+				return
+			self.set(self.RELEVE_TABLE, [])
+		self.validate_required(*applicable)
+
+	def validate_required(self, *fieldnames: str) -> None:
+		for fieldname in fieldnames:
+			if not self.get(fieldname):
+				field = self.meta.get_field(fieldname)
+				frappe.throw(_("{0} is required.").format(_(field.label) if field else fieldname))
+
+	def validate_releve_table(self) -> None:
+		"""The Releve party table needs at least one row, without duplicate
+		rows, and each party may belong to only one record of the same
+		doctype with the same category and layout_id."""
+		rows = self.get(self.RELEVE_TABLE) or []
+		table_label = self.meta.get_field(self.RELEVE_TABLE).label or self.RELEVE_TABLE
+		if not rows:
+			frappe.throw(_("{0} needs at least one row for {1}.").format(_(table_label), _(self.category)))
+		seen = set()
+		for row in rows:
+			value = row.get(self.RELEVE_CHILD_FIELD)
+			if not value:
+				frappe.throw(_("Row {0}: {1} is required.").format(row.idx, _(self.RELEVE_CHILD_FIELD)))
+			if value in seen:
+				frappe.throw(_("Duplicate row: {0} appears more than once in {1}.").format(value, _(table_label)))
+			seen.add(value)
+		# conflict search joins the child rows of OTHER records of the same
+		# doctype, category and layout; this record's own stored rows are
+		# excluded so editing without changes never conflicts with itself
+		conflicts = frappe.db.sql(
+			"""
+			select child.`{field}` as party, parent.name as record
+			from `tab{child}` as child
+			inner join `tab{parent}` as parent
+				on parent.name = child.parent
+			where child.parenttype = %(parenttype)s
+				and child.`{field}` in %(values)s
+				and parent.category = %(category)s
+				and parent.layout_id = %(layout)s
+				and parent.name != %(name)s
+			""".format(
+				child=self.RELEVE_CHILD_DOCTYPE,
+				parent=self.doctype,
+				field=self.RELEVE_CHILD_FIELD,
+			),
+			{
+				"parenttype": self.doctype,
+				"values": tuple(seen) or ("",),
+				"category": self.category,
+				"layout": self.layout_id,
+				"name": self.name or "",
+			},
+			as_dict=True,
+		)
+		if conflicts:
+			records = ", ".join(
+				_("{0} already used in {1}").format(conflict.party, conflict.record)
+				for conflict in conflicts
+			)
+			frappe.throw(_("Each {0} may appear in only one {1} of this category and layout: {2}.").format(
+				_(self.RELEVE_CHILD_FIELD), _(self.doctype), records
+			))
+
+	def owner_filters(self) -> dict:
+		"""Uniqueness tuple: category + the non-empty owner field(s) that
+		apply to the record's category."""
+		filters = {"category": self.category}
+		filters.update({fieldname: self.get(fieldname) for fieldname in self.applicable_owner_fields() if self.get(fieldname)})
+		return filters
+
+	def reject_duplicate(self) -> None:
 		duplicate = frappe.db.exists(
 			self.doctype,
-			{
-				"applies_to": self.applies_to,
-				"owner_party": self.owner_party,
-				"layout_id": self.layout_id,
-				"name": ("!=", self.name),
-			},
+			{**self.owner_filters(), "layout_id": self.layout_id, "name": ("!=", self.name)},
 		)
 		if duplicate:
-			frappe.throw(
-				_("A print format for this document, owner party and layout already exists: {0}").format(
-					duplicate
-				)
-			)
-		for index, row in enumerate(self.versions, 1):
-			row.version_no = index
-		if self.status == "Active" and not self.active_version:
-			frappe.throw(_("Activate a Passed version before setting the status to Active."))
+			frappe.throw(_("A print format for this category, owner and layout already exists: {0}").format(duplicate))

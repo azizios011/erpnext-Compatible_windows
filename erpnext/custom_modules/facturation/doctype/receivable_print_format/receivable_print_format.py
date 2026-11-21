@@ -5,7 +5,14 @@ from erpnext.custom_modules.facturation.print_format_base import PrintFormatDocu
 
 
 class ReceivablePrintFormat(PrintFormatDocument):
-	# Receivable sidebar section: sales-side documents; one layout per
-	# company (vente: layout_id "default" only)
+	# Receivable sidebar section; the engine category (vente) is kept as
+	# plain Python for the later template-engine stage, not as a field
 	CATEGORY = "vente"
-	APPLIES_TO = ("Facture Vente", "RS Vente", "Releve Vente")
+	SINGLE_LAYOUT = True
+	CATEGORY_OPTIONS = ("Facture Vente", "RS Vente", "Releve Vente")
+	OWNER_FIELDS = ("client",)
+	PARTY_FIELD = "client"
+	RELEVE_CATEGORY = "Releve Vente"
+	RELEVE_TABLE = "releve_clients"
+	RELEVE_CHILD_DOCTYPE = "Receivable Print Format Client"
+	RELEVE_CHILD_FIELD = "client"

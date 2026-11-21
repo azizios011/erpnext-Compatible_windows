@@ -1,8 +1,2 @@
-// Declaration Print Format form: the buttons live in the shared Facturation
-// layer (erpnext.facturation.print_format_form, facturation_entry.bundle.js),
-// which calls the template engine with this doctype as template_doctype.
-frappe.ui.form.on("Declaration Print Format", {
-	refresh(frm) {
-		erpnext.facturation.print_format_form(frm);
-	},
-});
+// Declaration Print Format form: visibility and mandatory state are driven by
+// depends_on in the doctype JSON; no custom form JS in this stage.

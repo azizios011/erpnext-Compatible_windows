@@ -5,7 +5,9 @@ from erpnext.custom_modules.facturation.print_format_base import PrintFormatDocu
 
 
 class DeclarationPrintFormat(PrintFormatDocument):
-	# Declaration sidebar section: declaration documents; one layout per
-	# company (other: layout_id "default" only)
+	# Declaration sidebar section; the engine category (other) is kept as
+	# plain Python for the later template-engine stage, not as a field
 	CATEGORY = "other"
-	APPLIES_TO = ("Mensuelle",)
+	SINGLE_LAYOUT = True
+	CATEGORY_OPTIONS = ("Mensuelle",)
+	OWNER_FIELDS = ("month",)
