@@ -48,7 +48,7 @@ from erpnext.custom_modules.reports.imported_entries_logic import (
 	build_entry_payload,
 	materialize_plan,
 )
-from erpnext.custom_modules.reports.ledger_import import _check_import_roles
+from erpnext.custom_modules.reports import check_import_roles
 
 LEDGER_DOCTYPE = "Ecriture Comptable"
 CHILD_DOCTYPE = "Ecriture Ligne"
@@ -348,7 +348,7 @@ def materialize_imported_entries(dry_run: int = 1) -> dict:
 	movements of the current Entreprise + Exercice. dry_run=1 (the default)
 	writes nothing; dry_run=0 runs the real materialization synchronously —
 	the UI path goes through enqueue_materialize_imported_entries instead."""
-	_check_import_roles()
+	check_import_roles()
 	context = require_context()
 	return _run_materialization(context, dry_run)
 
@@ -358,7 +358,7 @@ def enqueue_materialize_imported_entries() -> dict:
 	"""The UI path: enqueue the real run as a long background job (it creates
 	several thousand entries). Idempotent per Entreprise + Exercice via the
 	job id."""
-	_check_import_roles()
+	check_import_roles()
 	context = require_context()
 	job_id = f"gl_materialize_{context['entreprise']}_{context['exercice']}"
 	try:

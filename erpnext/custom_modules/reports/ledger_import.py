@@ -27,10 +27,10 @@ from frappe import _
 from frappe.utils import cint, cstr, flt, getdate, now_datetime
 
 from erpnext.custom_modules.organization.context import require_context, validate_exercice_open
+from erpnext.custom_modules.reports import check_import_roles
 from erpnext.custom_modules.reports.imported_entries import delete_imported_entries, flagged_linked_rows
 
 LEDGER_DOCTYPE = "Ecriture Comptable"
-IMPORT_ROLES = ("Accounts Manager", "System Manager")
 TOTAL_TOLERANCE = 0.001
 MAX_LISTED_ACCOUNTS = 50
 MAX_LISTED_ROWS = 20
@@ -61,12 +61,6 @@ JOURNAL_TYPE_BY_CODE = {
 	"ATB": "Banque",
 }
 DEFAULT_JOURNAL_TYPE = "Operations Diverses"
-
-
-def _check_import_roles() -> None:
-	roles = frappe.get_roles(frappe.session.user)
-	if not (IMPORT_ROLES[0] in roles or IMPORT_ROLES[1] in roles):
-		frappe.throw(_("Not permitted to import the Grand Livre"), frappe.PermissionError)
 
 
 def _header_key(value) -> str:
@@ -344,7 +338,7 @@ def _client_summary(analysis: dict) -> dict:
 def validate_grand_livre(file_url: str) -> dict:
 	"""Dry run: read and validate the workbook, return the summary without
 	writing anything. The import re-runs the whole validation itself."""
-	_check_import_roles()
+	check_import_roles()
 	context = require_context()
 	return _client_summary(_analyze(file_url, context, create_journals=1))
 
@@ -357,7 +351,7 @@ def import_grand_livre(file_url: str, replace: int = 0, create_journals: int = 1
 	those rows is lettree or pointee). create_journals: create the missing
 	Journal rows (global, name = the code). Entry-posted rows are untouched.
 	"""
-	_check_import_roles()
+	check_import_roles()
 	context = require_context()
 	validate_exercice_open(context)
 	replace = cint(replace)
@@ -522,7 +516,7 @@ def delete_import() -> dict:
 	"""Delete this context's imported rows (import_batch set) AND the entries
 	materialized from them (only those flagged imported), including the rows a
 	re-save re-posted. Refused while any of them is lettree or pointee."""
-	_check_import_roles()
+	check_import_roles()
 	context = require_context()
 	validate_exercice_open(context)
 	imported_names = frappe.get_all(
