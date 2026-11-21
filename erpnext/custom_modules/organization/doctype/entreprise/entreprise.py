@@ -122,10 +122,20 @@ def valider_entreprise(name: str) -> str:
 
 	doc.run_method("validate")
 
-	missing = [df.label or df.fieldname for df in doc.get_missing_mandatory_fields()]
+	# the fork's mandatory collector: (fieldname, message) tuples, parent and
+	# child rows alike
+	missing = doc._get_missing_mandatory_fields() + [
+		row for child in doc.get_all_children() for row in child._get_missing_mandatory_fields()
+	]
 	if missing:
+		labels = []
+		for fieldname, _message in missing:
+			df = doc.meta.get_field(fieldname)
+			label = (df.label if df else None) or fieldname
+			if label not in labels:
+				labels.append(label)
 		frappe.throw(
-			_("Impossible de valider: champs obligatoires vides: {0}.").format(", ".join(missing))
+			_("Impossible de valider: champs obligatoires vides: {0}.").format(", ".join(labels))
 		)
 
 	doc.status = "Creee"
