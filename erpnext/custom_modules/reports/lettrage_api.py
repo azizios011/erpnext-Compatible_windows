@@ -116,8 +116,8 @@ def get_accounts(category: str = "Tous", search: str = "", hide_settled: int = 1
 			continue
 
 		agg = by_account.get(account.name)
-		a_lettrer = int(agg.a_lettrer) if agg else 0
-		solde = flt(agg.total_debit - agg.total_credit, 3) if agg else 0.0
+		a_lettrer = int(agg["a_lettrer"]) if agg else 0
+		solde = flt(agg["total_debit"] - agg["total_credit"], 3) if agg else 0.0
 		accounts.append(
 			{
 				"account": account.name,
