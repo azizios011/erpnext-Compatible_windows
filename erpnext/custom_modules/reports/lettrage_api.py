@@ -1,14 +1,16 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""Lettrage — the "Saisie du lettrage" tool over the Ecriture Comptable
-ledger (single-doctype tool form, like the Bank Reconciliation Tool).
+"""Lettrage API — the whitelisted endpoints behind the "Lettrage" Script
+Report (report/lettrage; formerly the lettrage Page + Single doctype, which
+shared the /app/lettrage slug with the report route and resolved to an
+empty form).
 
 Everything is scoped to the dock context's Entreprise and Exercice: every
 query and every write carries the context conditions, and every entry
 point calls require_context(). Ledger rows are only ever touched with
-frappe.db.set_value / frappe.db.delete after a Lettrage permission check —
-the ledger itself stays read-only for users.
+frappe.db.set_value after the lettrage role check — the ledger itself
+stays read-only for users.
 """
 
 import json
@@ -16,22 +18,15 @@ from typing import Any
 
 import frappe
 from frappe import _
-from frappe.model.document import Document
-from frappe.utils import flt, getdate, nowdate
+from frappe.utils import flt, nowdate
 
 from erpnext.custom_modules.organization.context import require_context
-from erpnext.custom_modules.reports.doctype.lettrage.lettrage_rules import run_rules
+from erpnext.custom_modules.reports.lettrage_rules import run_rules
+from erpnext.custom_modules.reports.report_common import check_ledger_read_permission
 
 LEDGER = "Ecriture Comptable"
 TOLERANCE = 0.001
 SUGGEST_LIMIT = 50
-
-
-class Lettrage(Document):
-	"""Single doctype — the UI is rendered into ui_html by
-	erpnext/public/js/lettrage.bundle.js."""
-
-	pass
 
 # Tunisian PCG (plan comptable) prefixes per lettrage category. No PCT seed
 # data ships in the organization module, so the standard prefixes stand.
@@ -45,17 +40,24 @@ CATEGORIES = ("Tous",) + tuple(CATEGORY_PREFIXES) + ("Autres",)
 
 TREASURY_ACCOUNT_TYPES = ("Bank", "Cash")
 
+# the accountant role set the old Lettrage single doctype granted write to —
+# kept as the write gate now that the doctype is gone (the ledger itself is
+# read-only for Accounts User / Accounts Manager: they letter the ledger
+# through this API only)
+LETTRAGE_ROLES = ("Accounts User", "Accounts Manager", "System Manager")
+
 
 # ── permissions and context scope ────────────────────────────────────────────
 
 
 def _check_read() -> None:
-	if not frappe.has_permission("Lettrage", "read"):
-		frappe.throw(_("Not permitted to use the Lettrage tool"), frappe.PermissionError)
+	check_ledger_read_permission()
 
 
 def _check_write() -> None:
-	if not frappe.has_permission("Lettrage", "write"):
+	if frappe.session.user == "Administrator":
+		return
+	if not set(LETTRAGE_ROLES) & set(frappe.get_roles()):
 		frappe.throw(_("Not permitted to letter the ledger"), frappe.PermissionError)
 
 
@@ -109,7 +111,7 @@ def get_accounts(category: str = "Tous", search: str = "", hide_settled: int = 1
 		elif category != "Tous" and not _in_category(account.account_number, category):
 			continue
 		if search and search.lower() not in (
-			(f"{account.account_number or ''} {account.account_name or ''}").lower()
+			f"{account.account_number or ''} {account.account_name or ''}".lower()
 		):
 			continue
 
@@ -160,95 +162,6 @@ def _in_category(account_number: str | None, category: str) -> bool:
 		)
 	prefix = CATEGORY_PREFIXES.get(category)
 	return bool(prefix) and number.startswith(prefix)
-
-
-# ── lines panel ──────────────────────────────────────────────────────────────
-
-
-@frappe.whitelist()
-def get_lines(account: str, tab: str = "Toutes", filters: str = "{}", page: int = 1, page_size: int = 25) -> dict:
-	"""Right panel rows: paged lines of one account ("ALL" = overview of the
-	whole context) with a running balance, plus the header stats."""
-	_check_read()
-	context = _context()
-	parsed = json.loads(filters or "{}")
-	ledger_filters: list[list] = _scope_filters(context)
-	if account and account != "ALL":
-		ledger_filters.append(["account", "=", account])
-
-	status_map = {
-		"Non lettrees": "Non lettre",
-		"Partielles": "Partiel",
-		"Lettrees": "Lettre",
-	}
-	if tab in status_map:
-		ledger_filters.append(["lettrage_status", "=", status_map[tab]])
-
-	if parsed.get("from_date"):
-		ledger_filters.append(["posting_date", ">=", parsed["from_date"]])
-	if parsed.get("to_date"):
-		ledger_filters.append(["posting_date", "<=", parsed["to_date"]])
-	if parsed.get("journal"):
-		ledger_filters.append(["journal", "=", parsed["journal"]])
-	if parsed.get("libelle"):
-		ledger_filters.append(["libelle", "like", f"%{parsed['libelle']}%"])
-
-	or_filters: list[list] = []
-	if parsed.get("amount_min"):
-		or_filters.append(["debit", ">=", flt(parsed["amount_min"])])
-		or_filters.append(["credit", ">=", flt(parsed["amount_min"])])
-	if parsed.get("amount_max"):
-		or_filters.append(["debit", "<=", flt(parsed["amount_max"])])
-		or_filters.append(["credit", "<=", flt(parsed["amount_max"])])
-
-	all_rows = frappe.get_all(
-		LEDGER,
-		filters=ledger_filters,
-		or_filters=or_filters,
-		fields=[
-			"name",
-			"posting_date",
-			"journal",
-			"mvt",
-			"ref_doc",
-			"libelle",
-			"debit",
-			"credit",
-			"lettrage",
-			"lettrage_status",
-			"pointe",
-			"account",
-		],
-		order_by="posting_date asc, creation asc",
-	)
-
-	running: dict[str, float] = {}
-	for row in all_rows:
-		key = row.account if (account and account != "ALL") else ""
-		running[key] = flt(running.get(key, 0.0) + flt(row.debit) - flt(row.credit), 3)
-		row["solde_prog"] = running[key]
-
-	total = len(all_rows)
-	solde = flt(sum(flt(r.debit) - flt(r.credit) for r in all_rows), 3)
-	non_lettre = sum(1 for r in all_rows if r.lettrage_status == "Non lettre")
-	a_lettrer = sum(1 for r in all_rows if r.lettrage_status in ("Non lettre", "Partiel"))
-
-	page = max(int(page or 1), 1)
-	page_size = min(max(int(page_size or 25), 1), 250)
-	start = (page - 1) * page_size
-	rows = all_rows[start : start + page_size]
-
-	for row in rows:
-		row["date"] = getdate(row.posting_date).strftime("%d/%m/%Y") if row.posting_date else ""
-		row["side"] = "D" if row.solde_prog >= 0 else "C"
-
-	return {
-		"rows": rows,
-		"total": total,
-		"page": page,
-		"page_size": page_size,
-		"stats": {"solde": solde, "non_lettre": non_lettre, "lignes_a_lettrer": a_lettrer},
-	}
 
 
 # ── letter / unletter ────────────────────────────────────────────────────────
@@ -482,7 +395,7 @@ def run_auto_lettrage(category: str = "Tous", account: str = "ALL", rules: str =
 	context = _context()
 	user = frappe.session.user
 	frappe.enqueue(
-		method="erpnext.custom_modules.reports.doctype.lettrage.lettrage._auto_lettrage_job",
+		method="erpnext.custom_modules.reports.lettrage_api._auto_lettrage_job",
 		queue="long",
 		is_async=True,
 		enqueue_after_commit=True,
@@ -579,7 +492,7 @@ def run_auto_delettrage(category: str = "Tous", account: str = "ALL") -> dict:
 	context = _context()
 	user = frappe.session.user
 	frappe.enqueue(
-		method="erpnext.custom_modules.reports.doctype.lettrage.lettrage._auto_delettrage_job",
+		method="erpnext.custom_modules.reports.lettrage_api._auto_delettrage_job",
 		queue="long",
 		is_async=True,
 		enqueue_after_commit=True,
@@ -731,6 +644,19 @@ def _next_code(entreprise: str, account: str) -> str:
 	if not code:
 		frappe.throw(_("Plus de codes de lettrage disponibles pour {0} - {1}.").format(entreprise, account))
 	return code
+
+
+def peek_next_code(entreprise: str, account: str) -> str:
+	"""The code the next group of this account would take — read-only peek
+	for the report's "Prochaine lettre" card (no lock, nothing written)."""
+	existing = frappe.get_all(
+		"Lettrage Groupe",
+		filters={"entreprise": entreprise, "account": account},
+		fields=["code"],
+		order_by="creation desc, code desc",
+		limit=1,
+	)
+	return _increment_code(existing[0].code if existing else None) or ""
 
 
 def _increment_code(current: str | None) -> str | None:

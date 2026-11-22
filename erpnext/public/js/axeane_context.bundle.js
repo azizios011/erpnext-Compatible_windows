@@ -374,9 +374,10 @@
 	// ── banner while the context is missing ─────────────────────────────────
 
 	// the routes that show nothing useful without a context: the scoped
-	// doctypes' lists, the two ledger reports and the full-page tools
-	const BANNER_GATED_PAGES = new Set(["lettrage", "payable", "receivable", "envoi-multiple"]);
-	const BANNER_GATED_REPORTS = new Set(["Ledger Data", "Balance"]);
+	// doctypes' lists, the three ledger reports and the full-page tools.
+	// (Lettrage left the Page set: it is a Script Report now.)
+	const BANNER_GATED_PAGES = new Set(["payable", "receivable", "envoi-multiple"]);
+	const BANNER_GATED_REPORTS = new Set(["Ledger Data", "Balance", "Lettrage"]);
 
 	function gated_route() {
 		const ctx = context() || {};
