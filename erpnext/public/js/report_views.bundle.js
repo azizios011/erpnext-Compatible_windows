@@ -105,12 +105,16 @@
 				.report-summary-top .report-summary {
 					margin: 0;
 					padding: 6px 15px;
-					justify-content: flex-start;
+					/* the list view's cards sit centered (the bottom bar keeps
+					   its own left-aligned layout) */
+					justify-content: center;
 					gap: 4px;
 				}
 				.report-summary-top .report-summary .summary-item {
 					padding: 4px 14px;
 					border-right: 1px solid var(--border-color);
+					align-items: center;
+					text-align: center;
 				}
 				.report-summary-top .report-summary .summary-item:last-child {
 					border-right: none;
@@ -444,6 +448,11 @@
 			Object.values(view_state.containers).forEach(($container) => $container.hide());
 			move_summary_below();
 			if (fit_datatable) fit_datatable(); // the wrapper just became visible
+			// the list Filtres toggle returns with the list (the document
+			// views keep their own overlay toggle) and the remembered inline
+			// state re-applies — show_report_chrome just re-showed the filters
+			$filters_toggle.show();
+			set_filters_visible(filters_visible, false);
 		};
 
 		// opts.hide_filters_in_doc (the Ledger Data document views): the
@@ -466,6 +475,7 @@
 		const show_placeholder = (view) => {
 			// hide the native report and mount the placeholder with the
 			// CURRENT filter values
+			$filters_toggle.hide(); // the document views keep their own overlay toggle
 			if (hide_filters_in_doc) {
 				hide_report_chrome();
 			} else if (!opts.keep_filters) {
@@ -502,6 +512,51 @@
 		};
 
 		make_switcher();
+
+		// ── the LIST view's Filtres toggle ───────────────────────────────────
+		// same place and style as the document views' overlay toggle (before
+		// the view switcher), but INLINE: the filter section shows / hides and
+		// the summary cards + datatable stay — the datatable grows into the
+		// freed height (fit runs after every toggle). Default = shown; the
+		// state is remembered per report in localStorage (private-mode safe:
+		// on failure the default stands and nothing is stored). The document
+		// views keep their own overlay toggle: this button hides while a
+		// placeholder view is active.
+		const filters_storage_key = "report_views.filters_visible." + (opts.report_name || "default");
+		let filters_visible = true;
+		try {
+			const stored = localStorage.getItem(filters_storage_key);
+			if (stored !== null) filters_visible = stored === "1";
+		} catch (error) {
+			// localStorage unavailable (private mode): the default stands
+		}
+		const $filters_toggle = $(
+			`<button type="button" class="btn btn-default btn-sm gl-list-filters-toggle">${__("Filtres")}</button>`
+		);
+		const set_filters_visible = (visible, persist) => {
+			filters_visible = visible;
+			if (persist) {
+				try {
+					localStorage.setItem(filters_storage_key, visible ? "1" : "0");
+				} catch (error) {
+					// private mode: the state just is not remembered
+				}
+			}
+			$filters_toggle.toggleClass("btn-primary", visible);
+			if (visible) report.page.show_form();
+			else report.page.hide_form();
+			if (fit_datatable) fit_datatable(); // the datatable takes the freed height
+		};
+		const $switcher_parent = frappe.is_mobile()
+			? report.page.custom_mobile_actions
+			: report.page.custom_actions;
+		// a re-onload must never duplicate the toggle (same guard as the
+		// switcher above)
+		$switcher_parent.removeClass("hide").find(".gl-list-filters-toggle").remove();
+		$switcher_parent.append($filters_toggle);
+		$switcher_parent.find(".view-switcher").before($filters_toggle);
+		$filters_toggle.on("click", () => set_filters_visible(!filters_visible, true));
+		set_filters_visible(filters_visible, false); // the remembered state applies on load
 
 		// Frappe re-shows the summary (and the datatable) on every refresh:
 		// re-apply the bottom position in list view, re-assert the datatable
