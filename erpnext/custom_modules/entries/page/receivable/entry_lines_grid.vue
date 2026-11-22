@@ -30,6 +30,13 @@ const emit = defineEmits(["add-row", "remove-row"]);
 const EXPECTED_CLASSES = "border-surface-amber-3 bg-surface-amber-1";
 
 // ── Compte picker: server search over the context Entreprise's accounts ──────
+// frappe-ui 1.0.2 Combobox, input mode: the input IS the selected-value
+// display, so `update:query` fires with the committed option's LABEL (on
+// select) and again with that label when the dropdown closes (display sync),
+// and `focus` re-emits the raw FocusEvent. None of those is a search term —
+// only real typing searches; the full list is loaded on mount and reloaded
+// on every open (see on_account_open).
+
 const account_options = ref([]);
 const known_accounts = ref({});
 let account_timer = null;
@@ -44,10 +51,14 @@ function load_account_options(txt = "") {
 			start: 0,
 			page_len: 500,
 		}).then((rows) => {
-			account_options.value = (rows || []).map((r) => ({
+			const options = (rows || []).map((r) => ({
 				label: `${r.account_number} · ${r.account_name}`,
 				value: r.name,
 			}));
+			// an unfiltered load (txt "") that comes back empty (server
+			// hiccup) must not wipe the list already on screen
+			if (txt === "" && !options.length && account_options.value.length) return;
+			account_options.value = options;
 			(rows || []).forEach((r) => remember_account(r.name, r.account_number, r.account_name));
 		});
 	}, 250);
@@ -73,14 +84,39 @@ function options_for(row) {
 	return list;
 }
 
-function on_account_selected(row, index) {
-	if (!row.account) return;
-	if (known_accounts.value[row.account]) {
-		row.account_number = known_accounts.value[row.account].account_number;
+/** The query handler. The component echoes the display into the query:
+ * ignore anything that is not a string, ignore the empty display reset, and
+ * ignore a text equal to the selected option's label or to any option
+ * already listed — only then debounce-search. Never replaces
+ * account_options with an empty result on txt "". */
+function on_account_query(row, txt) {
+	if (typeof txt !== "string") return;
+	if (txt === "") return;
+	const selected = options_for(row).find((o) => o.value === row.account);
+	if (selected && txt === selected.label) return;
+	if (account_options.value.some((o) => o.label === txt)) return;
+	load_account_options(txt);
+}
+
+/** The dropdown opened: nothing is typed at that point (input mode resets
+ * the query to the display value on close), so reload the full list. */
+function on_account_open(is_open) {
+	if (is_open) load_account_options("");
+}
+
+/** The one explicit model update: assign, then the existing account_number /
+ * expected-side / focus follow-ups. (v-model plus a second update handler
+ * raced with the component's own label echo, which emptied the options the
+ * click depended on.) */
+function set_account(row, index, value) {
+	row.account = value;
+	if (!value) return;
+	if (known_accounts.value[value]) {
+		row.account_number = known_accounts.value[value].account_number;
 	} else {
-		frappe.db.get_value("Chart of Account", row.account, ["account_number", "account_name"]).then((r) => {
+		frappe.db.get_value("Chart of Account", value, ["account_number", "account_name"]).then((r) => {
 			const values = r?.message || {};
-			remember_account(row.account, values.account_number, values.account_name);
+			remember_account(value, values.account_number, values.account_name);
 			row.account_number = values.account_number || "";
 		});
 	}
@@ -209,13 +245,13 @@ function focus_side(index, side) {
 							</td>
 							<td class="min-w-[240px] px-2 py-2">
 								<Combobox
-									v-model="row.account"
+									:model-value="row.account"
 									:options="options_for(row)"
 									:filterable="false"
 									:placeholder="__('code · libellé')"
-									@update:model-value="on_account_selected(row, index)"
-									@update:query="load_account_options"
-									@focus="load_account_options"
+									@update:model-value="(value) => set_account(row, index, value)"
+									@update:query="(txt) => on_account_query(row, txt)"
+									@update:open="on_account_open"
 								/>
 							</td>
 							<td class="min-w-[180px] px-2 py-2">
