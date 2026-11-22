@@ -1,12 +1,15 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""Shared account binding for the tiers doctypes (Client / Fournisseur).
+"""Shared account binding for the tiers doctypes (Client / Fournisseur /
+Banque).
 
 A Client can only live on a custom account under 411, a Fournisseur only on a
-custom account under 401 — the account must belong to the Entreprise of the
-current accounting context and may not be a locked (standard) row of the plan
-comptable. The same rules drive the link search the forms use."""
+custom account under 401, and a Banque on a custom account of class 5 — any
+number longer than the "5" prefix (e.g. 532xxx) — the account must belong to
+the Entreprise of the current accounting context and may not be a locked
+(standard) row of the plan comptable. The same rules drive the link search
+the forms use."""
 
 import json
 
@@ -15,7 +18,7 @@ from frappe import _
 
 from erpnext.custom_modules.organization.context import require_entreprise
 
-TIERS_PREFIX = {"Client": "411", "Fournisseur": "401"}
+TIERS_PREFIX = {"Client": "411", "Fournisseur": "401", "Banque": "5"}
 
 
 @frappe.whitelist()

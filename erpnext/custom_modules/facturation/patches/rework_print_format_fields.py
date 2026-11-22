@@ -25,7 +25,7 @@ import frappe
 PARTY_CHANGES = {
 	"Payable Print Format": ("owner_party", "supplier", "Fournisseur"),
 	"Receivable Print Format": ("owner_party", "client", "Client"),
-	"Treasury Print Format": ("owner_party", "bank", "Bank"),
+	"Treasury Print Format": ("owner_party", "bank", "Banque"),
 	"Declaration Print Format": None,
 }
 

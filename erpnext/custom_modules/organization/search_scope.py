@@ -30,8 +30,10 @@ def custom_module_names() -> set[str]:
 
 def sidebar_linked_entities(modules: set[str]) -> dict[str, set[str]]:
 	"""Entities reachable from the custom modules' Workspace Sidebars, so
-	core doctypes and reports those sidebars link to (Bank, Bank Account,
-	Fiscal Year, the bank reports, …) stay searchable."""
+	core doctypes and reports those sidebars link to (Bank Reconciliation
+	Tool, Banque, Fiscal Year, the bank reports, …) stay searchable. The
+	core Bank / Bank Account / Bank Transaction / Bank Statement Import left
+	the sidebars (Banque replaced them), so they left this list too."""
 	out = {kind: set() for kind in KINDS}
 	sidebars = frappe.get_all("Sidebar", filters={"name": ("in", modules)}, pluck="name")
 	if not sidebars:

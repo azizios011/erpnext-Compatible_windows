@@ -36,8 +36,8 @@
   {
    "fieldname": "bank",
    "fieldtype": "Link",
-   "label": "Bank",
-   "options": "Bank",
+   "label": "Banque",
+   "options": "Banque",
    "reqd": 1,
    "in_list_view": 1
   },
