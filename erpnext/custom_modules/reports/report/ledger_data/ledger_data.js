@@ -479,34 +479,59 @@ function gl_mount_sheets_editor(area, file_docname) {
 }
 
 function gl_mount_pdf_editor(area, file_docname) {
-	// the bundled pdf editor page in read-only preview mode: page canvas,
-	// scroll, zoom and the page indicator only — no toolbar, sidebars,
-	// search or save. Same-origin: Print (header control) reaches it.
+	// the STANDALONE bundled pdf editor (the same one the /app/pdf-editor
+	// desk page iframes) in read-only preview mode: page canvas, scroll,
+	// zoom and the page indicator only — no toolbar, sidebars, search or
+	// save. Iframing the desk page would nest a whole second desk (Print
+	// Designer sidebar, page head). Same handshake as gl_mount_sheets_editor
+	// and the desk page (print_designer/page/pdf_editor): the editor signals
+	// pdf-editor-ready on every boot, the host replies pdf-editor-init with
+	// the same payload the desk page sends. Same-origin (served from
+	// /assets): Print (header control) reaches the iframe.
 	const iframe = document.createElement("iframe");
 	iframe.title = __("Grand Livre PDF");
 	iframe.style.cssText = "border: 0; width: 100%; height: 100%; display: block;";
-	iframe.src =
-		`/app/pdf-editor?file=${encodeURIComponent(file_docname)}&mode=preview` +
-		"&r=" + Date.now();
 	area.appendChild(iframe);
+	const on_message = (ev) => {
+		if (ev.source !== iframe.contentWindow) return;
+		const data = ev.data || {};
+		if (data.type !== "pdf-editor-ready") return;
+		iframe.contentWindow.postMessage(
+			{
+				type: "pdf-editor-init",
+				file: file_docname,
+				lang: frappe.boot.lang || "en",
+				csrfToken: frappe.csrf_token,
+				fullName: frappe.user_info(frappe.session.user).fullname,
+				// the preview mode strips every editing surface (ribbon,
+				// sidebars, search, save) — posted ledger data is read-only
+				mode: "preview",
+			},
+			window.location.origin
+		);
+	};
+	window.addEventListener("message", on_message);
+	GL_VIEW_STATE.cleanup = () => window.removeEventListener("message", on_message);
+	iframe.src = "/assets/print_designer/editors/pdf/index.html";
 }
 
 function gl_doc_mount_result(el, kind, result) {
-	// done: show the page count and mount the viewer / editor
+	// done: the page count lives ONLY in the header badge (gl-doc-pages) —
+	// the in-view toolbar goes away, the viewer takes the whole frame area
 	gl_doc_set_cancel(el, false);
-	const pages_text = `${__("Pages")}: ${result.pages || "?"}`;
-	const status = el.querySelector(".gl-doc-status");
-	if (status) status.textContent = pages_text;
 	gl_doc_header_pages(result.pages || "?");
 	gl_doc_header_progress("");
+	const toolbar = el.querySelector(".gl-doc-toolbar");
+	if (toolbar) toolbar.remove();
 	const area = el.querySelector(".gl-doc-frame-area");
 	if (!area) return;
 	area.innerHTML = "";
 	if (kind === "xlsx") {
 		gl_mount_sheets_editor(area, result.file);
 	} else if (result.file) {
-		// the bundled pdf editor in read-only PREVIEW mode (never a plain
-		// browser PDF iframe): full screen under the page header
+		// the standalone bundled pdf editor in read-only PREVIEW mode (never
+		// a plain browser PDF iframe, never the nested desk page): full
+		// screen under the page header
 		gl_mount_pdf_editor(area, result.file);
 	} else {
 		gl_doc_error_panel(el, kind, __("Le document n'a pas de fichier associe."), false);
@@ -559,6 +584,22 @@ function gl_doc_poll(el, kind, generation, cache_key) {
 	state.timer = setTimeout(tick, GL_DOC_POLL_MS);
 }
 
+function gl_hide_native_chrome() {
+	// while a document view is on screen, the native report pieces never
+	// show above the viewer: the report wrapper / empty state ("Nothing to
+	// show"), the prepared-report / stale status band ("This report was
+	// generated N minutes ago"), the server message, the loading band and
+	// the hint footer. frappe's refresh flow re-shows them — the shared
+	// after_refresh hook (report_views.bundle.js) re-hides after every
+	// refresh; this covers the mount itself.
+	const qr = frappe.query_report;
+	if (!qr) return;
+	[qr.$report, qr.$message, qr.$status, qr.$report_message, qr.$loading].forEach(
+		($el) => $el && $el.hide && $el.hide()
+	);
+	if (qr.$report_footer) qr.$report_footer.hide();
+}
+
 function gl_mount_document(el, kind, force) {
 	// one generation at a time; stale callbacks never mount
 	const generation = ++GL_VIEW_STATE.generation;
@@ -573,6 +614,7 @@ function gl_mount_document(el, kind, force) {
 		clearTimeout(GL_VIEW_STATE.timer);
 		GL_VIEW_STATE.timer = null;
 	}
+	gl_hide_native_chrome();
 	el.innerHTML = `
 		<div class="gl-doc-view" style="
 			display: flex; flex-direction: column; width: 100%; height: 100%;

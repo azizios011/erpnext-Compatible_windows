@@ -42,6 +42,17 @@
 					height: calc(100vh - var(--navbar-height, 48px) - var(--page-head-height, 60px));
 					background: var(--bg-color);
 				}
+				/* inside the full-height list layout (report-gl-fill): the
+				   document view starts right under the page header (where the
+				   view picker is) and fills to the bottom of the viewport —
+				   flex, no fixed calc; the native bands above it are hidden
+				   while a document view is active (see after_refresh) */
+				.layout-main-section.report-gl-fill .report-view-pdf,
+				.layout-main-section.report-gl-fill .report-view-xlsx {
+					height: auto;
+					flex: 1 1 auto;
+					min-height: 0;
+				}
 				.report-summary.report-summary-bottom {
 					position: sticky;
 					bottom: 0;
@@ -487,7 +498,14 @@
 			report.$summary.hide();
 			if ($summary_bar) $summary_bar.hide();
 			if ($bottom_bar) $bottom_bar.hide();
-			if (hide_filters_in_doc && report.$report_footer) report.$report_footer.hide();
+			// the native bands never show above a document view: the empty
+			// state, the prepared-report / stale status band, the server
+			// message, the loading band and the hint footer. after_refresh
+			// re-hides them after every refresh while a view is active.
+			[report.$message, report.$status, report.$report_message, report.$loading].forEach(
+				($el) => $el && $el.hide && $el.hide()
+			);
+			if (report.$report_footer) report.$report_footer.hide();
 			report.page.main.addClass("report-wide");
 			const container = view_state.containers[view];
 			container.show();
@@ -557,6 +575,22 @@
 		$switcher_parent.find(".view-switcher").before($filters_toggle);
 		$filters_toggle.on("click", () => set_filters_visible(!filters_visible, true));
 		set_filters_visible(filters_visible, false); // the remembered state applies on load
+
+		// frappe's refresh flow re-shows its native pieces even while a
+		// document view is on screen ($report on render, the empty state,
+		// the prepared-report status band, the footer it re-creates): re-hide
+		// them after EVERY refresh while a view is active — show_list (the
+		// chrome restore) brings them back on the way to the list
+		const previous_after_refresh = report.report_settings.after_refresh;
+		report.report_settings.after_refresh = () => {
+			if (previous_after_refresh) previous_after_refresh();
+			if (view_state.active !== "list") {
+				[report.$report, report.$message, report.$status, report.$report_message, report.$loading].forEach(
+					($el) => $el && $el.hide && $el.hide()
+				);
+				if (report.$report_footer) report.$report_footer.hide();
+			}
+		};
 
 		// Frappe re-shows the summary (and the datatable) on every refresh:
 		// re-apply the bottom position in list view, re-assert the datatable
