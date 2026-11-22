@@ -35,6 +35,11 @@ frappe.listview_settings["Operation Tresorerie"] = {
 			});
 		});
 
+		// the import hub: operations de tresorerie from one xlsx
+		listview.page.add_menu_item(__("Importer"), () => {
+			erpnext.import_hub.open_dialog("Operation Tresorerie", { on_import: () => listview.refresh() });
+		});
+
 		// default view: Exploitation of the Societe type
 		apply_filters(false);
 		listview.filter_area

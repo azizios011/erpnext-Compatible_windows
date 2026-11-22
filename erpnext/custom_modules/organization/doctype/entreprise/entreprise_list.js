@@ -41,5 +41,9 @@ frappe.listview_settings["Entreprise"] = {
 		listview.page.add_inner_button(__("Suivi Creation"), () => {
 			listview.filter_area.add(listview.doctype, "status", "=", "En creation");
 		});
+		// the import hub: one or many entreprises from one xlsx
+		listview.page.add_inner_button(__("Importer"), () => {
+			erpnext.import_hub.open_dialog("Entreprise", { on_import: () => listview.refresh() });
+		});
 	},
 };

@@ -85,6 +85,8 @@ doctype_js = {
 		"public/js/project_overview_attention.js",
 		"public/js/project_overview_breakdown.js",
 	],
+	# the Entreprise form carries the same Importer dialog as its list view
+	"Entreprise": "custom_modules/organization/import_hub.js",
 }
 doctype_list_js = {
 	"Code List": [
@@ -92,6 +94,22 @@ doctype_list_js = {
 	],
 	"Common Code": [
 		"edi/doctype/code_list/code_list_import.js",
+	],
+	# the import hub dialog (shared erpnext.import_hub.open_dialog)
+	"Entreprise": [
+		"custom_modules/organization/import_hub.js",
+	],
+	"Forme Juridique": [
+		"custom_modules/organization/import_hub.js",
+	],
+	"Convention Collective": [
+		"custom_modules/organization/import_hub.js",
+	],
+	"Activite": [
+		"custom_modules/organization/import_hub.js",
+	],
+	"Operation Tresorerie": [
+		"custom_modules/organization/import_hub.js",
 	],
 }
 

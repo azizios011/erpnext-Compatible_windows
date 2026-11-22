@@ -18,15 +18,22 @@ Ouvert Exercice (validate_exercice_open).
 """
 
 import io
-import re
-import unicodedata
-from datetime import date, datetime
+from datetime import date
 
 import frappe
 from frappe import _
-from frappe.utils import cint, cstr, flt, getdate, now_datetime
+from frappe.utils import cint, flt, getdate, now_datetime
 
 from erpnext.custom_modules.organization.context import require_context, validate_exercice_open
+from erpnext.custom_modules.organization.importing import (
+	alias_map,
+	cell,
+	get_import_config,
+	header_key,
+	norm_text,
+	parse_date,
+	read_file_content,
+)
 from erpnext.custom_modules.reports import check_import_roles
 from erpnext.custom_modules.reports.imported_entries import delete_imported_entries, flagged_linked_rows
 
@@ -35,8 +42,10 @@ TOTAL_TOLERANCE = 0.001
 MAX_LISTED_ACCOUNTS = 50
 MAX_LISTED_ROWS = 20
 
-# the sheet's header cells, matched accent/case-insensitively; Solde and
-# Lettage exist in the file but are not imported
+# the DEFAULT sheet header cells (matched accent/case-insensitively via
+# organization.importing.header_key); Solde and Lettage exist in the file
+# but are not imported. When an Import Configuration (target "Grand Livre")
+# is enabled, its column map replaces this table — see _column_map.
 HEADER_ALIASES = {
 	"date": "date",
 	"mvt": "mvt",
@@ -63,49 +72,22 @@ JOURNAL_TYPE_BY_CODE = {
 DEFAULT_JOURNAL_TYPE = "Operations Diverses"
 
 
-def _header_key(value) -> str:
-	"""Header cell → the accent-free lowercase key the aliases map on."""
-	text = cstr(value).strip().lower()
-	return "".join(ch for ch in unicodedata.normalize("NFKD", text) if not unicodedata.combining(ch))
-
-
-def _norm_text(value) -> str:
-	"""Text cells: stripped; an integral float loses the trailing .0 (the
-	Compte 401000.0 becomes "401000", a text Mvt keeps its leading zeros)."""
-	if value is None:
-		return ""
-	if isinstance(value, float) and value.is_integer():
-		return str(int(value))
-	return cstr(value).strip()
-
-
-def _parse_date(value):
-	"""A real date cell or a valid "dd/mm/yyyy" text, else None (invalid)."""
-	if value is None:
-		return None
-	if isinstance(value, datetime):
-		return value.date()
-	if isinstance(value, date):
-		return value
-	text = str(value).strip()
-	match = re.fullmatch(r"(\d{1,2})/(\d{1,2})/(\d{4})", text)
-	if match:
-		try:
-			return date(int(match.group(3)), int(match.group(2)), int(match.group(1)))
-		except ValueError:
-			return None  # "31/13/2026" and friends: reported as date invalide
-	return None
-
-
-def _cell(cells: tuple, index: int):
-	return cells[index] if index < len(cells) else None
-
-
-def _file_content(file_url: str) -> bytes:
-	if not file_url:
-		frappe.throw(_("A file is required."), frappe.ValidationError)
-	file = frappe.get_doc("File", {"file_url": file_url})
-	return file.get_content()
+def _column_map() -> tuple[dict[str, str], tuple[str, ...]]:
+	"""normalized header key -> logical column + the required logical
+	columns. From the enabled Import Configuration (target "Grand Livre")
+	when one exists — its target fields ARE this reader's logical keys (see
+	the Import Configuration docstring); the hard-coded defaults keep the
+	behavior identical otherwise."""
+	aliases, required = dict(HEADER_ALIASES), REQUIRED_HEADERS
+	config = get_import_config("Grand Livre", raise_when_missing=False)
+	if config and config.get("columns"):
+		from_config = alias_map(config)
+		if from_config:
+			aliases = from_config
+			configured_required = [col.target_field for col in config.columns if col.required]
+			if configured_required:
+				required = tuple(configured_required)
+	return aliases, required
 
 
 def _read_rows(file_url: str) -> tuple[list[dict], list[str], int, int]:
@@ -118,8 +100,9 @@ def _read_rows(file_url: str) -> tuple[list[dict], list[str], int, int]:
 	"""
 	from openpyxl import load_workbook
 
-	content = _file_content(file_url)
+	content = read_file_content(file_url)
 	workbook = load_workbook(io.BytesIO(content), read_only=True, data_only=True)
+	aliases, required_headers = _column_map()
 	rows: list[dict] = []
 	problems: list[str] = []
 	zero_skipped = 0
@@ -132,18 +115,18 @@ def _read_rows(file_url: str) -> tuple[list[dict], list[str], int, int]:
 				# the header row is detected by name, tolerant of a preamble
 				# row above it, of extra columns and of the column order
 				mapped: dict[str, int] = {}
-				for index, cell in enumerate(cells):
-					key = HEADER_ALIASES.get(_header_key(cell))
+				for index, cell_value in enumerate(cells):
+					key = aliases.get(header_key(cell_value))
 					if key and key not in mapped:
 						mapped[key] = index
-				if all(header in mapped for header in REQUIRED_HEADERS):
+				if all(header in mapped for header in required_headers):
 					columns = mapped
 				continue
 
-			journal = _norm_text(_cell(cells, columns["journal"]))
-			mvt = _norm_text(_cell(cells, columns["mvt"]))
-			compte = _norm_text(_cell(cells, columns["compte"]))
-			date_value = _parse_date(_cell(cells, columns["date"]))
+			journal = norm_text(cell(cells, columns["journal"]))
+			mvt = norm_text(cell(cells, columns["mvt"]))
+			compte = norm_text(cell(cells, columns["compte"]))
+			date_value = parse_date(cell(cells, columns["date"]))
 			if date_value is None and not journal and not mvt and not compte:
 				continue  # empty row
 
@@ -160,8 +143,8 @@ def _read_rows(file_url: str) -> tuple[list[dict], list[str], int, int]:
 				problems.append(_("Ligne {0}: compte manquant.").format(row_number))
 				continue
 
-			debit = flt(_cell(cells, columns["debit"]))
-			credit = flt(_cell(cells, columns["credit"]))
+			debit = flt(cell(cells, columns["debit"]))
+			credit = flt(cell(cells, columns["credit"]))
 			if debit < 0 or credit < 0:
 				problems.append(_("Ligne {0}: montant negatif.").format(row_number))
 				continue
@@ -172,8 +155,8 @@ def _read_rows(file_url: str) -> tuple[list[dict], list[str], int, int]:
 				zero_skipped += 1
 				continue
 
-			lettrage_cell = _cell(cells, columns["lettrage"]) if "lettrage" in columns else None
-			if _norm_text(lettrage_cell):
+			lettrage_cell = cell(cells, columns["lettrage"]) if "lettrage" in columns else None
+			if norm_text(lettrage_cell):
 				lettrage_ignored += 1
 
 			rows.append(
@@ -183,8 +166,8 @@ def _read_rows(file_url: str) -> tuple[list[dict], list[str], int, int]:
 					"journal": journal,
 					"mvt": mvt,
 					"compte": compte,
-					"libelle": _norm_text(_cell(cells, columns["libelle"])) if "libelle" in columns else "",
-					"ref_doc": _norm_text(_cell(cells, columns["piece"])) if "piece" in columns else "",
+					"libelle": norm_text(cell(cells, columns["libelle"])) if "libelle" in columns else "",
+					"ref_doc": norm_text(cell(cells, columns["piece"])) if "piece" in columns else "",
 					"debit": flt(debit, 3),
 					"credit": flt(credit, 3),
 				}
@@ -193,7 +176,7 @@ def _read_rows(file_url: str) -> tuple[list[dict], list[str], int, int]:
 		workbook.close()
 	if columns is None:
 		problems.append(
-			_("En-tete invalide: les colonnes {0} sont attendues.").format(", ".join(REQUIRED_HEADERS))
+			_("En-tete invalide: les colonnes {0} sont attendues.").format(", ".join(required_headers))
 		)
 		return rows, problems, zero_skipped, lettrage_ignored
 	return rows, problems, zero_skipped, lettrage_ignored

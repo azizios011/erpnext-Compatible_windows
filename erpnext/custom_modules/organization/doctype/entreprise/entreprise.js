@@ -1,7 +1,8 @@
 // Entreprise form: the 4-tab layout mirrors Axeane's wizard. Tab 4 renders
 // the recap cards (validation_html), tab 3 hosts the plan comptable attach
 // and the multi-document uploader; Valider runs the whitelisted
-// valider_entreprise after saving unsaved changes.
+// valider_entreprise after saving unsaved changes. The Importer button opens
+// the shared import hub dialog (one or many entreprises from one xlsx).
 frappe.ui.form.on("Entreprise", {
 	refresh(frm) {
 		frm.toggle_display("status", false); // shown as the page indicator instead
@@ -9,6 +10,7 @@ frappe.ui.form.on("Entreprise", {
 		render_validation_cards(frm);
 		bind_valider_button(frm);
 		bind_document_uploader(frm);
+		bind_importer_button(frm);
 	},
 	personne_physique(frm) {
 		// mirrors the controller default, so the recap shows it immediately
@@ -112,6 +114,13 @@ function add_document_row(frm, file_doc) {
 	row.date_ajout = frappe.datetime.get_today();
 	frm.refresh_field("documents");
 	render_validation_cards(frm);
+}
+
+function bind_importer_button(frm) {
+	// the import hub dialog: creates / updates entreprises from one xlsx
+	frm.add_custom_button(__("Importer"), () => {
+		erpnext.import_hub.open_dialog("Entreprise", { on_import: () => frm.reload_doc() });
+	});
 }
 
 function render_validation_cards(frm) {

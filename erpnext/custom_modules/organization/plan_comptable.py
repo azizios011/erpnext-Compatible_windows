@@ -6,7 +6,10 @@
 Chaque feuille du classeur décrit une classe de comptes (les noms des feuilles
 sont ignorés) avec l'en-tête: Code | Libelle | Nature | Sens — Nature vaut
 "Regroupement" ou "Comptable", sens vaut C, D ou DC. La classe d'un compte est
-le premier chiffre de son code.
+le premier chiffre de son code. L'en-tête reconnu vient de l'Import
+Configuration (target "Chart of Account") quand une est active — les
+colonnes logiques du parser restent code / libelle / nature / sens — sinon
+des valeurs par défaut codées maintiennent le comportement identique.
 
 Les comptes déjà présents pour l'entreprise ne sont jamais modifiés ni
 supprimés; seuls les codes absents sont insérés (name "<code> - <entreprise>").
@@ -15,7 +18,6 @@ dépendent pas de frappe et sont testables en python seul."""
 
 import io
 import re
-import unicodedata
 from collections import Counter
 
 import frappe
@@ -25,43 +27,59 @@ from frappe.utils.nestedset import rebuild_tree
 from openpyxl import load_workbook
 
 from erpnext.custom_modules.organization.context import _accessible_entreprises
+from erpnext.custom_modules.organization.importing import (
+	cell,
+	get_import_config,
+	header_key,
+	norm_text,
+	split_headers,
+)
 
 MAX_LABEL_LENGTH = 255
 # commit every ~200 inserts so transactions stay bounded on ~900 accounts
 INSERT_CHUNK = 200
 ERROR_PREVIEW = 50
 
+# the DEFAULT logical columns of the plan comptable sheet (the Import
+# Configuration target "Chart of Account" carries the same logical keys as
+# target fields when one is seeded)
 HEADER_FIELDS = {"code", "libelle", "nature", "sens"}
 NATURES = {"regroupement", "comptable"}
 SENS_VALUES = {"C", "D", "DC"}
 
 
+def _column_aliases() -> dict[str, list[str]]:
+	"""{logical column: [normalized aliases]} from the enabled Import
+	Configuration (target "Chart of Account") when one exists; the
+	hard-coded defaults keep the behavior identical otherwise. The config's
+	target fields ARE the parser's logical keys."""
+	config = get_import_config("Chart of Account", raise_when_missing=False)
+	if config and config.get("columns"):
+		aliases: dict[str, list[str]] = {}
+		for col in config.columns:
+			normalized = [header_key(alias) for alias in split_headers(col.xlsx_header)]
+			normalized = [key for key in normalized if key]
+			if col.target_field and normalized:
+				aliases[col.target_field] = normalized
+		if len(aliases) == len(config.columns):
+			return aliases
+	return {key: [key] for key in HEADER_FIELDS}
+
+
 # ── pure helpers (no frappe) ──────────────────────────────────────────────────
-def _as_text(value) -> str:
-	"""Cell value -> clean text: xlsx numbers become plain strings ("101000"),
-	whitespace at the ends is stripped."""
-	if value is None:
-		return ""
-	if isinstance(value, float) and value.is_integer():
-		return str(int(value))
-	return str(value).strip()
 
 
-def _header_key(value) -> str:
-	"""Case- and accent-insensitive header key ("Libellé" -> "libelle")."""
-	text = _as_text(value).lower()
-	return "".join(ch for ch in unicodedata.normalize("NFKD", text) if not unicodedata.combining(ch))
-
-
-def _header_map(values) -> dict | None:
+def _header_map(values, aliases: dict[str, list[str]]) -> dict | None:
 	"""Column indexes for the expected header row, or None when the row is not
-	the header ("Code | Libelle | Nature | Sens" in any order)."""
+	the header (every configured column present, in any order — "Code |
+	Libelle | Nature | Sens" for the default aliases)."""
 	columns = {}
 	for index, value in enumerate(values):
-		key = _header_key(value)
-		if key in HEADER_FIELDS and key not in columns:
-			columns[key] = index
-	return columns if len(columns) == len(HEADER_FIELDS) else None
+		key = header_key(value)
+		for logical, alias_list in aliases.items():
+			if key in alias_list and logical not in columns:
+				columns[logical] = index
+	return columns if len(columns) == len(aliases) else None
 
 
 def _normalize_label(value: str) -> str:
@@ -87,6 +105,7 @@ def parse_plan_workbook(content: bytes):
 	the first digit of the Code. Empty rows are skipped."""
 	rows: list[dict] = []
 	errors: list[dict] = []
+	aliases = _column_aliases()
 	seen: dict[str, tuple] = {}  # code -> (sheet, row) already declared in the file
 	workbook = load_workbook(io.BytesIO(content), read_only=True, data_only=True)
 	try:
@@ -96,13 +115,13 @@ def parse_plan_workbook(content: bytes):
 			for row_number, cells in enumerate(sheet.iter_rows(values_only=True), start=1):
 				if header_map is None:
 					# preamble rows are consumed while looking for the header
-					header_map = _header_map([_as_text(cell) for cell in cells])
+					header_map = _header_map([norm_text(cell_value) for cell_value in cells], aliases)
 					continue
 
-				code = re.sub(r"\s+", "", _as_text(_cell(cells, header_map["code"])))
-				libelle = _normalize_label(_as_text(_cell(cells, header_map["libelle"])))
-				nature_raw = _as_text(_cell(cells, header_map["nature"]))
-				sens_raw = _as_text(_cell(cells, header_map["sens"]))
+				code = re.sub(r"\s+", "", norm_text(cell(cells, header_map["code"])))
+				libelle = _normalize_label(norm_text(cell(cells, header_map["libelle"])))
+				nature_raw = norm_text(cell(cells, header_map["nature"]))
+				sens_raw = norm_text(cell(cells, header_map["sens"]))
 
 				if not code and not libelle and not nature_raw and not sens_raw:
 					continue  # empty row
@@ -156,7 +175,7 @@ def parse_plan_workbook(content: bytes):
 						"sheet": sheet_name,
 						"row": None,
 						"code": None,
-						"message": "En-tête Code | Libelle | Nature | Sens introuvable.",
+						"message": "En-tête {0} introuvable.".format(" | ".join(aliases.keys())),
 					}
 				)
 	finally:
@@ -193,10 +212,6 @@ def resolve_parent(code: str, codes: dict) -> str | None:
 		if codes.get(prefix):
 			return prefix
 	return None
-
-
-def _cell(cells, index):
-	return cells[index] if index < len(cells) else None
 
 
 # ── whitelisted entry point ───────────────────────────────────────────────────
