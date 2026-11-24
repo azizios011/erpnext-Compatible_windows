@@ -76,7 +76,7 @@ const GL_DOC_POLL_MS = 1500;
 // intercepted below: the numbers feed the bottom bar and the native
 // form-message above the table never shows (no duplicate text).
 
-const GL_PAGE_SIZE = 500;
+const GL_PAGE_SIZE = 20;
 
 const GL_PAGINATION = {
 	state: { page: 1, pages: 1, total: 0, start: 0, end: 0 },
@@ -164,21 +164,32 @@ function gl_filter_changed(report) {
 	report.refresh(true);
 }
 
-// ── Row action icons (document / eye) ────────────────────────────────────────
-// the narrow last column carries two small icon buttons per row: the
+// ── Row action icons (document / eye / pen) ──────────────────────────────────
+// the narrow last column carries three small icon buttons per row: the
 // document icon opens the attached file read-only (bundled pdf-editor page
 // when the attachment is a File, new-tab fallback otherwise) and is enabled
 // only when the transaction was entered with a Facturation document
 // (source_doctype + source_name + an attachment); the eye icon opens the
-// source entry in the Entries workspace in inspect mode. Both live in the
-// page's dict (has_document / document_file / document_file_name /
+// source entry in the Entries workspace in inspect mode; the pen icon opens
+// the entry in modify mode (disabled when the entry cannot be modified —
+// closed Exercice or lettered lines). All live in the page's dict
+// (has_document / document_file / document_file_name /
 // source_entry_doctype / source_entry) — resolved server-side in ONE
 // batched query per source_doctype group.
+
+function gl_exercice_is_closed() {
+	// the boot context carries every Exercice of the Entreprise with its
+	// status; all rows of this report belong to the selected Exercice
+	const context = (window.axeane && axeane.context && axeane.context.get()) || {};
+	const exercice = (context.exercices || []).find((item) => item.name === context.exercice);
+	return !!(exercice && exercice.status && exercice.status !== "Ouvert");
+}
 
 function gl_row_actions(data) {
 	const esc = frappe.utils.escape_html;
 	const doc_enabled = data.has_document && (data.document_file_name || data.document_file);
 	const entry_enabled = data.source_entry_doctype && data.source_entry;
+	const modify_disabled = !entry_enabled || !!data.lettrage || gl_exercice_is_closed();
 	const document_button = `<button type="button" class="btn btn-xs gl-row-action gl-doc-open${
 		doc_enabled ? "" : " gl-action-disabled"
 	}" title="${__("Voir le document")}"${doc_enabled ? "" : " disabled"} data-file-name="${esc(
@@ -188,12 +199,19 @@ function gl_row_actions(data) {
 	</button>`;
 	const entry_button = `<button type="button" class="btn btn-xs gl-row-action gl-entry-open${
 		entry_enabled ? "" : " gl-action-disabled"
-	}" title="${__("Ouvrir l'ecriture")}"${entry_enabled ? "" : " disabled"} data-entry-doctype="${esc(
+	}" title="${__("Inspecter l'ecriture")}"${entry_enabled ? "" : " disabled"} data-entry-doctype="${esc(
 		data.source_entry_doctype || ""
 	)}" data-entry="${esc(data.source_entry || "")}">
 		${frappe.utils.icon("eye", "xs")}
 	</button>`;
-	return `<span class="gl-row-actions">${document_button}${entry_button}</span>`;
+	const modify_button = `<button type="button" class="btn btn-xs gl-row-action gl-entry-edit${
+		modify_disabled ? " gl-action-disabled" : ""
+	}" title="${__("Modifier l'ecriture")}"${modify_disabled ? " disabled" : ""} data-entry-doctype="${esc(
+		data.source_entry_doctype || ""
+	)}" data-entry="${esc(data.source_entry || "")}">
+		${frappe.utils.icon("pencil", "xs")}
+	</button>`;
+	return `<span class="gl-row-actions">${document_button}${entry_button}${modify_button}</span>`;
 }
 
 function gl_open_document(file_name, file_url) {
@@ -726,6 +744,90 @@ const GL_DOCUMENT_VIEWS = {
 	},
 };
 
+// ── Single header row (merged title + filter) ────────────────────────────────
+// Called from after_datatable_render: the dt-row-header is hidden by CSS
+// (report_views.bundle.js scoped to .report-gl-fill); here we set each
+// filter input's placeholder to the column label and add a sort icon next to
+// every filterable column. The actions column gets no input. Survives every
+// re-render, fluid layout, and the filters-toggle states.
+
+const GL_SORT_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+	fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+	class="gl-sort-icon"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="m21 8-4-4-4 4"/><path d="M17 4v16"/></svg>`;
+
+function gl_setup_single_header_row(report) {
+	const datatable = report.datatable;
+	if (!datatable || !datatable.header) return;
+	const $header = $(datatable.header);
+	const $filterRow = $header.find(".dt-row-filter");
+	if (!$filterRow.length) return;
+
+	const columns = datatable.getColumns ? datatable.getColumns() : [];
+
+	$filterRow.find(".dt-cell").each(function () {
+		const $cell = $(this);
+		const $content = $cell.find(".dt-cell__content");
+		const $input = $cell.find(".dt-filter.dt-input");
+		const colIndex = parseInt($cell.attr("data-col-index"), 10);
+		const col = columns[colIndex];
+
+		// actions column: hide the input entirely
+		if (col && (col.id === "actions" || col.fieldname === "actions")) {
+			$input.hide();
+			return;
+		}
+
+		// set placeholder to the column label
+		if (col && $input.length) {
+			const label = col.name || col.content || "";
+			$input.attr("placeholder", label);
+		}
+
+		// add resize handle so native datatable resize works on filter cells
+		if (col && !$content.find(".dt-cell__resize-handle").length) {
+			$content.append('<span class="dt-cell__resize-handle"></span>');
+		}
+
+		// add a sort icon if not already present and update its state
+		if (col) {
+			let $sort = $content.find(".gl-col-sort");
+			if (!$sort.length) {
+				$sort = $(`<span class="gl-col-sort" data-col-index="${colIndex}" title="${__("Tri")}">${GL_SORT_ICON_SVG}</span>`);
+				$content.append($sort);
+			}
+			const sortOrder = col.sortOrder || "none";
+			const isSorted = sortOrder === "asc" || sortOrder === "desc";
+			$sort.find(".gl-sort-icon").toggleClass("active", isSorted);
+			if (isSorted) {
+				$sort.attr("title", sortOrder === "asc" ? __("Tri croissant") : __("Tri decroissant"));
+			} else {
+				$sort.attr("title", __("Tri"));
+			}
+		}
+	});
+
+	if (!datatable._gl_sort_hooked) {
+		datatable._gl_sort_hooked = true;
+		datatable.on("onSortColumn", () => {
+			gl_setup_single_header_row(report);
+		});
+	}
+
+	// delegated sort click handler (idempotent: off+on)
+	$header
+		.off("click.gl-sort")
+		.on("click.gl-sort", ".gl-col-sort", function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			const colIndex = parseInt($(this).attr("data-col-index"), 10);
+			if (isNaN(colIndex)) return;
+			const col = datatable.getColumn ? datatable.getColumn(colIndex) : columns[colIndex];
+			const currentOrder = (col && col.sortOrder) || "none";
+			const nextOrder = currentOrder === "asc" ? "desc" : "asc";
+			datatable.sortColumn(colIndex, nextOrder);
+		});
+}
+
 frappe.query_reports["Ledger Data"] = {
 	filters: [
 		{
@@ -811,9 +913,86 @@ frappe.query_reports["Ledger Data"] = {
 			fieldname: "extract_type",
 			label: __("Type Extrait"),
 			fieldtype: "Select",
-			options: "Tous les comptes\nComptes mouvementes\nComptes non soldes",
+			options: "Tous les comptes\nSaisie libre\nCompte\nIntervalle des comptes\nComptes non soldes",
 			default: "Tous les comptes",
 			reqd: 1,
+			on_change: gl_filter_changed,
+		},
+		{
+			fieldname: "account",
+			label: __("Compte"),
+			fieldtype: "Autocomplete",
+			depends_on: "eval:doc.extract_type == 'Compte'",
+			get_data(txt) {
+				return frappe
+					.xcall("erpnext.custom_modules.organization.tiers_accounts.compte_search", {
+						doctype: "Chart of Account",
+						txt: txt || "",
+						searchfield: "name",
+						start: 0,
+						page_len: 500,
+					})
+					.then((rows) =>
+						(rows || []).map((r) => ({
+							label: `${r.account_number} · ${r.account_name}`,
+							value: r.name,
+						}))
+					);
+			},
+			on_change: gl_filter_changed,
+		},
+		{
+			fieldname: "from_account",
+			label: __("Du compte"),
+			fieldtype: "Autocomplete",
+			depends_on: "eval:doc.extract_type == 'Intervalle des comptes'",
+			get_data(txt) {
+				return frappe
+					.xcall("erpnext.custom_modules.organization.tiers_accounts.compte_search", {
+						doctype: "Chart of Account",
+						txt: txt || "",
+						searchfield: "name",
+						start: 0,
+						page_len: 500,
+					})
+					.then((rows) =>
+						(rows || []).map((r) => ({
+							label: `${r.account_number} · ${r.account_name}`,
+							value: r.account_number,
+						}))
+					);
+			},
+			on_change: gl_filter_changed,
+		},
+		{
+			fieldname: "to_account",
+			label: __("Au compte"),
+			fieldtype: "Autocomplete",
+			depends_on: "eval:doc.extract_type == 'Intervalle des comptes'",
+			get_data(txt) {
+				return frappe
+					.xcall("erpnext.custom_modules.organization.tiers_accounts.compte_search", {
+						doctype: "Chart of Account",
+						txt: txt || "",
+						searchfield: "name",
+						start: 0,
+						page_len: 500,
+					})
+					.then((rows) =>
+						(rows || []).map((r) => ({
+							label: `${r.account_number} · ${r.account_name}`,
+							value: r.account_number,
+						}))
+					);
+			},
+			on_change: gl_filter_changed,
+		},
+		{
+			fieldname: "saisie_libre",
+			label: __("Saisie libre"),
+			fieldtype: "Data",
+			depends_on: "eval:doc.extract_type == 'Saisie libre'",
+			description: __("Ex: 401, 411000, 512-531"),
 			on_change: gl_filter_changed,
 		},
 		// pagination lives in client state: the page number and the FIXED
@@ -854,22 +1033,22 @@ frappe.query_reports["Ledger Data"] = {
 		// chunk render). On error: log the column + row, fall back to the
 		// default formatter, then to the escaped plain value.
 		try {
-			// the MVT of the two island-backed entry doctypes opens the entry in
-			// inspect mode through erpnext.entries.open_entry — in both views.
+			// the MVT of the entry doctypes opens the entry in inspect mode
+			// through erpnext.entries.open_entry — in both views.
 			// Header, opening and total rows carry no source_entry: default.
 			if (
 				column.id === "mvt" &&
 				data &&
 				data.source_entry &&
-				["Payable Transaction", "Receivable Transaction"].includes(data.source_entry_doctype)
+				["Payable Transaction", "Receivable Transaction", "Treasury Transaction", "Declaration Transaction"].includes(data.source_entry_doctype)
 			) {
 				return `<a href="#" class="gl-mvt-link" data-entry-doctype="${frappe.utils.escape_html(
 					data.source_entry_doctype
 				)}" data-entry="${frappe.utils.escape_html(data.source_entry)}">${frappe.utils.escape_html(value)}</a>`;
 			}
 			if (column.id === "actions" && data) {
-				// the narrow action-icon column: document / eye, greyed when the
-				// row carries no attachment / no source entry
+				// the narrow action-icon column: document / eye / pen, greyed when the
+				// row carries no attachment / no source entry / entry is lettered
 				return gl_row_actions(data);
 			}
 			return default_formatter(value, row, column, data);
@@ -953,6 +1132,18 @@ frappe.query_reports["Ledger Data"] = {
 					entry_doctype: $(this).attr("data-entry-doctype"),
 					name: $(this).attr("data-entry"),
 					mode: "inspect",
+				});
+			});
+		report.$report
+			.off("click.gl-entry-edit")
+			.on("click.gl-entry-edit", ".gl-entry-edit", function (event) {
+				event.preventDefault();
+				event.stopPropagation();
+				if (this.disabled) return;
+				erpnext.entries.open_entry({
+					entry_doctype: $(this).attr("data-entry-doctype"),
+					name: $(this).attr("data-entry"),
+					mode: "modify",
 				});
 			});
 
@@ -1055,6 +1246,7 @@ frappe.query_reports["Ledger Data"] = {
 			try {
 				if (previous_after_render) previous_after_render();
 				gl_remount_after_refresh();
+				gl_setup_single_header_row(report);
 			} catch (error) {
 				console.error("ledger_data: after_datatable_render failed", error);
 				gl_show_render_error(error);

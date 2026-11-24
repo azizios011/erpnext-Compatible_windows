@@ -220,6 +220,86 @@
 					opacity: 0.45;
 					cursor: not-allowed;
 				}
+				/* single header row for Ledger Data: hide plain title row, style filter row */
+				.layout-main-section.report-gl-fill .dt-header .dt-row-header {
+					display: none !important;
+				}
+				.layout-main-section.report-gl-fill .dt-header .dt-row-filter {
+					display: flex !important;
+					height: 36px;
+					background-color: var(--subtle-fg, #f8f9fa);
+					border-bottom: 1px solid var(--border-color, #d1d8dd);
+				}
+				.layout-main-section.report-gl-fill .dt-header .dt-row-filter .dt-cell {
+					background-color: var(--subtle-fg, #f8f9fa);
+					position: relative;
+					overflow: visible;
+				}
+				.layout-main-section.report-gl-fill .dt-header .dt-row-filter .dt-cell__content {
+					display: flex;
+					align-items: center;
+					padding: 3px 6px;
+					height: 100%;
+					position: relative;
+					overflow: visible;
+				}
+				.layout-main-section.report-gl-fill .dt-header .dt-row-filter .dt-filter.dt-input {
+					flex: 1 1 auto;
+					min-width: 0;
+					height: 26px;
+					font-size: 11px;
+					font-weight: 500;
+					border: 1px solid var(--border-color, #d1d8dd);
+					border-radius: 4px;
+					padding: 0 6px;
+					background-color: var(--control-bg, #fff);
+					color: var(--text-color, #1f272e);
+				}
+				.layout-main-section.report-gl-fill .dt-header .dt-row-filter .dt-filter.dt-input::placeholder {
+					color: var(--text-muted, #8d99ae);
+					font-size: 11px;
+					font-weight: 500;
+					text-overflow: ellipsis;
+				}
+				.layout-main-section.report-gl-fill .dt-header .dt-row-filter .dt-filter.dt-input:focus {
+					border-color: var(--primary, #171717);
+					box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+					outline: none;
+					background-color: #fff;
+				}
+				.layout-main-section.report-gl-fill .dt-header .dt-row-filter .gl-col-sort {
+					flex: 0 0 auto;
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					width: 18px;
+					height: 24px;
+					margin-left: 2px;
+					cursor: pointer;
+					color: var(--text-muted, #8d99ae);
+					border-radius: 3px;
+				}
+				.layout-main-section.report-gl-fill .dt-header .dt-row-filter .gl-col-sort:hover {
+					color: var(--text-color, #1f272e);
+					background-color: rgba(0, 0, 0, 0.05);
+				}
+				.layout-main-section.report-gl-fill .dt-header .dt-row-filter .gl-col-sort .gl-sort-icon.active {
+					color: var(--primary, #171717);
+				}
+				.layout-main-section.report-gl-fill .dt-header .dt-row-filter .dt-cell__resize-handle {
+					position: absolute;
+					right: -2px;
+					top: 0;
+					width: 5px;
+					height: 100%;
+					cursor: col-resize;
+					z-index: 10;
+					opacity: 0;
+				}
+				.layout-main-section.report-gl-fill .dt-header .dt-row-filter .dt-cell:hover .dt-cell__resize-handle {
+					opacity: 1;
+					background-color: var(--primary, #5292f7);
+				}
 			</style>`).appendTo("head");
 		}
 
@@ -507,10 +587,16 @@
 			);
 			if (report.$report_footer) report.$report_footer.hide();
 			report.page.main.addClass("report-wide");
+			// hide every OTHER view container before showing the target —
+			// fixes the split-screen bug when switching xlsx→pdf or pdf→xlsx
+			Object.entries(view_state.containers).forEach(([k, $c]) => {
+				if (k !== view) $c.hide();
+			});
 			const container = view_state.containers[view];
 			container.show();
 			const mount = views[view] && views[view].mount;
 			if (mount) mount(container[0], report.get_filter_values());
+			$(window).trigger("resize");
 		};
 
 		const set_view = (view) => {

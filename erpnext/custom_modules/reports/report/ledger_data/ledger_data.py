@@ -58,7 +58,7 @@ def _paginate(rows: list[dict], filters: dict) -> tuple[list[dict], str]:
 	"""Server-side paging for the list view: the client renders one page of
 	rows; the summary above stays global over the whole filtered set."""
 	total = len(rows)
-	page_size = cint(filters.get("page_size")) or 500
+	page_size = cint(filters.get("page_size")) or 20
 	page = max(cint(filters.get("page")), 1)
 	pages = max((total + page_size - 1) // page_size, 1)
 	page = min(page, pages)
@@ -86,7 +86,7 @@ def _paginate_grille(rows: list[dict], filters: dict) -> tuple[list[dict], str]:
 	if not blocks:
 		return rows, ""
 
-	page_size = cint(filters.get("page_size")) or 500
+	page_size = cint(filters.get("page_size")) or 20
 	page = max(cint(filters.get("page")), 1)
 
 	# pack the account blocks into pages bounded by the page size
@@ -111,7 +111,7 @@ def _paginate_grille(rows: list[dict], filters: dict) -> tuple[list[dict], str]:
 	return out, message
 
 
-def _account_filter(filters: dict) -> list[str]:
+def _account_filter(filters: dict, entreprise: str | None = None) -> list[str]:
 	"""The Chart of Account rows selected by the grand-livre type."""
 	ledger_type = filters.get("ledger_type") or "General"
 	if ledger_type == "Auxiliaire Client":
@@ -120,11 +120,109 @@ def _account_filter(filters: dict) -> list[str]:
 		prefix = AUX_FOURNISSEUR_PREFIX
 	else:
 		return []
+	cond: dict = {"account_number": ("like", f"{prefix}%")}
+	if entreprise:
+		cond["entreprise"] = entreprise
 	return frappe.get_all(
 		"Chart of Account",
-		filters={"account_number": ("like", f"{prefix}%")},
+		filters=cond,
 		pluck="name",
 	)
+
+
+def _match_upper(acc_num: str, upper: str) -> bool:
+	return acc_num <= upper or acc_num.startswith(upper)
+
+
+def _match_lower(acc_num: str, lower: str) -> bool:
+	return acc_num >= lower or acc_num.startswith(lower)
+
+
+def _extract_account_filter(filters: dict, entreprise: str) -> list[str] | None:
+	"""Resolve account filters from Type Extrait (Compte, Intervalle des comptes, Saisie libre).
+	Returns None if unrestricted ('Tous les comptes', 'Comptes non soldes').
+	Returns a list of Chart of Account names (which may be empty if no match)."""
+	extract_type = filters.get("extract_type") or "Tous les comptes"
+	if extract_type in ("Tous les comptes", "Comptes non soldes"):
+		return None
+
+	coas = frappe.get_all(
+		"Chart of Account",
+		filters={"entreprise": entreprise},
+		fields=["name", "account_number", "account_name"],
+	)
+
+	if extract_type == "Compte":
+		target = (filters.get("account") or "").strip()
+		if not target:
+			return []
+		target_clean = target.split(" · ")[0].split(" - ")[0].strip()
+		matched = []
+		for acc in coas:
+			num = acc.account_number or ""
+			name = acc.name or ""
+			if (
+				target in (name, num)
+				or (num and target_clean == num)
+				or (num and target.startswith(f"{num} ·"))
+				or (num and target.startswith(f"{num} -"))
+			):
+				matched.append(acc.name)
+		return matched
+
+	if extract_type == "Intervalle des comptes":
+		from_raw = (filters.get("from_account") or "").strip()
+		to_raw = (filters.get("to_account") or "").strip()
+		if not from_raw and not to_raw:
+			return []
+		from_acc = from_raw.split(" - ")[0].split(" · ")[0].strip() if from_raw else ""
+		to_acc = to_raw.split(" - ")[0].split(" · ")[0].strip() if to_raw else ""
+		for acc in coas:
+			if acc.name == from_raw and acc.account_number:
+				from_acc = acc.account_number
+			if acc.name == to_raw and acc.account_number:
+				to_acc = acc.account_number
+		matched = []
+		for acc in coas:
+			num = acc.account_number or ""
+			if not num:
+				continue
+			if from_acc and not _match_lower(num, from_acc):
+				continue
+			if to_acc and not _match_upper(num, to_acc):
+				continue
+			matched.append(acc.name)
+		return matched
+
+	if extract_type == "Saisie libre":
+		raw = (filters.get("saisie_libre") or "").strip()
+		if not raw:
+			return []
+		tokens = [t.strip() for t in raw.split(",") if t.strip()]
+		if not tokens:
+			return []
+		matched = []
+		for acc in coas:
+			num = acc.account_number or ""
+			if not num:
+				continue
+			match_token = False
+			for token in tokens:
+				if "-" in token:
+					parts = [p.strip() for p in token.split("-", 1)]
+					lower, upper = parts[0], parts[1] if len(parts) > 1 else ""
+					if (not lower or _match_lower(num, lower)) and (not upper or _match_upper(num, upper)):
+						match_token = True
+						break
+				else:
+					if num.startswith(token) or num == token:
+						match_token = True
+						break
+			if match_token:
+				matched.append(acc.name)
+		return matched
+
+	return None
 
 
 def _ledger_filters(filters: dict, context: dict, from_date: date, to_date: date) -> list[list]:
@@ -146,12 +244,28 @@ def _ledger_filters(filters: dict, context: dict, from_date: date, to_date: date
 		out.append(["lettrage", "is", "set"])
 	elif lettrage == "Non lettre":
 		out.append(["lettrage", "is", "not set"])
-	accounts = _account_filter(filters)
-	if accounts:
-		out.append(["account", "in", accounts])
-	elif (filters.get("ledger_type") or "General") != "General":
-		# an auxiliary type whose prefix matched no account: nothing to show
-		out.append(["name", "=", ""])
+
+	ledger_type = filters.get("ledger_type") or "General"
+	ledger_accounts = _account_filter(filters, context["entreprise"]) if ledger_type != "General" else None
+	extract_accounts = _extract_account_filter(filters, context["entreprise"])
+
+	if ledger_accounts is not None and extract_accounts is not None:
+		intersected = sorted(list(set(ledger_accounts) & set(extract_accounts)))
+		if intersected:
+			out.append(["account", "in", intersected])
+		else:
+			out.append(["name", "=", ""])
+	elif ledger_accounts is not None:
+		if ledger_accounts:
+			out.append(["account", "in", ledger_accounts])
+		else:
+			out.append(["name", "=", ""])
+	elif extract_accounts is not None:
+		if extract_accounts:
+			out.append(["account", "in", extract_accounts])
+		else:
+			out.append(["name", "=", ""])
+
 	return out
 
 
@@ -189,7 +303,7 @@ def _get_rows(filters: dict, context: dict) -> list[dict]:
 		for row in rows:
 			balance[row.account] = balance.get(row.account, 0.0) + flt(row.debit) - flt(row.credit)
 		rows = [row for row in rows if abs(balance.get(row.account, 0.0)) > BALANCE_TOLERANCE]
-	# "Comptes mouvementes" and "Tous les comptes" both show the period's rows
+	# "Tous les comptes" shows the period's rows; account filtering is done in _ledger_filters
 
 	numbers = frappe.get_all(
 		"Chart of Account",
@@ -220,8 +334,8 @@ def get_columns() -> list[dict]:
 		{"label": _("Lettrage"), "fieldname": "lettrage", "fieldtype": "Data", "width": 90},
 		{"label": _("N° Doc"), "fieldname": "ref_doc", "fieldtype": "Data", "width": 120},
 		{"label": _("Piece"), "fieldname": "source_name", "fieldtype": "Dynamic Link", "options": "source_doctype", "width": 150},
-		# narrow action-icon column (document / eye), no header label
-		{"fieldname": "actions", "fieldtype": "Data", "width": 90},
+		# narrow action-icon column (document / eye / pen), no header label
+		{"fieldname": "actions", "fieldtype": "Data", "width": 120},
 	]
 
 
@@ -360,6 +474,7 @@ def _get_grille_rows(filters: dict, context: dict) -> list[dict]:
 					"credit": credit,
 					"solde": solde,
 					"source_entry_doctype": row.source_entry_doctype,
+					"source_entry": row.source_entry,
 					"source_doctype": row.source_doctype,
 					"source_name": row.source_name,
 				}
