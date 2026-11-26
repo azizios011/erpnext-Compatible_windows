@@ -148,12 +148,16 @@ def materialize_plan(
 	unbalanced_groups: list[dict] = []
 	unresolvable_groups: list[dict] = []
 
+	groups_with_multiple_dates: list[tuple[str, str]] = []
+
 	for (journal, mvt), group_rows in group_imported_rows(rows).items():
 		distinct_dates = {r.get("posting_date") for r in group_rows if r.get("posting_date")}
 		distinct_refs = {r.get("ref_doc") for r in group_rows if r.get("ref_doc")}
 		has_multi = len(distinct_dates) > 1 or len(distinct_refs) > 1
 		if has_multi:
 			groups_with_multiple_refs_or_dates.append((journal, mvt))
+		if len(distinct_dates) > 1:
+			groups_with_multiple_dates.append((journal, mvt))
 
 		tot_debit = _round3(sum(_round3(r.get("debit")) for r in group_rows))
 		tot_credit = _round3(sum(_round3(r.get("credit")) for r in group_rows))
@@ -246,6 +250,7 @@ def materialize_plan(
 		"plan": plan,
 		"per_journal": per_journal,
 		"groups_with_multiple_refs_or_dates": groups_with_multiple_refs_or_dates,
+		"groups_with_multiple_dates": groups_with_multiple_dates,
 		"unbalanced_groups": unbalanced_groups,
 		"unresolvable_groups": unresolvable_groups,
 	}

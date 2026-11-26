@@ -261,6 +261,7 @@ def _run_materialization(context: dict, dry_run: int, split_multiref: bool = Fal
 	plan = built["plan"]
 	per_journal = built["per_journal"]
 	multi_refs = built.get("groups_with_multiple_refs_or_dates", [])
+	multi_dates = built.get("groups_with_multiple_dates", [])
 	unbalanced = built.get("unbalanced_groups", [])
 	unresolvable = built.get("unresolvable_groups", [])
 
@@ -289,6 +290,7 @@ def _run_materialization(context: dict, dry_run: int, split_multiref: bool = Fal
 		"unclassified_rows": sum(len(group) for _, _, group in plan.get(None, [])),
 		"per_journal": per_journal,
 		"groups_with_multiple_refs_or_dates": len(multi_refs),
+		"groups_with_multiple_dates": len(multi_dates),
 		"unbalanced_groups": len(unbalanced),
 		"unresolvable_groups": unresolvable,
 	}

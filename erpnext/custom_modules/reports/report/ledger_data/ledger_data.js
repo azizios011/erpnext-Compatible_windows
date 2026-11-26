@@ -1357,6 +1357,9 @@ function render_materialize_summary(result, context) {
 	if (result.groups_with_multiple_refs_or_dates) {
 		stats.push({ label: __("Plusieurs refs/dates"), value: result.groups_with_multiple_refs_or_dates });
 	}
+	if (result.groups_with_multiple_dates) {
+		stats.push({ label: __("Groupes multi-dates"), value: result.groups_with_multiple_dates });
+	}
 	const $stats = $('<div class="report-summary gl-import-stats"></div>');
 	stats.forEach((item) =>
 		$stats.append(frappe.utils.build_summary_item({ label: item.label, value: item.value, datatype: "Data" }))

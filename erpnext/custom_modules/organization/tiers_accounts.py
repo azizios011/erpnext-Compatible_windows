@@ -86,6 +86,7 @@ def compte_search(
 	page_len: int = 20,
 	filters: dict | None = None,
 	as_dict: bool = True,
+	reference_doctype: str | None = None,
 	**kwargs,
 ) -> list:
 	"""Generic Chart of Account link search: non-group, non-disabled accounts
