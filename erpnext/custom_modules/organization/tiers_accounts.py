@@ -23,12 +23,14 @@ TIERS_PREFIX = {"Client": "411", "Fournisseur": "401", "Banque": "5"}
 
 @frappe.whitelist()
 def tiers_account_search(
-	doctype: str,
-	txt: str,
-	searchfield: str,
+	doctype: str = "Chart of Account",
+	txt: str = "",
+	searchfield: str = "name",
 	start: int = 0,
 	page_len: int = 20,
 	filters: dict | None = None,
+	as_dict: bool = True,
+	**kwargs,
 ) -> list:
 	"""Link search for the `account` field of Client / Fournisseur: custom
 	accounts under the doctype's prefix, of the context Entreprise, not used
@@ -71,22 +73,26 @@ def tiers_account_search(
 			"start": int(start or 0),
 			"page_len": int(page_len or 20),
 		},
-		as_dict=True,
+		as_dict=as_dict,
 	)
 
 
 @frappe.whitelist()
 def compte_search(
-	doctype: str,
-	txt: str,
-	searchfield: str,
+	doctype: str = "Chart of Account",
+	txt: str = "",
+	searchfield: str = "name",
 	start: int = 0,
 	page_len: int = 20,
 	filters: dict | None = None,
+	as_dict: bool = True,
+	**kwargs,
 ) -> list:
 	"""Generic Chart of Account link search: non-group, non-disabled accounts
 	of the context Entreprise (no prefix rule) — used by the Modele Taxe
-	lines."""
+	lines and classic entry forms."""
+	if isinstance(filters, str):
+		filters = json.loads(filters)
 	entreprise = require_entreprise()
 	return frappe.db.sql(
 		"""
@@ -105,7 +111,7 @@ def compte_search(
 			"start": int(start or 0),
 			"page_len": int(page_len or 20),
 		},
-		as_dict=True,
+		as_dict=as_dict,
 	)
 
 

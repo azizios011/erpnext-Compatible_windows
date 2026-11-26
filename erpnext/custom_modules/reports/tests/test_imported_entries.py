@@ -26,15 +26,24 @@ if "frappe" not in sys.modules:
 		if _repo_root not in sys.path:
 			sys.path.insert(0, _repo_root)
 		_frappe = types.ModuleType("frappe")
+		_frappe._ = lambda value, *a, **kw: value
 		_utils = types.ModuleType("frappe.utils")
 		_utils.cstr = lambda value: str(value) if value is not None else ""
 		_frappe.utils = _utils
 		sys.modules["frappe"] = _frappe
 		sys.modules["frappe.utils"] = _utils
+else:
+	if not hasattr(sys.modules["frappe"], "_"):
+		sys.modules["frappe"]._ = lambda value, *a, **kw: value
+
+_repo_root = str(pathlib.Path(__file__).resolve().parents[4])
+if _repo_root not in sys.path:
+	sys.path.insert(0, _repo_root)
 
 from erpnext.custom_modules.reports.imported_entries_logic import (
 	PAYABLE_DOCTYPE,
 	RECEIVABLE_DOCTYPE,
+	TREASURY_DOCTYPE,
 	build_entry_payload,
 	classify_group,
 	group_imported_rows,
@@ -162,23 +171,23 @@ class TestClassifyGroup(unittest.TestCase):
 		]
 		self.assertEqual(classify_group("Vente", lines), RECEIVABLE_DOCTYPE)
 
-	def test_mixed_group_under_a_neutral_journal_stays_unclassified(self):
+	def test_mixed_group_under_a_neutral_journal_classifies_as_treasury(self):
 		lines = [
 			{"account_number": "401000", "debit": 10, "credit": 0},
 			{"account_number": "411000", "debit": 0, "credit": 10},
 		]
-		self.assertIsNone(classify_group("Banque", lines))
-		self.assertIsNone(classify_group("Operations Diverses", lines))
+		self.assertEqual(classify_group("Banque", lines), TREASURY_DOCTYPE)
+		self.assertEqual(classify_group("Operations Diverses", lines), TREASURY_DOCTYPE)
 
-	def test_group_without_auxiliary_lines_is_never_an_entry(self):
-		# opening balances AN / capital / pure bank & tax lines
+	def test_group_without_auxiliary_lines_classifies_as_treasury(self):
+		# opening balances AN / capital / pure bank & tax lines -> Treasury Transaction
 		opening = [
 			{"account_number": "112000", "debit": 500, "credit": 0},
 			{"account_number": "101000", "debit": 0, "credit": 500},
 		]
 		bank_only = [{"account_number": "532000", "debit": 10, "credit": 10}]
-		self.assertIsNone(classify_group("Achat", opening))
-		self.assertIsNone(classify_group("Banque", bank_only))
+		self.assertEqual(classify_group("Achat", opening), TREASURY_DOCTYPE)
+		self.assertEqual(classify_group("Banque", bank_only), TREASURY_DOCTYPE)
 
 
 class TestMaterializePlan(unittest.TestCase):
@@ -190,7 +199,7 @@ class TestMaterializePlan(unittest.TestCase):
 			# VT · V-1: client payment → Receivable
 			ledger_row("L3", "VT", "V-1", "532000", debit=80),
 			ledger_row("L4", "VT", "V-1", "411000", credit=80),
-			# BQ · B-1: opening balance without auxiliaries → unlinked
+			# BQ · B-1: opening balance without auxiliaries → Treasury
 			ledger_row("L5", "BQ", "B-1", "101000", credit=500),
 			ledger_row("L6", "BQ", "B-1", "532000", debit=500),
 			# same mvt number in two journals: classified independently
@@ -205,16 +214,20 @@ class TestMaterializePlan(unittest.TestCase):
 
 		self.assertEqual(len(plan[PAYABLE_DOCTYPE]), 2)  # AC · A-1 and AC · X-1
 		self.assertEqual(len(plan[RECEIVABLE_DOCTYPE]), 2)  # VT · V-1 and VT · X-1
-		self.assertEqual(len(plan[None]), 1)  # BQ · B-1 stays unlinked
+		self.assertEqual(len(plan[TREASURY_DOCTYPE]), 1)  # BQ · B-1 is Treasury
+		self.assertEqual(len(plan.get(None, [])), 0)
 
 		self.assertEqual(
-			built["per_journal"]["AC"], {PAYABLE_DOCTYPE: 2, RECEIVABLE_DOCTYPE: 0, "unclassified": 0}
+			built["per_journal"]["AC"],
+			{PAYABLE_DOCTYPE: 2, RECEIVABLE_DOCTYPE: 0, TREASURY_DOCTYPE: 0, "unclassified": 0},
 		)
 		self.assertEqual(
-			built["per_journal"]["VT"], {PAYABLE_DOCTYPE: 0, RECEIVABLE_DOCTYPE: 2, "unclassified": 0}
+			built["per_journal"]["VT"],
+			{PAYABLE_DOCTYPE: 0, RECEIVABLE_DOCTYPE: 2, TREASURY_DOCTYPE: 0, "unclassified": 0},
 		)
 		self.assertEqual(
-			built["per_journal"]["BQ"], {PAYABLE_DOCTYPE: 0, RECEIVABLE_DOCTYPE: 0, "unclassified": 1}
+			built["per_journal"]["BQ"],
+			{PAYABLE_DOCTYPE: 0, RECEIVABLE_DOCTYPE: 0, TREASURY_DOCTYPE: 1, "unclassified": 0},
 		)
 
 		# the groups carry their rows untouched
@@ -229,7 +242,26 @@ class TestMaterializePlan(unittest.TestCase):
 			ledger_row("L2", "AC", "A-9", "532000", credit=10),
 		]
 		built = plan_of(rows, {"AC": "Achat"})
-		self.assertEqual(len(built["plan"][None]), 1)
+		self.assertEqual(len(built["plan"][TREASURY_DOCTYPE]), 1)
+		self.assertEqual(len(built["plan"].get(None, [])), 0)
+
+	def test_split_unbalanced_multiref_group(self):
+		rows = [
+			# Sub-entry 1: ref REF-1, 2026-03-01
+			ledger_row("L1", "BQ", "M-1", "532000", debit=100, ref_doc="REF-1", posting_date=date(2026, 3, 1)),
+			ledger_row("L2", "BQ", "M-1", "401000", credit=100, ref_doc="REF-1", posting_date=date(2026, 3, 1)),
+			# Sub-entry 2: ref REF-2, 2026-03-02
+			ledger_row("L3", "BQ", "M-1", "532000", debit=50, ref_doc="REF-2", posting_date=date(2026, 3, 2)),
+			ledger_row("L4", "BQ", "M-1", "411000", credit=50, ref_doc="REF-2", posting_date=date(2026, 3, 2)),
+		]
+		built = materialize_plan(rows, {"BQ": "Banque"}, ACCOUNT_NUMBERS, split_multiref=True)
+		self.assertEqual(len(built["groups_with_multiple_refs_or_dates"]), 1)
+		# Sub-entry 1 has 401000 -> PAYABLE_DOCTYPE
+		# Sub-entry 2 has 411000 -> RECEIVABLE_DOCTYPE
+		self.assertEqual(len(built["plan"][PAYABLE_DOCTYPE]), 1)
+		self.assertEqual(len(built["plan"][RECEIVABLE_DOCTYPE]), 1)
+		self.assertEqual(built["plan"][PAYABLE_DOCTYPE][0][1], "M-1-1")
+		self.assertEqual(built["plan"][RECEIVABLE_DOCTYPE][0][1], "M-1-2")
 
 
 class TestBuildEntryPayload(unittest.TestCase):
@@ -299,7 +331,8 @@ class TestPlanPerformance(unittest.TestCase):
 
 		self.assertEqual(len(built["plan"][PAYABLE_DOCTYPE]), 5363)
 		self.assertEqual(len(built["plan"][RECEIVABLE_DOCTYPE]), 5362)
-		self.assertEqual(len(built["plan"][None]), 1)
+		self.assertEqual(len(built["plan"][TREASURY_DOCTYPE]), 1)
+		self.assertEqual(len(built["plan"].get(None, [])), 0)
 		self.assertEqual(len(rows), 32177)
 		print(f"\nmaterialize_plan over {len(rows)} rows / 10727 groups: {elapsed * 1000:.0f} ms")
 		self.assertLess(elapsed, 5.0)

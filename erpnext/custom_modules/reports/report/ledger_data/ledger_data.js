@@ -1350,9 +1350,13 @@ function render_materialize_summary(result, context) {
 		{ label: __("Lignes deja liees"), value: result.rows_already_linked || 0 },
 		{ label: __("Payable Transaction"), value: (result.created || {})["Payable Transaction"] || 0 },
 		{ label: __("Receivable Transaction"), value: (result.created || {})["Receivable Transaction"] || 0 },
+		{ label: __("Treasury Transaction"), value: (result.created || {})["Treasury Transaction"] || 0 },
 		{ label: __("Non classes"), value: result.unclassified_groups || 0 },
 		{ label: __("Conflits de nom"), value: result.skipped_name_conflict || 0 },
 	];
+	if (result.groups_with_multiple_refs_or_dates) {
+		stats.push({ label: __("Plusieurs refs/dates"), value: result.groups_with_multiple_refs_or_dates });
+	}
 	const $stats = $('<div class="report-summary gl-import-stats"></div>');
 	stats.forEach((item) =>
 		$stats.append(frappe.utils.build_summary_item({ label: item.label, value: item.value, datatype: "Data" }))
@@ -1363,12 +1367,12 @@ function render_materialize_summary(result, context) {
 			([journal, counts]) =>
 				`<tr><td>${esc(journal)}</td><td>${counts["Payable Transaction"] || 0}</td><td>${
 					counts["Receivable Transaction"] || 0
-				}</td><td>${counts.unclassified || 0}</td></tr>`
+				}</td><td>${counts["Treasury Transaction"] || 0}</td><td>${counts.unclassified || 0}</td></tr>`
 		)
 		.join("");
 	const table = `
 		<table class="table table-bordered" style="margin-top: 8px;">
-			<thead><tr><th>${__("Journal")}</th><th>${__("Payable")}</th><th>${__("Receivable")}</th><th>${__("Non classe")}</th></tr></thead>
+			<thead><tr><th>${__("Journal")}</th><th>${__("Payable")}</th><th>${__("Receivable")}</th><th>${__("Treasury")}</th><th>${__("Non classe")}</th></tr></thead>
 			<tbody>${rows}</tbody>
 		</table>`;
 	const note = result.unclassified_groups

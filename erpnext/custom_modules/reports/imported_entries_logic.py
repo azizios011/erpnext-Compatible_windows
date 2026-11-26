@@ -17,6 +17,8 @@ AUX_FOURNISSEUR_PREFIX = "401"
 
 PAYABLE_DOCTYPE = "Payable Transaction"
 RECEIVABLE_DOCTYPE = "Receivable Transaction"
+TREASURY_DOCTYPE = "Treasury Transaction"
+ALL_ENTRY_DOCTYPES = (PAYABLE_DOCTYPE, RECEIVABLE_DOCTYPE, TREASURY_DOCTYPE)
 
 # journal_type → the doctype that wins a mixed (supplier + client) group:
 # purchase journals → Payable, sales journals → Receivable; the neutral
@@ -48,11 +50,13 @@ def group_imported_rows(rows: list) -> dict[tuple[str, str], list]:
 	return groups
 
 
-def classify_group(journal_type: str | None, lines: list[dict]) -> str | None:
-	"""The entry doctype for a group of imported lines, or None when the
-	group must stay unlinked. lines carry account_number. Both sign
-	directions classify the same way; a mixed group is decided by the
-	journal's type; a group with neither auxiliary kind stays unlinked."""
+def classify_group(journal_type: str | None, lines: list[dict]) -> str:
+	"""The entry doctype for a group of imported lines. lines carry account_number.
+	Both sign directions classify the same way. Aux-prefix rule first:
+	401 -> Payable Transaction, 411 -> Receivable Transaction.
+	A group with both is decided by the journal's type (purchase -> Payable, sales -> Receivable).
+	Everything else (bank, cash, OD, opening balances, declaration journals,
+	mixed groups under neutral journals) -> Treasury Transaction."""
 	has_supplier = any(is_supplier_line(line["account_number"]) for line in lines)
 	has_client = any(is_client_line(line["account_number"]) for line in lines)
 	if has_supplier and not has_client:
@@ -60,8 +64,10 @@ def classify_group(journal_type: str | None, lines: list[dict]) -> str | None:
 	if has_client and not has_supplier:
 		return RECEIVABLE_DOCTYPE
 	if has_supplier and has_client:
-		return JOURNAL_TYPE_TO_ENTRY.get(journal_type or "")
-	return None
+		resolved = JOURNAL_TYPE_TO_ENTRY.get(journal_type or "")
+		if resolved:
+			return resolved
+	return TREASURY_DOCTYPE
 
 
 def _round3(value) -> float:
@@ -94,7 +100,7 @@ def build_entry_payload(
 		"jour": posting_date.day if posting_date else 0,
 		"devise": "TND",
 		"mvt": mvt,
-		"ref_doc": ref_doc,
+		"ref_doc": ref_doc or mvt,
 		"libelle": "",
 		"source_doctype": "",
 		"source_name": "",
@@ -123,14 +129,95 @@ def build_entry_payload(
 
 
 def materialize_plan(
-	rows: list[dict], journal_types: dict[str, str], account_numbers: dict[str, str]
+	rows: list[dict],
+	journal_types: dict[str, str],
+	account_numbers: dict[str, str],
+	split_multiref: bool = False,
 ) -> dict:
-	"""The pure classification plan over the unlinked imported rows: which
-	groups become which entry doctype, and which stay unlinked (with the
-	per-journal counts the dry run reports)."""
-	plan: dict[str | None, list] = {PAYABLE_DOCTYPE: [], RECEIVABLE_DOCTYPE: [], None: []}
+	"""The classification plan over the unlinked imported rows: which
+	groups become which entry doctype (Payable, Receivable, Treasury),
+	with multi-ref/date detection, per-journal counts, and optional splitting."""
+	plan: dict[str | None, list] = {
+		PAYABLE_DOCTYPE: [],
+		RECEIVABLE_DOCTYPE: [],
+		TREASURY_DOCTYPE: [],
+		None: [],
+	}
 	per_journal: dict[str, dict[str, int]] = {}
+	groups_with_multiple_refs_or_dates: list[tuple[str, str]] = []
+	unbalanced_groups: list[dict] = []
+	unresolvable_groups: list[dict] = []
+
 	for (journal, mvt), group_rows in group_imported_rows(rows).items():
+		distinct_dates = {r.get("posting_date") for r in group_rows if r.get("posting_date")}
+		distinct_refs = {r.get("ref_doc") for r in group_rows if r.get("ref_doc")}
+		has_multi = len(distinct_dates) > 1 or len(distinct_refs) > 1
+		if has_multi:
+			groups_with_multiple_refs_or_dates.append((journal, mvt))
+
+		tot_debit = _round3(sum(_round3(r.get("debit")) for r in group_rows))
+		tot_credit = _round3(sum(_round3(r.get("credit")) for r in group_rows))
+		is_unbalanced = abs(tot_debit - tot_credit) > 0.001
+		if is_unbalanced:
+			unbalanced_groups.append({
+				"journal": journal,
+				"mvt": mvt,
+				"debit": tot_debit,
+				"credit": tot_credit,
+			})
+
+		if split_multiref and (has_multi or is_unbalanced):
+			# Split by (ref_doc, posting_date)
+			subgroups: dict[tuple, list] = {}
+			for r in group_rows:
+				skey = (r.get("ref_doc") or "", r.get("posting_date"))
+				subgroups.setdefault(skey, []).append(r)
+
+			all_balanced = all(
+				abs(
+					_round3(sum(_round3(sr.get("debit")) for sr in srows))
+					- _round3(sum(_round3(sr.get("credit")) for sr in srows))
+				)
+				<= 0.001
+				for srows in subgroups.values()
+			)
+
+			if all_balanced and len(subgroups) > 1:
+				for sidx, (_skey, srows) in enumerate(subgroups.items(), start=1):
+					entry_name = f"{mvt}-{sidx}"
+					lines = [
+						{
+							"account_number": account_numbers.get(row["account"], ""),
+							"debit": row["debit"],
+							"credit": row["credit"],
+						}
+						for row in srows
+					]
+					entry_doctype = classify_group(journal_types.get(journal), lines)
+					plan[entry_doctype].append((journal, entry_name, srows))
+					stats = per_journal.setdefault(
+						journal,
+						{
+							PAYABLE_DOCTYPE: 0,
+							RECEIVABLE_DOCTYPE: 0,
+							TREASURY_DOCTYPE: 0,
+							"unclassified": 0,
+						},
+					)
+					if entry_doctype:
+						stats[entry_doctype] += 1
+					else:
+						stats["unclassified"] += 1
+				continue
+			else:
+				if is_unbalanced:
+					unresolvable_groups.append({
+						"journal": journal,
+						"mvt": mvt,
+						"debit": tot_debit,
+						"credit": tot_credit,
+					})
+
 		lines = [
 			{
 				"account_number": account_numbers.get(row["account"], ""),
@@ -142,10 +229,23 @@ def materialize_plan(
 		entry_doctype = classify_group(journal_types.get(journal), lines)
 		plan[entry_doctype].append((journal, mvt, group_rows))
 		stats = per_journal.setdefault(
-			journal, {PAYABLE_DOCTYPE: 0, RECEIVABLE_DOCTYPE: 0, "unclassified": 0}
+			journal,
+			{
+				PAYABLE_DOCTYPE: 0,
+				RECEIVABLE_DOCTYPE: 0,
+				TREASURY_DOCTYPE: 0,
+				"unclassified": 0,
+			},
 		)
 		if entry_doctype:
 			stats[entry_doctype] += 1
 		else:
 			stats["unclassified"] += 1
-	return {"plan": plan, "per_journal": per_journal}
+
+	return {
+		"plan": plan,
+		"per_journal": per_journal,
+		"groups_with_multiple_refs_or_dates": groups_with_multiple_refs_or_dates,
+		"unbalanced_groups": unbalanced_groups,
+		"unresolvable_groups": unresolvable_groups,
+	}

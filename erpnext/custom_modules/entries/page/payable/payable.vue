@@ -207,7 +207,7 @@ function on_list_filter_change() {
 }
 
 // ── form mode ────────────────────────────────────────────────────────────────
-const empty_row = () => ({ account: "", libelle: "", tresorerie: "", debit: "", credit: "" });
+const empty_row = () => ({ account: "", libelle: "", fact: "", tresorerie: "", debit: "", credit: "" });
 
 const doc = ref(null);
 const loading_doc = ref(false);
@@ -223,11 +223,14 @@ const model_dialogs_ref = ref(null);
 
 const is_inspect = computed(() => mode.value === "inspect");
 const editable = computed(() => mode.value !== "inspect");
+const is_new = computed(() => mode.value === "creation");
 const has_source = computed(() => Boolean(doc.value?.source_doctype && doc.value?.source_name));
 const show_tresorerie = computed(() => Boolean(Number(frappe.boot?.axeane_context?.flux_tresorerie_autorise)));
 
-const status_theme = computed(() => (status.value === "Comptabilise" ? "green" : "orange"));
-const status_label = computed(() => (status.value === "Comptabilise" ? "Comptabilise" : "Brouillon"));
+const status_theme_for = (s) => (s === "Comptabilise" ? "green" : "orange");
+const status_label_for = (s) => (s === "Comptabilise" ? "Comptabilise" : "Brouillon");
+const status_theme = computed(() => status_theme_for(status.value));
+const status_label = computed(() => status_label_for(status.value));
 
 const panel_title = computed(() => {
 	if (is_inspect.value) return doc.value?.mvt || record_name.value;
@@ -409,6 +412,7 @@ function apply_model_lines(lines) {
 	doc.value.lines = (lines || []).map((line) => ({
 		account: line.account || "",
 		libelle: line.libelle || "",
+		fact: line.fact || "",
 		tresorerie: "",
 		debit: flt(line.debit),
 		credit: flt(line.credit),
@@ -635,7 +639,7 @@ watch(
 											<td class="px-3 py-2.5 text-end text-p-sm tabular-nums text-ink-gray-7">{{ flt(row.total_debit).toFixed(3) }}</td>
 											<td class="px-3 py-2.5 text-end text-p-sm tabular-nums text-ink-gray-7">{{ flt(row.total_credit).toFixed(3) }}</td>
 											<td class="px-3 py-2.5 text-center">
-												<Badge variant="subtle" size="sm" :theme="status_theme(row.status)" :label="status_label(row.status)" />
+												<Badge variant="subtle" size="sm" :theme="status_theme_for(row.status)" :label="status_label_for(row.status)" />
 											</td>
 										</tr>
 									</template>

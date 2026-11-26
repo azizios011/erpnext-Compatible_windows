@@ -62,9 +62,13 @@ class EntryDocument(Document):
 		# the journal's shared series
 		if not frappe.flags.in_import:
 			self.name = None
+		if not self.journal:
+			self.journal = JOURNAL_CODE_BY_DOCTYPE.get(self.doctype)
 		self.mvt = self.resolve_mvt()
 
 	def resolve_mvt(self) -> str:
+		if frappe.flags.in_import and self.mvt:
+			return self.mvt
 		if self.source_doctype and self.source_name:
 			self.validate_source_doctype()
 			mvt = frappe.db.get_value(self.source_doctype, self.source_name, "mvt")
@@ -75,7 +79,7 @@ class EntryDocument(Document):
 					)
 				)
 			return mvt
-		journal_code = JOURNAL_CODE_BY_DOCTYPE.get(self.doctype, "OD")
+		journal_code = self.journal or JOURNAL_CODE_BY_DOCTYPE.get(self.doctype, "OD")
 		return make_autoname(f"{journal_code}-.YYYY.-.#####")
 
 	def validate_source_doctype(self):
@@ -95,6 +99,8 @@ class EntryDocument(Document):
 		validate_source_context(self.source_doctype, self.source_name, context)
 		self.entreprise = context["entreprise"]
 		self.exercice = context["exercice"]
+		if not self.journal:
+			self.journal = JOURNAL_CODE_BY_DOCTYPE.get(self.doctype)
 
 	def validate(self):
 		self.set_missing_values()
@@ -163,8 +169,15 @@ class EntryDocument(Document):
 				self.ref_doc = (
 					frappe.db.get_value(self.source_doctype, self.source_name, "reference_number") or ""
 				)
+		if not self.ref_doc and self.mvt:
+			self.ref_doc = self.mvt
 
 	def validate_lines(self):
+		# strip completely blank lines that desk grids sometimes leave behind
+		self.lines = [
+			l for l in (self.lines or [])
+			if l.account or flt(l.debit) or flt(l.credit)
+		]
 		if not self.lines or len(self.lines) < 2:
 			frappe.throw(_("An entry needs at least two lines (one debit, one credit)."))
 		for i, line in enumerate(self.lines, start=1):

@@ -10,7 +10,8 @@
      expected side and warns on the opposite one without ever blocking. -->
 <script setup>
 import { nextTick, onMounted, ref, watch } from "vue";
-import { Badge, Button, Combobox } from "frappe-ui";
+import { Badge, Button } from "frappe-ui";
+import AccountAutocomplete from "./account_autocomplete.vue";
 
 const frappe = window.frappe;
 const __ = window.__;
@@ -109,16 +110,28 @@ function on_account_open(is_open) {
  * raced with the component's own label echo, which emptied the options the
  * click depended on.) */
 function set_account(row, index, value) {
-	row.account = value;
-	if (!value) return;
-	if (known_accounts.value[value]) {
-		row.account_number = known_accounts.value[value].account_number;
+	if (!value) {
+		row.account = "";
+		row.account_number = "";
+		row.account_name = "";
+		return;
+	}
+	if (typeof value === "object") {
+		row.account = value.value;
+		row.account_number = value.account_number || "";
+		row.account_name = value.account_name || "";
+		remember_account(value.value, value.account_number, value.account_name);
 	} else {
-		frappe.db.get_value("Chart of Account", value, ["account_number", "account_name"]).then((r) => {
-			const values = r?.message || {};
-			remember_account(value, values.account_number, values.account_name);
-			row.account_number = values.account_number || "";
-		});
+		row.account = value;
+		if (known_accounts.value[value]) {
+			row.account_number = known_accounts.value[value].account_number;
+		} else {
+			frappe.db.get_value("Chart of Account", value, ["account_number", "account_name"]).then((r) => {
+				const values = r?.message || {};
+				remember_account(value, values.account_number, values.account_name);
+				row.account_number = values.account_number || "";
+			});
+		}
 	}
 	const expected = expected_side(row);
 	if (expected) {
@@ -244,14 +257,12 @@ function focus_side(index, side) {
 								{{ index + 1 }}
 							</td>
 							<td class="min-w-[240px] px-2 py-2">
-								<Combobox
+								<AccountAutocomplete
 									:model-value="row.account"
-									:options="options_for(row)"
-									:filterable="false"
 									:placeholder="__('code · libellé')"
-									@update:model-value="(value) => set_account(row, index, value)"
-									@update:query="(txt) => on_account_query(row, txt)"
-									@update:open="on_account_open"
+									:disabled="readOnly"
+									@select="(opt) => set_account(row, index, opt)"
+									@update:model-value="(val) => { if (!val) set_account(row, index, null); }"
 								/>
 							</td>
 							<td class="min-w-[180px] px-2 py-2">
@@ -262,11 +273,11 @@ function focus_side(index, side) {
 								/>
 							</td>
 							<td v-if="showTresorerie" class="min-w-[160px] px-2 py-2">
-								<Combobox
+								<AccountAutocomplete
 									v-model="row.tresorerie"
 									:options="tresorerie_options"
-									:filterable="true"
 									:placeholder="__('Trésorerie')"
+									:disabled="readOnly"
 								/>
 							</td>
 							<td class="w-40 px-2 py-2 text-end">

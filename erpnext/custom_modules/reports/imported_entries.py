@@ -43,8 +43,10 @@ from frappe.utils import cint, getdate
 
 from erpnext.custom_modules.organization.context import require_context, validate_exercice_open
 from erpnext.custom_modules.reports.imported_entries_logic import (
+	ALL_ENTRY_DOCTYPES,
 	PAYABLE_DOCTYPE,
 	RECEIVABLE_DOCTYPE,
+	TREASURY_DOCTYPE,
 	build_entry_payload,
 	materialize_plan,
 )
@@ -250,17 +252,21 @@ def _link_rows(doctype: str, name: str, row_names: list[str]) -> None:
 	)
 
 
-def _run_materialization(context: dict, dry_run: int) -> dict:
+def _run_materialization(context: dict, dry_run: int, split_multiref: bool = False) -> dict:
 	rows = _imported_rows(context)
 	account_numbers, journal_types = _reference_data(
 		{row.account for row in rows}, {row.journal for row in rows}
 	)
-	built = materialize_plan(rows, journal_types, account_numbers)
+	built = materialize_plan(rows, journal_types, account_numbers, split_multiref=split_multiref)
 	plan = built["plan"]
 	per_journal = built["per_journal"]
+	multi_refs = built.get("groups_with_multiple_refs_or_dates", [])
+	unbalanced = built.get("unbalanced_groups", [])
+	unresolvable = built.get("unresolvable_groups", [])
 
-	mvts = [mvt for _, mvt, _ in plan[PAYABLE_DOCTYPE] + plan[RECEIVABLE_DOCTYPE]]
-	existing = _existing_entry_names((PAYABLE_DOCTYPE, RECEIVABLE_DOCTYPE), mvts) if mvts else {}
+	all_doctypes = ALL_ENTRY_DOCTYPES
+	mvts = [entry_name for doctype in all_doctypes for _, entry_name, _ in plan[doctype]]
+	existing = _existing_entry_names(all_doctypes, mvts) if mvts else {}
 
 	result = {
 		"dry_run": cint(dry_run),
@@ -274,34 +280,37 @@ def _run_materialization(context: dict, dry_run: int) -> dict:
 				"source_entry": ("is", "set"),
 			},
 		),
-		"groups_total": sum(len(v) for v in plan.values()),
-		"created": {PAYABLE_DOCTYPE: 0, RECEIVABLE_DOCTYPE: 0},
+		"groups_total": sum(len(plan[d]) for d in all_doctypes),
+		"created": {PAYABLE_DOCTYPE: 0, RECEIVABLE_DOCTYPE: 0, TREASURY_DOCTYPE: 0},
 		"rebuilt": 0,
 		"skipped_name_conflict": 0,
 		"rows_linked": 0,
-		"unclassified_groups": len(plan[None]),
-		"unclassified_rows": sum(len(group) for _, _, group in plan[None]),
+		"unclassified_groups": len(plan.get(None, [])),
+		"unclassified_rows": sum(len(group) for _, _, group in plan.get(None, [])),
 		"per_journal": per_journal,
+		"groups_with_multiple_refs_or_dates": len(multi_refs),
+		"unbalanced_groups": len(unbalanced),
+		"unresolvable_groups": unresolvable,
 	}
 	if dry_run:
-		for doctype in (PAYABLE_DOCTYPE, RECEIVABLE_DOCTYPE):
-			conflicts = sum(1 for _, mvt, _ in plan[doctype] if existing.get(doctype, {}).get(mvt) == 0)
+		for doctype in all_doctypes:
+			conflicts = sum(1 for _, entry_name, _ in plan[doctype] if existing.get(doctype, {}).get(entry_name) == 0)
 			result["skipped_name_conflict"] += conflicts
 			result["created"][doctype] = len(plan[doctype]) - conflicts
 		result["rows_linked"] = sum(
 			len(group)
-			for doctype in (PAYABLE_DOCTYPE, RECEIVABLE_DOCTYPE)
-			for _, mvt, group in plan[doctype]
-			if existing.get(doctype, {}).get(mvt) != 0
+			for doctype in all_doctypes
+			for _, entry_name, group in plan[doctype]
+			if existing.get(doctype, {}).get(entry_name) != 0
 		)
 		return result
 
 	validate_exercice_open(context)
 	processed = 0
 	total_groups = result["groups_total"] or 1
-	for doctype in (PAYABLE_DOCTYPE, RECEIVABLE_DOCTYPE):
-		for journal, mvt, group_rows in plan[doctype]:
-			leftover_imported = existing.get(doctype, {}).get(mvt)
+	for doctype in all_doctypes:
+		for journal, entry_name, group_rows in plan[doctype]:
+			leftover_imported = existing.get(doctype, {}).get(entry_name)
 			if leftover_imported == 0:
 				# a foreign document already owns this MVT: never touch it
 				result["skipped_name_conflict"] += 1
@@ -309,13 +318,13 @@ def _run_materialization(context: dict, dry_run: int) -> dict:
 				continue
 			if leftover_imported == 1:
 				# leftover of an interrupted run: rebuild it in place
-				_delete_entry(doctype, mvt)
+				_delete_entry(doctype, entry_name)
 				result["rebuilt"] += 1
 			batches = ", ".join(sorted({row.import_batch for row in group_rows if row.import_batch}))
 			posting_date = min(getdate(row.posting_date) for row in group_rows)
-			parent, lines = build_entry_payload(doctype, journal, mvt, posting_date, batches, group_rows)
+			parent, lines = build_entry_payload(doctype, journal, entry_name, posting_date, batches, group_rows)
 			_insert_entry(doctype, parent, lines)
-			_link_rows(doctype, mvt, [row.name for row in group_rows])
+			_link_rows(doctype, entry_name, [row.name for row in group_rows])
 			result["created"][doctype] += 1
 			result["rows_linked"] += len(group_rows)
 			processed += 1
@@ -343,18 +352,18 @@ def _bump_progress(context: dict, processed: int, total_groups: int) -> None:
 
 
 @frappe.whitelist()
-def materialize_imported_entries(dry_run: int = 1) -> dict:
+def materialize_imported_entries(dry_run: int = 1, split_multiref: int = 0) -> dict:
 	"""Counts per doctype / per journal / unclassified for the imported
 	movements of the current Entreprise + Exercice. dry_run=1 (the default)
 	writes nothing; dry_run=0 runs the real materialization synchronously —
 	the UI path goes through enqueue_materialize_imported_entries instead."""
 	check_import_roles()
 	context = require_context()
-	return _run_materialization(context, dry_run)
+	return _run_materialization(context, dry_run, split_multiref=bool(cint(split_multiref)))
 
 
 @frappe.whitelist(methods=["POST"])
-def enqueue_materialize_imported_entries() -> dict:
+def enqueue_materialize_imported_entries(split_multiref: int = 0) -> dict:
 	"""The UI path: enqueue the real run as a long background job (it creates
 	several thousand entries). Idempotent per Entreprise + Exercice via the
 	job id."""
@@ -368,6 +377,7 @@ def enqueue_materialize_imported_entries() -> dict:
 			timeout=3600,
 			job_id=job_id,
 			deduplicate=True,
+			split_multiref=bool(cint(split_multiref)),
 		)
 	except Exception:
 		frappe.log_error("Grand Livre materialize enqueue failed", frappe.get_traceback())
@@ -375,11 +385,11 @@ def enqueue_materialize_imported_entries() -> dict:
 	return {"enqueued": 1, "job_id": job_id}
 
 
-def materialize_imported_entries_job() -> None:
+def materialize_imported_entries_job(split_multiref: bool = False) -> None:
 	"""The enqueued real run (long queue, chunked commits, progress through
 	publish_realtime)."""
 	context = require_context()
-	result = _run_materialization(context, dry_run=0)
+	result = _run_materialization(context, dry_run=0, split_multiref=split_multiref)
 	frappe.publish_realtime(
 		"grand_livre_materialize_progress",
 		{
@@ -402,7 +412,7 @@ def delete_imported_entries(context: dict) -> int:
 	re-posted), so 'Supprimer l'import' leaves nothing behind. Returns the
 	number of deleted entries."""
 	deleted = 0
-	for doctype in (PAYABLE_DOCTYPE, RECEIVABLE_DOCTYPE):
+	for doctype in ALL_ENTRY_DOCTYPES:
 		names = frappe.get_all(
 			doctype,
 			filters={
@@ -430,7 +440,7 @@ def flagged_linked_rows(context: dict) -> list[str]:
 	are lettree or pointee — 'Supprimer l'import' / replace must refuse while
 	any of them exists (the lettrage would be destroyed)."""
 	entry_names: list[str] = []
-	for doctype in (PAYABLE_DOCTYPE, RECEIVABLE_DOCTYPE):
+	for doctype in ALL_ENTRY_DOCTYPES:
 		entry_names.extend(
 			frappe.get_all(
 				doctype,
@@ -447,7 +457,7 @@ def flagged_linked_rows(context: dict) -> list[str]:
 	return frappe.get_all(
 		LEDGER_DOCTYPE,
 		filters={
-			"source_entry_doctype": ("in", (PAYABLE_DOCTYPE, RECEIVABLE_DOCTYPE)),
+			"source_entry_doctype": ("in", ALL_ENTRY_DOCTYPES),
 			"source_entry": ("in", entry_names),
 		},
 		or_filters=[

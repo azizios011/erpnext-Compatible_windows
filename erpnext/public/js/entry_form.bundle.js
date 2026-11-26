@@ -115,7 +115,7 @@ Object.assign(erpnext.entries, {
 			filters: { visible: 1, type_plan: type_plan },
 		}));
 		frm.set_query("account", "lines", () => ({
-			filters: { disabled: 0 },
+			query: "erpnext.custom_modules.organization.tiers_accounts.compte_search",
 		}));
 		// the column only shows when the Entreprise autorise le flux de tresorerie
 		const autorise = cint(frappe.boot.axeane_context && frappe.boot.axeane_context.flux_tresorerie_autorise);
@@ -216,6 +216,17 @@ Object.assign(erpnext.entries, {
 		erpnext.entries.preview_source_attachment(frm);
 		erpnext.entries.show_status_indicator(frm);
 		erpnext.entries.show_headline(frm);
+		if (!frm.doc.journal) {
+			const default_journal = {
+				"Treasury Transaction": "BQ",
+				"Declaration Transaction": "DC",
+				"Payable Transaction": "AC",
+				"Receivable Transaction": "VT",
+			}[frm.doctype];
+			if (default_journal) {
+				frm.set_value("journal", default_journal);
+			}
+		}
 		frm.add_custom_button(__("Modifier la ligne source"), () => erpnext.entries.open_source(frm));
 		frm.add_custom_button(__("Appel Modele"), () => erpnext.entries.appel_modele(frm));
 		frm.add_custom_button(__("Enreg. Modele"), () => erpnext.entries.enreg_modele(frm));
@@ -245,6 +256,9 @@ Object.assign(erpnext.entries, {
 			args: { entry_doctype: frm.doctype, source_doctype, source_name },
 			callback(r) {
 				const defaults = r.message || {};
+				if (!frm.doc.journal && defaults.journal) {
+					frm.set_value("journal", defaults.journal);
+				}
 				if (!frm.doc.ref_doc && defaults.ref_doc) {
 					frm.set_value("ref_doc", defaults.ref_doc);
 				}
