@@ -270,9 +270,25 @@
    "open_in_new_tab": 0,
    "show_arrow": 0,
    "type": "Link"
+  },
+  {
+   "type": "Section Break",
+   "label": "Declaration"
+  },
+  {
+   "type": "Link",
+   "label": "Familles de declaration",
+   "link_to": "Famille Declaration",
+   "child": 1
+  },
+  {
+   "type": "Link",
+   "label": "Rubriques de declaration",
+   "link_to": "Rubrique Declaration",
+   "child": 1
   }
  ],
- "modified": "2026-11-22 18:00:00.000000",
+ "modified": "2026-11-28 10:00:00.000000",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Organization",

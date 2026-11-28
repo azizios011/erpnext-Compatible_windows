@@ -123,6 +123,36 @@ class FacturationDocument(Document):
 			self.exercice = context["exercice"]
 
 
+def context_annee(context: dict) -> int:
+	"""The context exercice's annee (the DM's year)."""
+	return frappe.db.get_value("Exercice", context.get("exercice"), "annee") or 0
+
+
+def _existing_declaration(context: dict, source) -> str:
+	"""The Declaration Transaction of the source Mensuelle's month: the
+	Principale first, else the latest declaration of that month. Nothing is
+	written here."""
+	mois = source.get("period_month") or ""
+	if not mois:
+		return ""
+	rows = frappe.get_all(
+		"Declaration Transaction",
+		filters={
+			"entreprise": context["entreprise"],
+			"exercice": context["exercice"],
+			"mois": mois,
+		},
+		fields=["name", "type_declaration", "creation"],
+		order_by="creation desc",
+	)
+	if not rows:
+		return ""
+	for row in rows:
+		if row.type_declaration == "Principale":
+			return row.name
+	return rows[0].name
+
+
 @frappe.whitelist()
 def get_entry_target(doctype: str, name: str) -> dict:
 	"""Resolve the Entries-workspace target of a Facturation document.
@@ -159,6 +189,30 @@ def get_entry_target(doctype: str, name: str) -> dict:
 		"entreprise": context["entreprise"],
 		"exercice": context["exercice"],
 	}
+
+	if doctype == "Mensuelle":
+		# the pen opens the month's Déclaration Mensuelle, not a journal-lines
+		# entry: an existing DM of the month wins, otherwise the defaults
+		# prefill the form and Calculer builds it
+		existing_dm = _existing_declaration(context, source)
+		defaults.update(
+			{
+				"mois": source.get("period_month") or "",
+				"annee": source.get("period_year") or context_annee(context),
+				"type_declaration": "Principale",
+				"mensuelle": name,
+				"date_operation": None,
+				"ref_doc": source.get("reference_number") or "",
+				"journal": None,
+				"mvt": None,
+			}
+		)
+		return {
+			"entry_doctype": entry_doctype,
+			"existing_entry": existing_dm,
+			"defaults": defaults,
+		}
+
 	return {
 		"entry_doctype": entry_doctype,
 		"existing_entry": source.get("entry") or "",

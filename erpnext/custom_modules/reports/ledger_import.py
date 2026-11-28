@@ -24,6 +24,7 @@ import frappe
 from frappe import _
 from frappe.utils import cint, flt, getdate, now_datetime
 
+from erpnext.custom_modules.entries.ledger_lock import any_row_locked_by_filter
 from erpnext.custom_modules.organization.context import require_context, validate_exercice_open
 from erpnext.custom_modules.organization.importing import (
 	alias_map,
@@ -357,6 +358,16 @@ def import_grand_livre(file_url: str, replace: int = 0, create_journals: int = 1
 						len(flagged)
 					)
 				)
+			if any_row_locked_by_filter(
+				{
+					"entreprise": context["entreprise"],
+					"exercice": context["exercice"],
+					"import_batch": ("is", "set"),
+				}
+			):
+				analysis["blockers"].append(
+					_("L'import precedent contient des ecritures verrouillees par une declaration mensuelle cloturee: de-cloturez d'abord.")
+				)
 		if analysis["blockers"]:
 			frappe.throw(
 				_("Import impossible: {0}").format(" ".join(analysis["blockers"])),
@@ -515,6 +526,17 @@ def delete_import() -> dict:
 	if flagged:
 		frappe.throw(
 			_("Impossible de supprimer: {0} ligne(s) lettrees ou pointees (delettrer d'abord).").format(len(flagged)),
+			title=_("Supprimer l'import"),
+		)
+	if any_row_locked_by_filter(
+		{
+			"entreprise": context["entreprise"],
+			"exercice": context["exercice"],
+			"import_batch": ("is", "set"),
+		}
+	):
+		frappe.throw(
+			_("Impossible de supprimer: des ecritures sont verrouillees par une declaration mensuelle cloturee (de-cloturez d'abord)."),
 			title=_("Supprimer l'import"),
 		)
 	if not imported_names:

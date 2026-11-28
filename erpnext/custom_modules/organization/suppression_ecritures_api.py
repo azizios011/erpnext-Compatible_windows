@@ -27,6 +27,7 @@ import frappe
 from frappe import _
 from frappe.utils import cint
 
+from erpnext.custom_modules.entries.ledger_lock import locked_row_names
 from erpnext.custom_modules.organization.context import (
 	require_context,
 	validate_exercice_open,
@@ -38,6 +39,7 @@ from erpnext.custom_modules.reports.imported_entries import (
 
 LEDGER_DOCTYPE = "Ecriture Comptable"
 CHILD_DOCTYPE = "Ecriture Ligne"
+DECLARATION_LINE_DOCTYPE = "Declaration Transaction Rubrique"
 
 ENTRY_DOCTYPES = (
 	"Payable Transaction",
@@ -88,6 +90,8 @@ def _build_entry_where(
 	context: dict[str, Any],
 ) -> tuple[str, dict[str, Any]]:
 	"""Build WHERE clause fragments for one of the 4 entry doctypes."""
+	if dt == "Declaration Transaction":
+		return _build_declaration_where(filters, context)
 	clauses: list[str] = [
 		"e.entreprise = %(entreprise)s",
 		"e.exercice = %(exercice)s",
@@ -147,6 +151,37 @@ def _build_entry_where(
 			clauses.append("(e.imported = 0 OR e.imported IS NULL)")
 	elif origin == "Imported":
 		clauses.append("1 = 0")
+
+	return " AND ".join(clauses), params
+
+
+def _build_declaration_where(
+	filters: dict[str, Any],
+	context: dict[str, Any],
+) -> tuple[str, dict[str, Any]]:
+	"""The Declaration Transaction columns are the DM redesign's (mois, type,
+	status, numero_recepisse) — no journal / mvt / posting_date: the shared
+	entry filters map onto them, the rest are ignored."""
+	clauses: list[str] = [
+		"e.entreprise = %(entreprise)s",
+		"e.exercice = %(exercice)s",
+	]
+	params: dict[str, Any] = {
+		"entreprise": context["entreprise"],
+		"exercice": context["exercice"],
+	}
+
+	if filters.get("mvt"):
+		clauses.append("e.name LIKE %(mvt)s")
+		params["mvt"] = f"%{filters['mvt']}%"
+
+	if filters.get("ref_doc"):
+		clauses.append("e.numero_recepisse LIKE %(ref_doc)s")
+		params["ref_doc"] = f"%{filters['ref_doc']}%"
+
+	if filters.get("libelle"):
+		clauses.append("e.type_declaration LIKE %(libelle)s")
+		params["libelle"] = f"%{filters['libelle']}%"
 
 	return " AND ".join(clauses), params
 
@@ -275,10 +310,24 @@ def search_transactions(
 			  AND ec.source_entry = e.name
 			  AND (ec.lettrage_status != 'Non lettre' OR ec.pointe = 1)) > 0"""
 
+		if dt == "Declaration Transaction":
+			# the DM redesign's columns mapped onto the shared row shape:
+			# mois in the Mvt slot, the type in Journal, the status in
+			# Libelle, the receipisse in Ref and the grand total once
+			select_columns = (
+				"e.mois AS mvt, e.type_declaration AS journal, e.depose_le AS date_operation, "
+				"e.status AS libelle, e.numero_recepisse AS ref_doc, "
+				"e.total_a_payer AS total_debit, 0 AS total_credit"
+			)
+		else:
+			select_columns = (
+				"e.mvt, e.journal, e.date_operation, e.libelle, e.ref_doc, "
+				"e.total_debit, e.total_credit"
+			)
+
 		union_parts.append(f"""
 			SELECT e.name, '{dt}' AS doctype,
-				   e.mvt, e.journal, e.date_operation, e.libelle, e.ref_doc,
-				   e.total_debit, e.total_credit,
+				   {select_columns},
 				   '{ENTRY_DOCTYPE_LABELS.get(dt, dt)}' AS entry_type,
 				   {imported_expr} AS imported,
 				   ({lettered_sub}) AS has_lettered
@@ -424,6 +473,14 @@ def _delete_single_target(
 			"journal": journal,
 			"mvt": mvt,
 		}
+		locked_names = frappe.db.sql(
+			f"""SELECT name FROM `tab{LEDGER_DOCTYPE}` WHERE {where_clause}""",
+			params,
+			as_dict=True,
+		)
+		if locked_row_names([row.name for row in locked_names]):
+			return "declaration"
+
 		has_lettered = frappe.db.sql(
 			f"""SELECT 1 FROM `tab{LEDGER_DOCTYPE}`
 				WHERE {where_clause} AND (lettrage_status != 'Non lettre' OR pointe = 1)
@@ -440,6 +497,12 @@ def _delete_single_target(
 
 	where_clause = "source_entry_doctype = %(dt)s AND source_entry = %(name)s"
 	params = {"dt": doctype, "name": name}
+
+	row_names = frappe.get_all(LEDGER_DOCTYPE, filters={"source_entry_doctype": doctype, "source_entry": name}, pluck="name")
+	locked = locked_row_names(row_names)
+	if locked:
+		return "declaration"
+
 	has_lettered = frappe.db.sql(
 		f"""SELECT 1 FROM `tab{LEDGER_DOCTYPE}`
 			WHERE {where_clause} AND (lettrage_status != 'Non lettre' OR pointe = 1)
@@ -458,11 +521,18 @@ def _delete_single_target(
 	# 2. delete ledger rows
 	frappe.db.delete(LEDGER_DOCTYPE, {"source_entry_doctype": doctype, "source_entry": name})
 
-	# 3. delete child table rows
-	frappe.db.sql(
-		f"""DELETE FROM `tab{CHILD_DOCTYPE}` WHERE parenttype = %(dt)s AND parent = %(name)s""",
-		params,
-	)
+	# 3. delete child table rows (Ecriture Ligne for the entries, the DM
+	# rubriques for a Declaration Transaction)
+	child_doctypes = (
+		(CHILD_DOCTYPE, "lines"),
+		(DECLARATION_LINE_DOCTYPE, "rubriques"),
+	) if doctype == "Declaration Transaction" else ((CHILD_DOCTYPE, "lines"),)
+	for child_dt, parentfield in child_doctypes:
+		frappe.db.sql(
+			f"""DELETE FROM `tab{child_dt}` WHERE parenttype = %(dt)s AND parent = %(name)s
+				AND (parentfield = %(pf)s OR parentfield IS NULL OR parentfield = '')""",
+			{**params, "pf": parentfield},
+		)
 
 	# 4. delete entry itself
 	frappe.db.sql(f"""DELETE FROM `tab{doctype}` WHERE name = %(name)s""", {"name": name})
@@ -647,6 +717,8 @@ def _delete_batch_job(
 					forced += 1
 			elif reason == "lettered":
 				skipped += 1
+			elif reason == "declaration":
+				skipped += 1
 			else:
 				failed += 1
 		except Exception:
@@ -696,6 +768,8 @@ def _delete_targets(
 				if force:
 					forced_count += 1
 			elif reason == "lettered":
+				skipped += 1
+			elif reason == "declaration":
 				skipped += 1
 			else:
 				failed += 1

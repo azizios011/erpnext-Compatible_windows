@@ -41,6 +41,7 @@ import frappe
 from frappe import _
 from frappe.utils import cint, getdate
 
+from erpnext.custom_modules.entries.ledger_lock import assert_rows_not_declaration_locked
 from erpnext.custom_modules.organization.context import require_context, validate_exercice_open
 from erpnext.custom_modules.reports.imported_entries_logic import (
 	ALL_ENTRY_DOCTYPES,
@@ -244,6 +245,7 @@ def _delete_entry(doctype: str, name: str) -> None:
 
 def _link_rows(doctype: str, name: str, row_names: list[str]) -> None:
 	"""Point the EXISTING imported ledger rows at the entry (no new rows)."""
+	assert_rows_not_declaration_locked(row_names, action="lier")
 	frappe.db.sql(
 		f"""update `tab{LEDGER_DOCTYPE}`
 			set source_entry_doctype = %(doctype)s, source_entry = %(name)s
@@ -426,6 +428,14 @@ def delete_imported_entries(context: dict) -> int:
 		)
 		if not names:
 			continue
+		assert_rows_not_declaration_locked(
+			frappe.get_all(
+				LEDGER_DOCTYPE,
+				filters={"source_entry_doctype": doctype, "source_entry": ("in", names)},
+				pluck="name",
+			),
+			action="supprimer",
+		)
 		frappe.db.sql(
 			f"""delete from `tab{LEDGER_DOCTYPE}`
                 where source_entry_doctype = %(doctype)s and source_entry in %(names)s""",

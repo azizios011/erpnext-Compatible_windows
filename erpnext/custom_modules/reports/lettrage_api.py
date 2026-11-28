@@ -21,6 +21,10 @@ from frappe import _
 from frappe.utils import flt, nowdate
 
 from erpnext.custom_modules.organization.context import require_context
+from erpnext.custom_modules.entries.ledger_lock import (
+	assert_rows_not_declaration_locked,
+	locked_row_names,
+)
 from erpnext.custom_modules.reports.lettrage_rules import run_rules
 from erpnext.custom_modules.reports.report_common import check_ledger_read_permission
 
@@ -264,6 +268,7 @@ def letter_lines(account: str, names: str, allow_partial: int = 0) -> dict:
 		group.insert(ignore_permissions=True)
 		group_name = group.name
 
+	assert_rows_not_declaration_locked([line.name for line in lines], action="letttrer")
 	for line in lines:
 		frappe.db.set_value(
 			LEDGER,
@@ -299,6 +304,7 @@ def unletter(names: str) -> dict:
 	if len(lines) < len(set(selected)):
 		frappe.throw(_("Certaines lignes n'appartiennent pas au contexte comptable."))
 
+	assert_rows_not_declaration_locked([line.name for line in lines], action="delettrer")
 	today = nowdate()
 	groups = {line.lettrage_groupe for line in lines if line.lettrage_groupe}
 	for line in lines:
@@ -376,6 +382,7 @@ def toggle_pointe(names: str, value: int) -> dict:
 			)
 		)
 
+	assert_rows_not_declaration_locked([line.name for line in lines], action="pointer")
 	today = nowdate() if value else None
 	for line in lines:
 		frappe.db.set_value(
@@ -441,6 +448,9 @@ def _auto_lettrage_job(entreprise: str, exercice: str, category: str, account: s
 					"line_count": len(candidate["lines"]),
 				}
 			)
+			if locked_row_names([line["name"] for line in candidate["lines"]]):
+				skipped += len(candidate["lines"])
+				continue
 			group.insert(ignore_permissions=True)
 			groups_created += 1
 			for line in candidate["lines"]:
@@ -523,6 +533,8 @@ def _auto_delettrage_job(entreprise: str, exercice: str, category: str, account:
 
 	for i, group in enumerate(groups, start=1):
 		rows = frappe.get_all(LEDGER, filters={"lettrage_groupe": group}, pluck="name")
+		locked = {row["name"] for row in locked_row_names(rows)}
+		rows = [name for name in rows if name not in locked]
 		for name in rows:
 			frappe.db.set_value(
 				LEDGER,

@@ -7,6 +7,7 @@ from frappe.model.document import Document
 from frappe.model.naming import make_autoname
 from frappe.utils import flt, getdate
 
+from erpnext.custom_modules.entries.ledger_lock import assert_entry_ledger_not_locked
 from erpnext.custom_modules.facturation.facturation_base import ENTRY_DOCTYPE_BY_DOCTYPE
 from erpnext.custom_modules.organization.context import (
 	require_context,
@@ -231,6 +232,9 @@ class EntryDocument(Document):
 
 	def on_update(self):
 		self.validate_ledger_not_lettered()
+		# a row used by a clotured Déclaration Mensuelle is frozen: the
+		# delete-and-repost rewrite below would touch it
+		assert_entry_ledger_not_locked(self.doctype, self.name, action="modifier")
 		# every save re-posts: editing a posted entry rewrites its ledger rows
 		self.post_to_ledger()
 
@@ -301,6 +305,7 @@ class EntryDocument(Document):
 
 	def on_trash(self):
 		self.validate_ledger_not_lettered()
+		assert_entry_ledger_not_locked(self.doctype, self.name, action="supprimer")
 		frappe.db.delete(LEDGER_DOCTYPE, {"source_entry_doctype": self.doctype, "source_entry": self.name})
 		if not (self.source_doctype and self.source_name):
 			return

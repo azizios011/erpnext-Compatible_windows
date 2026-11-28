@@ -1,7 +1,6 @@
 {
  "actions": [],
- "autoname": "",
- "naming_rule": "By script",
+ "autoname": "format:DM-{exercice}-{mois}-{type_declaration}",
  "creation": "2026-11-07 22:00:00.000000",
  "default_view": "List",
  "doctype": "DocType",
@@ -9,74 +8,316 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "date_operation",
-  "journal",
-  "mois",
-  "cb_header",
-  "devise",
-  "mvt",
-  "jour",
-  "ref_doc",
-  "cb_header2",
-  "libelle",
-  "apply_libelle_to_lines",
-  "source_doctype",
-  "source_name",
   "entreprise",
   "exercice",
-  "imported",
-  "import_batch",
-  "lines_section",
-  "lines",
-  "total_debit",
-  "total_credit",
-  "solde",
+  "mois",
+  "cb_header",
+  "annee",
+  "type_declaration",
   "status",
+  "cb_header2",
+  "mensuelle",
+  "report_credit_anterieur",
+  "rubriques_section",
+  "rubriques_html",
+  "rubriques",
+  "section_depot",
+  "depose_le",
+  "column_break_depot",
+  "numero_recepisse",
   "totaux_section",
-  "totaux_html",
-  "attachment_preview"
+  "tva_collectee",
+  "cb_tva",
+  "tva_deductible",
+  "column_break_tva",
+  "tva_a_payer",
+  "credit_suivant",
+  "cb_totaux",
+  "total_rs",
+  "total_tfp",
+  "column_break_totaux",
+  "total_foprolos",
+  "total_timbre",
+  "column_break_totaux2",
+  "total_tcl",
+  "total_a_payer",
+  "avertissements"
  ],
  "fields": [
-  {"fieldname": "date_operation", "fieldtype": "Date", "reqd": 1, "in_list_view": 1, "default": "Today", "label": "Date Operation"},
-  {"fieldname": "journal", "fieldtype": "Link", "options": "Journal", "reqd": 1, "in_list_view": 1, "default": "DC", "label": "Journal"},
-  {"fieldname": "mois", "fieldtype": "Data", "read_only": 1, "label": "Mois"},
-  {"fieldname": "cb_header", "fieldtype": "Column Break"},
-  {"fieldname": "devise", "fieldtype": "Link", "options": "Currency", "default": "TND", "label": "Devise"},
-  {"fieldname": "mvt", "fieldtype": "Data", "read_only": 1, "in_list_view": 1, "label": "MVT"},
-  {"fieldname": "jour", "fieldtype": "Int", "read_only": 1, "label": "Jour"},
-  {"fieldname": "ref_doc", "fieldtype": "Data", "reqd": 1, "in_list_view": 1, "label": "Ref/N°doc"},
-  {"fieldname": "cb_header2", "fieldtype": "Column Break"},
-  {"fieldname": "libelle", "fieldtype": "Data", "label": "Libelle"},
-  {"fieldname": "apply_libelle_to_lines", "fieldtype": "Check", "default": "0", "label": "Apply libelle to all lines"},
-  {"fieldname": "source_doctype", "fieldtype": "Link", "options": "DocType", "read_only": 1, "label": "Source DocType", "hidden": 1},
-  {"fieldname": "source_name", "fieldtype": "Dynamic Link", "options": "source_doctype", "read_only": 1, "label": "Source Name", "hidden": 1},
-  {"fieldname": "entreprise", "fieldtype": "Link", "options": "Entreprise", "read_only": 1, "hidden": 1, "search_index": 1, "label": "Entreprise"},
-  {"fieldname": "exercice", "fieldtype": "Link", "options": "Exercice", "read_only": 1, "hidden": 1, "search_index": 1, "label": "Exercice"},
-  {"fieldname": "imported", "fieldtype": "Check", "default": "0", "read_only": 1, "hidden": 1, "label": "Importe"},
-  {"fieldname": "import_batch", "fieldtype": "Data", "read_only": 1, "search_index": 1, "label": "Lot d'import", "in_list_view": 0, "hidden": 1},
-  {"fieldname": "lines_section", "fieldtype": "Section Break", "label": "Lignes"},
-  {"fieldname": "lines", "fieldtype": "Table", "options": "Ecriture Ligne", "label": "Lignes"},
-  {"fieldname": "total_debit", "fieldtype": "Currency", "read_only": 1, "label": "Tot Debit", "in_list_view": 1, "hidden": 1},
-  {"fieldname": "total_credit", "fieldtype": "Currency", "read_only": 1, "label": "Tot Credit", "in_list_view": 1, "hidden": 1},
-  {"fieldname": "solde", "fieldtype": "Currency", "read_only": 1, "label": "Solde", "hidden": 1},
-  {"fieldname": "status", "fieldtype": "Select", "options": "Brouillon\nComptabilise", "default": "Brouillon", "read_only": 1, "in_list_view": 1, "label": "Status", "hidden": 1},
-  {"fieldname": "totaux_section", "fieldtype": "Section Break", "label": "Totaux"},
-  {"fieldname": "totaux_html", "fieldtype": "HTML", "label": "Totaux"},
-  {"fieldname": "attachment_preview", "fieldtype": "HTML", "label": "Attachment Preview"}
+  {
+   "fieldname": "entreprise",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Entreprise",
+   "options": "Entreprise",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "exercice",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Exercice",
+   "options": "Exercice",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "description": "Mois de la declaration",
+   "fieldname": "mois",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Mois",
+   "options": "01\n02\n03\n04\n05\n06\n07\n08\n09\n10\n11\n12",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "cb_header",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "annee",
+   "fieldtype": "Int",
+   "in_list_view": 0,
+   "label": "Annee",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "default": "Principale",
+   "fieldname": "type_declaration",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Type",
+   "options": "Principale\nComplementaire",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "default": "Brouillon",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Statut",
+   "options": "Brouillon\nCloture\nDepose",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "cb_header2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "mensuelle",
+   "fieldtype": "Link",
+   "label": "Mensuelle",
+   "options": "Mensuelle",
+   "read_only": 1
+  },
+  {
+   "description": "Credit reporte du mois precedent (negatif = credit). Editable sur la premiere declaration de l'exercice uniquement.",
+   "fieldname": "report_credit_anterieur",
+   "fieldtype": "Currency",
+   "label": "Credit reporte anterieur",
+   "precision": "3"
+  },
+  {
+   "collapsible": 0,
+   "fieldname": "rubriques_section",
+   "fieldtype": "Section Break",
+   "label": "Rubriques"
+  },
+  {
+   "fieldname": "rubriques_html",
+   "fieldtype": "HTML",
+   "label": "Rubriques"
+  },
+  {
+   "fieldname": "rubriques",
+   "fieldtype": "Table",
+   "hidden": 1,
+   "label": "Rubriques",
+   "options": "Declaration Transaction Rubrique"
+  },
+  {
+   "collapsible": 0,
+   "fieldname": "section_depot",
+   "fieldtype": "Section Break",
+   "label": "Depot"
+  },
+  {
+   "fieldname": "depose_le",
+   "fieldtype": "Datetime",
+   "label": "Depose le",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_depot",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "numero_recepisse",
+   "fieldtype": "Data",
+   "label": "N° recepisse",
+   "read_only": 1
+  },
+  {
+   "collapsible": 0,
+   "fieldname": "totaux_section",
+   "fieldtype": "Section Break",
+   "label": "Totaux"
+  },
+  {
+   "fieldname": "tva_collectee",
+   "fieldtype": "Currency",
+   "in_list_view": 0,
+   "label": "TVA collectee",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_tva",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tva_deductible",
+   "fieldtype": "Currency",
+   "in_list_view": 0,
+   "label": "TVA deductible",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_tva",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tva_a_payer",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "TVA a payer",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "credit_suivant",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Credit suivant",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_totaux",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_rs",
+   "fieldtype": "Currency",
+   "in_list_view": 0,
+   "label": "Total RS",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_tfp",
+   "fieldtype": "Currency",
+   "in_list_view": 0,
+   "label": "Total TFP",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_totaux",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_foprolos",
+   "fieldtype": "Currency",
+   "in_list_view": 0,
+   "label": "Total FOPROLOS",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_timbre",
+   "fieldtype": "Currency",
+   "in_list_view": 0,
+   "label": "Total timbre",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_totaux2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_tcl",
+   "fieldtype": "Currency",
+   "in_list_view": 0,
+   "label": "Total TCL",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_a_payer",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total a payer",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "avertissements",
+   "fieldtype": "Long Text",
+   "hidden": 1,
+   "label": "Avertissements",
+   "read_only": 1
+  }
  ],
+ "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-08 23:45:00.000000",
+ "modified": "2026-11-28 10:00:00.000000",
  "modified_by": "Administrator",
  "module": "Entries",
  "name": "Declaration Transaction",
  "owner": "Administrator",
  "permissions": [
-  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Accounts User", "share": 1, "write": 1},
-  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Accounts Manager", "share": 1, "write": 1}
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
+   "write": 1
+  }
  ],
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": [],
- "title_field": "ref_doc",
  "track_changes": 1
 }

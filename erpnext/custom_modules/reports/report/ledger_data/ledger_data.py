@@ -17,6 +17,7 @@ import frappe
 from frappe import _
 from frappe.utils import cint, flt, getdate
 
+from erpnext.custom_modules.organization.account_interval import match_lower, match_upper
 from erpnext.custom_modules.organization.context import require_context
 from erpnext.custom_modules.reports.report_common import (
 	AUX_CLIENT_PREFIX,
@@ -128,14 +129,6 @@ def _account_filter(filters: dict, entreprise: str | None = None) -> list[str]:
 		filters=cond,
 		pluck="name",
 	)
-
-
-def _match_upper(acc_num: str, upper: str) -> bool:
-	return acc_num <= upper or acc_num.startswith(upper)
-
-
-def _match_lower(acc_num: str, lower: str) -> bool:
-	return acc_num >= lower or acc_num.startswith(lower)
 
 
 def _extract_account_filter(filters: dict, entreprise: str) -> list[str] | None:
