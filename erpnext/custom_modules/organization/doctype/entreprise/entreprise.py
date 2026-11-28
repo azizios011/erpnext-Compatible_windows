@@ -14,6 +14,12 @@ MATRICULE_FISCAL_PATTERN = re.compile(r"^\d{7}[A-Z]{3}\d{3}$")
 
 
 class Entreprise(Document):
+	def before_insert(self):
+		# autoname field:code takes the name from the RAW client value before
+		# validate runs (and _sync_autoname_field later resets the field to the
+		# name): normalize first, so name == code == the upper-cased code
+		self.normalize_code()
+
 	def validate(self):
 		self.normalize_code()
 		self.normalize_matricule_fiscal()
@@ -37,20 +43,30 @@ class Entreprise(Document):
 		self.matricule_fiscal = normalized
 
 	def validate_jour_arrete(self):
-		mois = cint(self.mois_arrete) or 12
-		jour = cint(self.jour_arrete) or 31
+		raw_mois = cint(self.mois_arrete)
+		raw_jour = cint(self.jour_arrete)
+		# empty means the defaults (31/12): the island form fills them from the
+		# meta defaults, but a partial payload or a legacy row must not be
+		# rejected over an unset jour — only a TYPED jour the month cannot
+		# hold throws. mois stays inside 1..12 and jour inside 1..31 before the
+		# clamp loop, or date() would fail forever and hang the save.
+		mois = raw_mois if 1 <= raw_mois <= 12 else 12
+		jour = raw_jour or 31
+		if not 1 <= jour <= 31:
+			frappe.throw(_("Le jour d'arrete {0} n'est pas valide (1 - 31).").format(raw_jour))
 		while True:
 			try:
 				date(2024, mois, jour)  # leap year: 29 is valid for 02
 				break
 			except ValueError:
 				jour -= 1
-		if jour != cint(self.jour_arrete):
+		if raw_jour and jour != raw_jour:
 			frappe.throw(
 				_("Le jour d'arrete {0} n'est pas valide pour le mois {1} (31 pour 12 est admis, 31 pour 04 refuse).").format(
-					cint(self.jour_arrete), mois
+					raw_jour, mois
 				)
 			)
+		self.mois_arrete = mois
 		self.jour_arrete = jour
 
 	def default_type_plan_comptable(self):

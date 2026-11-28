@@ -15,7 +15,7 @@
 <script setup>
 import { computed, onErrorCaptured, provide, ref, watch } from "vue";
 import { Badge, Button } from "frappe-ui";
-import { buildLayoutFromMeta, FormLayout, LinkTitlesKey } from "@framework/ui/FormLayout";
+import { buildLayoutFromMeta, evaluateDependsOn, FormLayout, LinkTitlesKey } from "@framework/ui/FormLayout";
 import { useDoctypeMeta } from "@framework/ui";
 import { FileUploadDialog } from "@framework/ui/FileUpload";
 import PlanComptableImportDialog from "./PlanComptableImportDialog.vue";
@@ -429,32 +429,94 @@ const card_rows = computed(() => {
 });
 
 // ── actions ──────────────────────────────────────────────────────────────────
+// frappe.call rejects with the failed jqXHR: a server-raised error arrives as
+// HTTP 417 whose body carries _server_messages (a JSON array of msgprint
+// dicts, doubly encoded) and exc (the traceback). frappe.xcall instead
+// rejects with r?.message — undefined for those — which silently swallowed
+// every server validation here. The extracted array goes straight to
+// frappe.msgprint, which parses the entries and shows each one (keeping only
+// the raising messages when any exist, like the desk's own handler).
+function server_error_payload(error) {
+	const body = error?.responseJSON || error;
+	if (body && typeof body === "object" && body._server_messages) {
+		try {
+			const parsed =
+				typeof body._server_messages === "string"
+					? JSON.parse(body._server_messages)
+					: body._server_messages;
+			if (Array.isArray(parsed) && parsed.length) return parsed;
+		} catch {
+			// malformed payload: fall through to the traceback
+		}
+	}
+	const traceback = body?.exc;
+	if (typeof traceback === "string" && traceback) {
+		try {
+			const frames = JSON.parse(traceback);
+			const last = (Array.isArray(frames) ? frames : [traceback]).map((t) => String(t).trimEnd()).pop();
+			if (last) return [last];
+		} catch {
+			const last = String(traceback).trimEnd().split("\n").pop();
+			if (last) return [last];
+		}
+	}
+	const text = typeof body === "string" ? body : body?.message || "";
+	return text ? [text] : [];
+}
+
+function show_server_errors(error) {
+	const messages = server_error_payload(error);
+	if (messages.length) {
+		frappe.msgprint(messages);
+		return;
+	}
+	console.error("entreprise_view: call failed", error);
+	frappe.msgprint({
+		message: __("L'operation a echoue — voir la console pour le detail."),
+		indicator: "red",
+	});
+}
+
 async function save() {
+	// the island pre-checks the doctype's mandatory fields (reqd, minus hidden
+	// and depends_on-false ones) and refuses with ONE message listing the
+	// missing labels — a server round-trip would reject on the first one only
+	const missing = missing_required_fields.value;
+	if (missing.length) {
+		const labels = missing.map((field) => __(field.label || field.fieldname));
+		frappe.msgprint({
+			message: __("Impossible d'enregistrer: champs obligatoires vides: {0}.", [labels.join(", ")]),
+			indicator: "orange",
+		});
+		return false;
+	}
 	saving.value = true;
 	try {
 		const payload = JSON.parse(JSON.stringify(doc.value));
 		if (is_new.value) {
-			const inserted = await frappe.xcall("frappe.client.insert", { doc: payload });
+			const response = await frappe.call({
+				method: "frappe.client.insert",
+				args: { doc: payload },
+			});
+			const inserted = response?.message;
 			is_new.value = false;
 			frappe.show_alert({
 				message: __("Entreprise enregistrée — vous pouvez maintenant importer son plan comptable"),
 				indicator: "green",
 			});
 			frappe.set_route("entreprise-view", inserted.name);
-			return;
+			return true;
 		}
-		doc.value = await frappe.xcall(
-			"erpnext.custom_modules.organization.doctype.entreprise.entreprise.save_entreprise",
-			{ doc: payload }
-		);
+		const response = await frappe.call({
+			method: "erpnext.custom_modules.organization.doctype.entreprise.entreprise.save_entreprise",
+			args: { doc: payload },
+		});
+		if (response?.message) doc.value = response.message;
 		frappe.show_alert({ message: __("Enregistre."), indicator: "green" });
+		return true;
 	} catch (error) {
-		const text = error?.message || error?.exc || "";
-		// frappe.call already displays server-raised messages; only surface
-		// client-side failures that carried no server message
-		if (text && !text.includes("Code is required") && !error?._server_messages) {
-			frappe.msgprint({ message: text, indicator: "red" });
-		}
+		show_server_errors(error);
+		return false;
 	} finally {
 		saving.value = false;
 	}
@@ -463,16 +525,16 @@ async function save() {
 async function valider() {
 	validating.value = true;
 	try {
-		await save();
-		if (is_new.value || !doc.value?.name) return;
-		await frappe.xcall(
-			"erpnext.custom_modules.organization.doctype.entreprise.entreprise.valider_entreprise",
-			{ name: doc.value.name }
-		);
+		const saved = await save();
+		if (!saved || is_new.value || !doc.value?.name) return;
+		await frappe.call({
+			method: "erpnext.custom_modules.organization.doctype.entreprise.entreprise.valider_entreprise",
+			args: { name: doc.value.name },
+		});
 		doc.value.status = "Creee";
 		frappe.show_alert({ message: __("Entreprise validee."), indicator: "green" });
 	} catch (error) {
-		// save()/valider already surfaced the server message via msgprint
+		show_server_errors(error);
 	} finally {
 		validating.value = false;
 	}
@@ -652,6 +714,10 @@ const missing_required_fields = computed(() => {
 	const d = doc.value;
 	return meta.meta.value.fields.filter((field) => {
 		if (!field.reqd || LAYOUT_FIELDTYPES.has(field.fieldtype) || field.hidden) {
+			return false;
+		}
+		// a depends_on-false field is not fillable on this form: not missing
+		if (!evaluateDependsOn(field.depends_on, d)) {
 			return false;
 		}
 		return is_value_empty(d[field.fieldname]);
