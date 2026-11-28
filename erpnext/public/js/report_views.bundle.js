@@ -20,6 +20,40 @@
 		xlsx: { label: __("XLSX View"), icon: "table", css_class: "report-view-xlsx" },
 	};
 
+	// ── the shared bundled Sheets editor (print_designer/editors/sheets) ────
+	// One iframe + postMessage handshake for every report that embeds a
+	// workbook read-only (Ledger Data's xlsx view, the Declaration Mensuelle
+	// Vue XLSX). Returns the cleanup that removes the message listener — the
+	// host owns when the editor goes away. Same handshake as the desk's
+	// /app/sheets-editor page.
+	erpnext.reports.mount_sheets_editor = function (area, file_docname, opts = {}) {
+		const iframe = document.createElement("iframe");
+		iframe.title = opts.title || __("Sheets");
+		iframe.style.cssText = "border: 0; width: 100%; height: 100%; display: block;";
+		area.appendChild(iframe);
+		const on_message = (ev) => {
+			if (ev.source !== iframe.contentWindow) return;
+			const data = ev.data || {};
+			if (data.type !== "sheets-editor-ready") return;
+			iframe.contentWindow.postMessage(
+				{
+					type: "sheets-editor-init",
+					file: file_docname,
+					lang: frappe.boot.lang || "en",
+					csrfToken: frappe.csrf_token,
+					fullName: frappe.user_info(frappe.session.user).fullname,
+					readonly: opts.readonly !== false,
+					// grid only: no ribbon, no formula bar, no sheet tabs, no save
+					mode: opts.mode || "preview",
+				},
+				window.location.origin
+			);
+		};
+		window.addEventListener("message", on_message);
+		iframe.src = "/assets/print_designer/editors/sheets/index.html";
+		return () => window.removeEventListener("message", on_message);
+	};
+
 	erpnext.reports.setup_views = function (report, opts) {
 		opts = opts || {};
 		const views = opts.views || {};

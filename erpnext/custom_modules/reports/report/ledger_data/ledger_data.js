@@ -469,31 +469,11 @@ function gl_doc_too_large_panel(el, kind, result) {
 }
 
 function gl_mount_sheets_editor(area, file_docname) {
-	const iframe = document.createElement("iframe");
-	iframe.title = __("Grand Livre XLSX");
-	iframe.style.cssText = "border: 0; width: 100%; height: 100%; display: block;";
-	area.appendChild(iframe);
-	const on_message = (ev) => {
-		if (ev.source !== iframe.contentWindow) return;
-		const data = ev.data || {};
-		if (data.type !== "sheets-editor-ready") return;
-		iframe.contentWindow.postMessage(
-			{
-				type: "sheets-editor-init",
-				file: file_docname,
-				lang: frappe.boot.lang || "en",
-				csrfToken: frappe.csrf_token,
-				fullName: frappe.user_info(frappe.session.user).fullname,
-				readonly: true,
-				// grid only: no ribbon, no formula bar, no sheet tabs, no save
-				mode: "preview",
-			},
-			window.location.origin
-		);
-	};
-	window.addEventListener("message", on_message);
-	GL_VIEW_STATE.cleanup = () => window.removeEventListener("message", on_message);
-	iframe.src = "/assets/print_designer/editors/sheets/index.html";
+	// the shared bundled Sheets editor handshake (report_views.bundle.js) —
+	// the listener's removal rides the view state's cleanup
+	GL_VIEW_STATE.cleanup = erpnext.reports.mount_sheets_editor(area, file_docname, {
+		title: __("Grand Livre XLSX"),
+	});
 }
 
 function gl_mount_pdf_editor(area, file_docname) {

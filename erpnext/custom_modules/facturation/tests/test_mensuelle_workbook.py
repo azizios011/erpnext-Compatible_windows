@@ -104,6 +104,7 @@ class TestWorkbookExtraction(unittest.TestCase):
 		self.assertAlmostEqual(value("tcl"), 311.481, places=3)
 		self.assertAlmostEqual(value("gross"), 13654.922, places=3)
 		self.assertAlmostEqual(value("irpp"), 2126.599, places=3)
+		self.assertAlmostEqual(value("s_impos"), 12578.236, places=3)
 		self.assertAlmostEqual(value("css"), 57.639, places=3)
 		self.assertAlmostEqual(value("tfp"), 273.098, places=3)
 		self.assertAlmostEqual(value("foprolos"), 136.549, places=3)

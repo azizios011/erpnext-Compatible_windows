@@ -56,6 +56,7 @@ FIGURE_CELLS: dict[str, tuple[str | None, str | None]] = {
     "tax_id_digit_7": ("P8", "N8"),
     "tax_id_letter": ("Q8", "O8"),
     "irpp": ("A17", "A17"),
+    "s_impos": ("L17", "J17"),
     "css": ("A18", "A18"),
     "rs_loyer": ("A19", "A20"),
     "rs_loyer_rate": ("J19", "H20"),

@@ -267,6 +267,21 @@ def _mensuelle_lines(extracted: dict) -> list[dict]:
 				"raw_formula": str(formula) if formula else "",
 			}
 		)
+	# the taxable pay (the sheet's own cell): the RECAP's S.IMPOS column and
+	# the derived CNSS (S.BRUT - S.IMPOS) read it — no Declaration Transaction
+	# counterpart, so the checks skip it
+	s_impos = extracted["figures"].get("s_impos") or {}
+	if s_impos.get("value") is not None:
+		rows.append(
+			{
+				"code_rubrique": "S_IMPOS",
+				"libelle": "Salaire imposable",
+				"base_declaree": float(s_impos["value"]),
+				"montant_declare": None,
+				"source_cell": s_impos.get("cell") or "",
+				"raw_formula": str(s_impos.get("formula") or ""),
+			}
+		)
 	return rows
 
 
@@ -444,6 +459,20 @@ def _declaration_payload(entreprise: str, exercice: str, month: str) -> dict | N
 	}
 
 
+def _sheet_check_payload(extracted: dict) -> dict:
+	"""The extraction + the declared rubrique figures (the RUBRIQUE_MAP
+	mapping, S_IMPOS excluded: it has no Declaration Transaction
+	counterpart), so the checks' family C compares per rubrique."""
+	rubriques = []
+	for mapping in mensuelle_workbook.RUBRIQUE_MAP:
+		base = None
+		if mapping["base"]:
+			base = (extracted["figures"].get(mapping["base"]) or {}).get("value")
+		montant = (extracted["figures"].get(mapping["montant"]) or {}).get("value")
+		rubriques.append({"code": mapping["code"], "base": base, "montant": montant})
+	return {**extracted, "rubriques": rubriques}
+
+
 @frappe.whitelist(methods=["POST"])
 def verify_mensuelle(name: str) -> dict:
 	"""Re-run the three check families over the stored source sheet and store
@@ -470,7 +499,7 @@ def verify_mensuelle(name: str) -> dict:
 
 	recap_row = payload["recap"].get(int(doc.period_month)) if doc.period_month else None
 	dm = _declaration_payload(doc.entreprise, doc.exercice, doc.period_month)
-	result = mensuelle_checks.run_checks(extracted, recap_row, dm)
+	result = mensuelle_checks.run_checks(_sheet_check_payload(extracted), recap_row, dm)
 
 	doc.set("controles", [])
 	for control in result["controls"]:
