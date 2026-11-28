@@ -118,6 +118,8 @@ def _get_line_rows(filters: dict, context: dict, account: str) -> tuple[list[dic
 			"devise",
 			"lettrage",
 			"lettrage_status",
+			"lettrage_groupe",
+			"declaration_cloture",
 			"pointe",
 			"source_entry_doctype",
 			"source_entry",
@@ -127,10 +129,22 @@ def _get_line_rows(filters: dict, context: dict, account: str) -> tuple[list[dic
 		order_by="posting_date asc, creation asc",
 	)
 
+	# the treasury flag gates the POINTE checkbox; the group + the lock feed
+	# the linked selection and the tax-lock chips
+	account_types = {
+		row.name: (row.account_type or "")
+		for row in frappe.get_all(
+			"Chart of Account",
+			filters={"name": ("in", {row.account for row in all_rows})} if all_rows else {"name": ""},
+			fields=["name", "account_type"],
+		)
+	}
+
 	running = 0.0
 	for row in all_rows:
 		running = flt(running + flt(row.debit) - flt(row.credit), 3)
 		row["solde_prog"] = running
+		row["account_type"] = account_types.get(row.account, "")
 
 	stats = {
 		"solde": running,

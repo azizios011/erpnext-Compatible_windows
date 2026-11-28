@@ -1001,6 +1001,18 @@ frappe.query_reports["Ledger Data"] = {
 			description: __("One or several MVT numbers, comma-separated"),
 			on_change: gl_filter_changed,
 		},
+		{
+			fieldname: "libelle",
+			label: __("Libelle contient"),
+			fieldtype: "Data",
+			on_change: gl_filter_changed,
+		},
+		{
+			fieldname: "ref_doc",
+			label: __("N° piece contient"),
+			fieldtype: "Data",
+			on_change: gl_filter_changed,
+		},
 	],
 
 	// the PDF / XLSX mounts the switcher calls: el = the wide-open container,
@@ -1027,6 +1039,10 @@ frappe.query_reports["Ledger Data"] = {
 				return `<a href="#" class="gl-mvt-link" data-entry-doctype="${frappe.utils.escape_html(
 					data.source_entry_doctype
 				)}" data-entry="${frappe.utils.escape_html(data.source_entry)}">${frappe.utils.escape_html(value)}</a>`;
+			}
+			if (data && data.row_type === "opening") {
+				// the Axeane "Solde precedent" line: greyed, never a link
+				return `<span class="text-muted">${frappe.utils.escape_html(value == null ? "" : String(value))}</span>`;
 			}
 			if (column.id === "actions" && data) {
 				// the narrow action-icon column: document / eye / pen, greyed when the

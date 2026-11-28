@@ -48,8 +48,8 @@ def execute(filters=None) -> tuple:
 		# add_total_row is 0: the datatable never builds a total row anyway
 		return columns, rows, message, None, summary
 	columns = get_columns()
-	rows = _get_rows(filters, context)
-	summary = _get_report_summary(rows)
+	rows = _get_rows(filters, context, prepend_openings=True)
+	summary = _get_report_summary([row for row in rows if row.get("row_type") != "opening"])
 	rows, message = _paginate(rows, filters)
 	_attach_documents(rows)
 	return columns, rows, message, None, summary
@@ -230,6 +230,11 @@ def _ledger_filters(filters: dict, context: dict, from_date: date, to_date: date
 		out.append(["journal", "in", as_list(filters["journal"])])
 	if filters.get("mvt"):
 		out.append(["mvt", "in", as_list(filters["mvt"])])
+	# per-column text search (Axeane: a search box under Libelle / N° Piece)
+	if filters.get("libelle"):
+		out.append(["libelle", "like", f"%{filters['libelle']}%"])
+	if filters.get("ref_doc"):
+		out.append(["ref_doc", "like", f"%{filters['ref_doc']}%"])
 	if filters.get("devise"):
 		out.append(["devise", "=", filters["devise"]])
 	lettrage = filters.get("lettrage") or "Tous"
@@ -262,7 +267,7 @@ def _ledger_filters(filters: dict, context: dict, from_date: date, to_date: date
 	return out
 
 
-def _get_rows(filters: dict, context: dict) -> list[dict]:
+def _get_rows(filters: dict, context: dict, prepend_openings: bool = False) -> list[dict]:
 	check_ledger_read_permission()
 	from_date, to_date = resolve_period(filters, context)
 	rows = frappe.get_all(
@@ -311,7 +316,75 @@ def _get_rows(filters: dict, context: dict) -> list[dict]:
 		row["compte_comptable"] = display.get(row.account, row.account)
 
 	rows.sort(key=lambda r: (display.get(r.account, ""), getdate(r.posting_date), r.mvt or ""))
+
+	# the Axeane "Solde precedent" line (list view only — the Grille builds
+	# its own): one per account with a non-zero opening, when the period does
+	# not start at the Exercice start. The opening is the cumulative balance
+	# from the Exercice start to the day before the period.
+	if prepend_openings:
+		exercice_debut = getdate(context["date_debut"]) if context.get("date_debut") else None
+		if exercice_debut and from_date > exercice_debut:
+			rows = _prepend_openings(rows, context, from_date, display)
+
 	return rows
+
+
+def _prepend_openings(rows: list[dict], context: dict, from_date, display: dict) -> list[dict]:
+	"""Insert a greyed "Solde precedent" row before each account's first row
+	when the account carries a non-zero opening balance."""
+	from datetime import timedelta
+
+	accounts = {row.account for row in rows}
+	ledger_filters = [
+		["entreprise", "=", context["entreprise"]],
+		["exercice", "=", context["exercice"]],
+		["account", "in", sorted(accounts)],
+		["posting_date", "<", from_date],
+	]
+	opening_rows = frappe.get_all(
+		LEDGER_DOCTYPE,
+		filters=ledger_filters,
+		fields=["account", "debit", "credit"],
+	)
+	openings: dict[str, float] = {}
+	for row in opening_rows:
+		openings[row.account] = flt(openings.get(row.account, 0.0) + flt(row.debit) - flt(row.credit), 3)
+
+	if not any(abs(v) > BALANCE_TOLERANCE for v in openings.values()):
+		return rows
+
+	opening_until = (getdate(from_date) - timedelta(days=1)).strftime("%d/%m/%Y")
+	out: list[dict] = []
+	seen: set[str] = set()
+	for row in rows:
+		if row.account not in seen:
+			seen.add(row.account)
+			opening = openings.get(row.account, 0.0)
+			if abs(opening) > BALANCE_TOLERANCE:
+				out.append(
+					{
+						"row_type": "opening",
+						"name": "",
+						"posting_date": None,
+						"journal": "",
+						"mvt": "",
+						"account": row.account,
+						"compte_comptable": display.get(row.account, row.account),
+						"libelle": _("Solde precedent au {0}").format(opening_until),
+						"debit": flt(opening) if opening > 0 else 0.0,
+						"credit": flt(-opening) if opening < 0 else 0.0,
+						"devise": row.get("devise") or REPORT_CURRENCY,
+						"ref_doc": "",
+						"tresorerie": "",
+						"lettrage": "",
+						"source_entry_doctype": "",
+						"source_entry": "",
+						"source_doctype": "",
+						"source_name": "",
+					}
+				)
+		out.append(row)
+	return out
 
 
 def get_columns() -> list[dict]:
@@ -378,10 +451,14 @@ def _get_report_summary(rows: list[dict]) -> list[dict]:
 	total_debit = flt(sum(flt(r["debit"]) for r in rows), 3)
 	total_credit = flt(sum(flt(r["credit"]) for r in rows), 3)
 	solde = flt(total_debit - total_credit, 3)
+	# the balance check: a double-entry ledger nets to zero (openings excluded)
+	balanced = abs(solde) <= BALANCE_TOLERANCE
 	return [
 		{"label": _("Total Debit"), "value": total_debit, "datatype": "Currency", "currency": REPORT_CURRENCY, "precision": 3, "indicator": "Green"},
 		{"label": _("Total Credit"), "value": total_credit, "datatype": "Currency", "currency": REPORT_CURRENCY, "precision": 3, "indicator": "Red"},
-		{"label": _("Solde"), "value": solde, "datatype": "Currency", "currency": REPORT_CURRENCY, "precision": 3, "indicator": "Blue"},
+		{"label": _("Solde") + (" - " + _("Equilibre") if balanced else " - " + _("Non equilibre")),
+		 "value": solde, "datatype": "Currency", "currency": REPORT_CURRENCY, "precision": 3,
+		 "indicator": "Blue" if balanced else "Red"},
 	]
 
 
