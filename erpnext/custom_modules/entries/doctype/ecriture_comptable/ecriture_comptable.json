@@ -27,6 +27,9 @@
   "lettrage_date",
   "pointe",
   "pointe_date",
+  "rapprochement_section_l",
+  "date_rapprochement",
+  "rapprochement_manuel",
   "mois",
   "annee",
   "source_section_l",
@@ -165,6 +168,27 @@
    "fieldname": "pointe_date",
    "fieldtype": "Date",
    "label": "Pointe Date"
+  },
+  {
+   "depends_on": "eval:doc.rapprochement_manuel",
+   "fieldname": "rapprochement_section_l",
+   "fieldtype": "Section Break",
+   "label": "Rapprochement"
+  },
+  {
+   "fieldname": "date_rapprochement",
+   "fieldtype": "Date",
+   "label": "Date rapprochement",
+   "search_index": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "rapprochement_manuel",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Rapprochement manuel",
+   "search_index": 1
   },
   {
    "fieldname": "mois",

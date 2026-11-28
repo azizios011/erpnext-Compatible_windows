@@ -105,12 +105,32 @@ def rename_sales_taxes_template():
 	frappe.reload_doctype(new, force=True)
 
 
+BANK_REPORT_MODULE = "Bank Reconciliation"
+ROUTED_BANK_REPORTS = ("Bank Reconciliation Statement", "Bank Clearance Summary")
+
+
+def route_bank_reports():
+	"""Re-point the two rapprochement reports to the custom module so OUR
+	implementation serves them (the fork resolves both the execute import —
+	get_report_module_dotted_path — and the served .js — get_module_path —
+	through the custom-modules map). A data change on the Report records:
+	nothing under erpnext/accounts/ is touched, and a future fixture re-sync
+	only resets it until the next migrate re-asserts it here."""
+	for report_name in ROUTED_BANK_REPORTS:
+		if not frappe.db.exists("Report", report_name):
+			continue
+		if frappe.db.get_value("Report", report_name, "module") != BANK_REPORT_MODULE:
+			frappe.db.set_value("Report", report_name, "module", BANK_REPORT_MODULE, update_modified=False)
+			frappe.clear_cache(doctype="Report")
+
+
 def after_install():
 	force_reload_custom_workspaces()
 	fix_workspace_hierarchy()
 	dedupe_home_links()
 	clear_module_map_cache()
 	rename_sales_taxes_template()
+	route_bank_reports()
 
 
 def after_migrate():
@@ -119,3 +139,4 @@ def after_migrate():
 	dedupe_home_links()
 	clear_module_map_cache()
 	rename_sales_taxes_template()
+	route_bank_reports()

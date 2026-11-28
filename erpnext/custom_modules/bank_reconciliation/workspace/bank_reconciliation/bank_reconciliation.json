@@ -13,8 +13,61 @@
  "indicator_color": "orange",
  "is_hidden": 1,
  "label": "Bank Reconciliation",
- "links": [],
- "modified": "2026-11-08 16:00:00.000000",
+ "links": [
+  {
+   "type": "Card Break",
+   "label": "Rapprochement",
+   "icon": "bank",
+   "hidden": 0,
+   "link_type": "DocType",
+   "link_to": ""
+  },
+  {
+   "type": "Link",
+   "label": "Rapprochement Manuel",
+   "link_type": "Page",
+   "link_to": "rapprochement_manuel",
+   "icon": "bank",
+   "hidden": 0,
+   "onboard": 0,
+   "is_query_report": 0,
+   "link_count": 0
+  },
+  {
+   "type": "Link",
+   "label": "Solde Initial Banque",
+   "link_type": "DocType",
+   "link_to": "Solde Initial Banque",
+   "icon": "file",
+   "hidden": 0,
+   "onboard": 0,
+   "is_query_report": 0,
+   "link_count": 0
+  },
+  {
+   "type": "Link",
+   "label": "Bank Reconciliation Statement",
+   "link_type": "Report",
+   "link_to": "Bank Reconciliation Statement",
+   "icon": "file",
+   "hidden": 0,
+   "onboard": 0,
+   "is_query_report": 1,
+   "link_count": 0
+  },
+  {
+   "type": "Link",
+   "label": "Bank Clearance Summary",
+   "link_type": "Report",
+   "link_to": "Bank Clearance Summary",
+   "icon": "file",
+   "hidden": 0,
+   "onboard": 0,
+   "is_query_report": 1,
+   "link_count": 0
+  }
+ ],
+ "modified": "2026-11-28 10:00:00.000000",
  "modified_by": "Administrator",
  "module": "Bank Reconciliation",
  "name": "Bank Reconciliation",

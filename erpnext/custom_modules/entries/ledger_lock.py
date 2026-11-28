@@ -11,6 +11,11 @@ rewrite), the grand-livre import (replace + delete), the Suppression des
 Ecritures screen (which SKIPS locked rows instead of throwing), the lettrage
 writes and the imported-entries materialization link. The Ecriture Comptable
 doc controller re-checks direct desk edits.
+
+DELIBERATELY NOT GUARDED: the bank reconciliation writes
+(bank_reconciliation.rapprochement_api) — frappe.db.set_value on
+date_rapprochement + rapprochement_manuel ONLY, never debit/credit, so a
+clotured declaration's amounts stay intact and reconciliation may proceed.
 """
 
 import frappe

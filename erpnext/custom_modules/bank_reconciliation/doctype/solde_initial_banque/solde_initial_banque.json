@@ -1,0 +1,122 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:SIB-{exercice}-{account}",
+ "creation": "2026-11-28 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "entreprise",
+  "exercice",
+  "account",
+  "cb_initial",
+  "solde_initial",
+  "sens",
+  "mois"
+ ],
+ "fields": [
+  {
+   "fieldname": "entreprise",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Entreprise",
+   "options": "Entreprise",
+   "reqd": 1
+  },
+  {
+   "fieldname": "exercice",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Exercice",
+   "options": "Exercice",
+   "reqd": 1
+  },
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Compte de banque",
+   "options": "Chart of Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cb_initial",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "solde_initial",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Solde initial",
+   "precision": "3",
+   "reqd": 1
+  },
+  {
+   "default": "Debit",
+   "description": "Le sens du releve banque: Debit = solde crediteur banque (argent disponible), Credit = solde debiteur banque.",
+   "fieldname": "sens",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Sens",
+   "options": "Debit\nCredit",
+   "reqd": 1
+  },
+  {
+   "description": "Mois auquel ce solde initial s'applique (debut du mois).",
+   "fieldname": "mois",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Mois",
+   "options": "Janvier\nFevrier\nMars\nAvril\nMai\nJuin\nJuillet\nAout\nSeptembre\nOctobre\nNovembre\nDecembre",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-11-28 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Bank Reconciliation",
+ "name": "Solde Initial Banque",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
