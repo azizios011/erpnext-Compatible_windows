@@ -19,13 +19,10 @@ import frappe
 from frappe import _
 from frappe.utils import cint
 
-from erpnext.custom_modules.entries.declaration_engine import (
-    DECLARATION_LINE_DOCTYPE,
-    DM_DOCTYPE,
-)
-from erpnext.custom_modules.facturation.mensuelle_checks import ECART_TOLERANCE
+from erpnext.custom_modules.entries.declaration_engine import DM_DOCTYPE, DM_LINE_DOCTYPE
 from erpnext.custom_modules.organization.context import require_context
 from erpnext.custom_modules.reports.declaration_recap_logic import (
+    ECART_TOLERANCE,
     RECAP_COLUMNS,
     build_recap,
     dashboard_aggregates,
@@ -71,7 +68,7 @@ def _declaration_figures(entreprise: str, exercice: str) -> dict[int, dict]:
         return rows
 
     lines = frappe.get_all(
-        DECLARATION_LINE_DOCTYPE,
+        DM_LINE_DOCTYPE,
         filters={
             "parenttype": DM_DOCTYPE,
             "parent": ("in", [row.name for row in declarations]),
