@@ -16,6 +16,7 @@ from erpnext.custom_modules.entries.entry_base import JOURNAL_CODE_BY_DOCTYPE, P
 from erpnext.custom_modules.facturation.facturation_base import ENTRY_DOCTYPE_BY_DOCTYPE
 from erpnext.custom_modules.organization.context import (
 	context_for_read,
+	get_accounting_context,
 	require_context,
 	validate_exercice_open,
 )
@@ -74,6 +75,27 @@ def get_entry_defaults(entry_doctype: str, source_doctype: str = "", source_name
 			for line in doc.lines
 		]
 	return defaults
+
+
+@frappe.whitelist()
+def get_tresorerie_options() -> list[dict]:
+	"""Visible Operation Tresorerie of the context's plan type, for the
+	Tresorerie column of the payable / receivable islands. Mirrors exactly what
+	the classic forms show through setup_tresorerie_query's link query:
+	visible = 1, type_plan from the accounting context (Societe when no
+	context is set), ordered by ordre, fields name + libelle.
+
+	frappe.get_all reads with the user's permissions bypassed: the operations
+	are the Entreprise's shared cash-flow configuration, a read-only list the
+	classic form shows to anyone who may open an entry."""
+	type_plan = get_accounting_context().get("type_plan") or "Societe"
+	return frappe.get_all(
+		"Operation Tresorerie",
+		filters={"visible": 1, "type_plan": type_plan},
+		fields=["name", "libelle"],
+		order_by="ordre asc, name asc",
+		limit_page_length=0,
+	)
 
 
 @frappe.whitelist()

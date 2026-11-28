@@ -9,7 +9,7 @@
      / 411 Debit, read from the server via get_entry_defaults) highlights the
      expected side and warns on the opposite one without ever blocking. -->
 <script setup>
-import { nextTick, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { Badge, Button } from "frappe-ui";
 import AccountAutocomplete from "./account_autocomplete.vue";
 
@@ -165,23 +165,44 @@ function row_note(row, side) {
 }
 
 // ── Trésorerie picker: visible operations of the context's plan type ─────────
+// Loaded from the server (get_tresorerie_options): the same list the classic
+// forms show through setup_tresorerie_query's link query — visible = 1,
+// type_plan from the accounting context, ordered by ordre. The list is
+// read-only configuration shared by the Entreprise, so the server reads it
+// with the user's permissions bypassed. staticMode makes the autocomplete
+// offer ONLY this list, even when it is empty: a failed or empty load is
+// logged and shown as a message row in the dropdown, never the compte_search.
 const tresorerie_options = ref([]);
+const tresorerie_error = ref("");
+
+const tresorerie_empty_message = computed(() =>
+	tresorerie_error.value ? __("Erreur: {0}", [tresorerie_error.value]) : ""
+);
+
+function load_tresorerie_options() {
+	tresorerie_error.value = "";
+	frappe
+		.xcall("erpnext.custom_modules.entries.api.get_tresorerie_options")
+		.then((rows) => {
+			const options = (rows || []).map((r) => ({
+				label: r.libelle || r.name,
+				value: r.name,
+			}));
+			if (!options.length) {
+				console.error("get_tresorerie_options: no visible Operation Tresorerie for this plan type");
+			}
+			tresorerie_options.value = options;
+		})
+		.catch((err) => {
+			console.error("get_tresorerie_options failed:", err);
+			tresorerie_options.value = [];
+			tresorerie_error.value = err?.message || String(err);
+		});
+}
 
 onMounted(() => {
 	load_account_options("");
-	if (!props.showTresorerie) return;
-	const type_plan = frappe.boot?.axeane_context?.type_plan || "Societe";
-	frappe.xcall("frappe.client.get_list", {
-		doctype: "Operation Tresorerie",
-		fields: ["name", "libelle"],
-		filters: { visible: 1, type_plan },
-		limit_page_length: 0,
-	}).then((rows) => {
-		tresorerie_options.value = (rows || []).map((r) => ({
-			label: r.libelle || r.name,
-			value: r.name,
-		}));
-	});
+	if (props.showTresorerie) load_tresorerie_options();
 });
 
 // rows arriving from the server (edit mode, model loads) carry the account
@@ -276,6 +297,8 @@ function focus_side(index, side) {
 								<AccountAutocomplete
 									v-model="row.tresorerie"
 									:options="tresorerie_options"
+									:empty-message="tresorerie_empty_message"
+									:static-mode="true"
 									:placeholder="__('Trésorerie')"
 									:disabled="readOnly"
 								/>
