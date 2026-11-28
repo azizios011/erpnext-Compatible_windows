@@ -745,11 +745,13 @@ const GL_DOCUMENT_VIEWS = {
 };
 
 // ── Single header row (merged title + filter) ────────────────────────────────
-// Called from after_datatable_render: the dt-row-header is hidden by CSS
-// (report_views.bundle.js scoped to .report-gl-fill); here we set each
-// filter input's placeholder to the column label and add a sort icon next to
-// every filterable column. The actions column gets no input. Survives every
-// re-render, fluid layout, and the filters-toggle states.
+// Called from after_datatable_render: the dt-row-header is zero-height and
+// invisible by CSS (report_views.bundle.js scoped to .report-gl-fill; never
+// display:none — the datatable measures every column width from that row);
+// here we set each filter input's placeholder to the column label and add a
+// sort icon next to every filterable column. The actions column gets no
+// input. Survives every re-render, fluid layout, and the filters-toggle
+// states.
 
 const GL_SORT_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
 	fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"

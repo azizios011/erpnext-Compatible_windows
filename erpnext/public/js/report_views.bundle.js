@@ -220,9 +220,36 @@
 					opacity: 0.45;
 					cursor: not-allowed;
 				}
-				/* single header row for Ledger Data: hide plain title row, style filter row */
+				/* single header row for Ledger Data: neutralize the plain title
+				   row and style the filter row as the only visible header.
+				   NEVER display:none on .dt-row-header: the datatable measures
+				   every column width from this row — setupNaturalColumnWidth
+				   reads its .dt-cell__content widths and distributeRemainingWidth
+				   reads its cells via getColumnHeaderElement — so a hidden row
+				   measures 0 / NaN and every column collapses to content width.
+				   Keep it laid out and measurable but invisible and
+				   non-interactive (visibility and pointer-events change no
+				   layout); the filter row stays the only visible header row.
+				   The stylesheet is static and precedes the datatable, so every
+				   setDimensions already measures correctly — no re-measure hook
+				   is needed for this styling. */
 				.layout-main-section.report-gl-fill .dt-header .dt-row-header {
-					display: none !important;
+					height: 0 !important;
+					min-height: 0 !important;
+					overflow: hidden;
+					visibility: hidden;
+					pointer-events: none;
+					border: 0;
+					padding: 0;
+				}
+				.layout-main-section.report-gl-fill .dt-header .dt-row-header .dt-cell__content {
+					height: 0 !important;
+					min-height: 0 !important;
+					overflow: hidden;
+					visibility: hidden;
+					pointer-events: none;
+					border: 0;
+					padding: 0;
 				}
 				.layout-main-section.report-gl-fill .dt-header .dt-row-filter {
 					display: flex !important;
@@ -538,6 +565,21 @@
 			report.page.main.removeClass("report-wide");
 			Object.values(view_state.containers).forEach(($container) => $container.hide());
 			move_summary_below();
+			// one re-measure, now that the report area is visible again: the
+			// datatable's own window-resize handler keeps running while a
+			// document view has $report hidden and reads the wrapper's width
+			// as 'auto' (display:none) — the fluid width distribution then
+			// stores NaN widths that would collapse the grid on return.
+			// setDimensions re-reads every width from the laid-out wrapper and
+			// fires no events, so it cannot loop; show_list runs only on an
+			// actual document → list switch, so this runs once per switch.
+			if (report.datatable && typeof report.datatable.setDimensions === "function") {
+				try {
+					report.datatable.setDimensions();
+				} catch (error) {
+					console.error("report_views: datatable re-measure failed", error);
+				}
+			}
 			if (fit_datatable) fit_datatable(); // the wrapper just became visible
 			// the list Filtres toggle returns with the list (the document
 			// views keep their own overlay toggle) and the remembered inline
