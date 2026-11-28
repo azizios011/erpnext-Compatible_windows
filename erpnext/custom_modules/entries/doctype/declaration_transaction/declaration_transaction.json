@@ -23,8 +23,19 @@
   "rubriques",
   "section_depot",
   "depose_le",
+  "section_portail",
+  "numero_declaration",
+  "acte",
+  "date_liquidation",
+  "date_operation",
+  "cb_portal1",
+  "mode_paiement",
+  "quittance",
+  "situation_paiement",
+  "montant_liquide",
+  "echeance",
+  "portail_lignes",
   "column_break_depot",
-  "numero_recepisse",
   "totaux_section",
   "tva_collectee",
   "cb_tva",
@@ -164,12 +175,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "numero_recepisse",
-   "fieldtype": "Data",
-   "label": "N° recepisse",
-   "read_only": 1
-  },
-  {
    "collapsible": 0,
    "fieldname": "totaux_section",
    "fieldtype": "Section Break",
@@ -281,11 +286,82 @@
    "hidden": 1,
    "label": "Avertissements",
    "read_only": 1
+  },
+  {
+   "collapsible": 0,
+   "fieldname": "section_portail",
+   "fieldtype": "Section Break",
+   "label": "Portail e-tasrih"
+  },
+  {
+   "description": "Numero du recu du portail e-tasrih",
+   "fieldname": "numero_declaration",
+   "fieldtype": "Data",
+   "in_list_view": 0,
+   "label": "N° declaration",
+   "search_index": 1
+  },
+  {
+   "default": "0",
+   "description": "0 = acte principal",
+   "fieldname": "acte",
+   "fieldtype": "Int",
+   "label": "Acte"
+  },
+  {
+   "fieldname": "date_liquidation",
+   "fieldtype": "Date",
+   "label": "Date liquidation"
+  },
+  {
+   "fieldname": "date_operation",
+   "fieldtype": "Date",
+   "label": "Date operation"
+  },
+  {
+   "fieldname": "cb_portal1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "mode_paiement",
+   "fieldtype": "Data",
+   "label": "Mode paiement"
+  },
+  {
+   "fieldname": "quittance",
+   "fieldtype": "Data",
+   "label": "Quittance"
+  },
+  {
+   "fieldname": "situation_paiement",
+   "fieldtype": "Select",
+   "label": "Situation paiement",
+   "options": "Liquidee\nPayee\nAnnulee"
+  },
+  {
+   "fieldname": "montant_liquide",
+   "fieldtype": "Currency",
+   "label": "Montant liquide",
+   "precision": "3"
+  },
+  {
+   "description": "20 du mois suivant (teledeclaration) ou 28; avertissement si jour non ouvrable",
+   "fieldname": "echeance",
+   "fieldtype": "Date",
+   "label": "Echeance",
+   "read_only": 1
+  },
+  {
+   "collapsible": 0,
+   "fieldname": "portail_lignes",
+   "fieldtype": "Table",
+   "label": "Lignes portail",
+   "options": "Declaration Transaction Portail Ligne"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-28 10:00:00.000000",
+ "modified": "2026-11-28 16:00:00.000000",
  "modified_by": "Administrator",
  "module": "Entries",
  "name": "Declaration Transaction",

@@ -31,8 +31,13 @@ function show_dm_headline(frm) {
 			__("Source: {0}", [frappe.utils.get_form_link("Mensuelle", frm.doc.mensuelle, true, label)])
 		);
 	}
-	if (frm.doc.status === "Depose" && frm.doc.numero_recepisse) {
-		parts.push(__("Recepisse {0}", [frappe.utils.escape_html(frm.doc.numero_recepisse)]));
+	if (frm.doc.status === "Depose" && frm.doc.numero_declaration) {
+		parts.push(
+			__("Recu portail {0} — liquidé {1}", [
+				frappe.utils.escape_html(frm.doc.numero_declaration),
+				dm_money(frm.doc.montant_liquide),
+			])
+		);
 	}
 	frm.dashboard.set_headline(parts.join(" &nbsp;—&nbsp; "));
 }
@@ -120,14 +125,26 @@ function decloture_dm(frm) {
 
 function depose_dm(frm) {
 	const dialog = new frappe.ui.Dialog({
-		title: __("Deposer la declaration"),
+		title: __("Deposer la declaration — recu portail e-tasrih"),
 		fields: [
+			{ fieldname: "numero_declaration", fieldtype: "Data", label: __("N° declaration"), reqd: 1 },
 			{
-				fieldname: "numero_recepisse",
-				fieldtype: "Data",
-				label: __("N° recepisse"),
+				fieldname: "situation_paiement",
+				fieldtype: "Select",
+				label: __("Situation paiement"),
+				options: "Liquidee\nPayee\nAnnulee",
+				default: "Liquidee",
 				reqd: 1,
 			},
+			{ fieldname: "cb1", fieldtype: "Column Break" },
+			{ fieldname: "acte", fieldtype: "Int", label: __("Acte (0 = principal)"), default: 0 },
+			{ fieldname: "montant_liquide", fieldtype: "Currency", label: __("Montant liquide"), precision: 3 },
+			{ fieldname: "cb2", fieldtype: "Column Break" },
+			{ fieldname: "date_liquidation", fieldtype: "Date", label: __("Date liquidation") },
+			{ fieldname: "date_operation", fieldtype: "Date", label: __("Date operation") },
+			{ fieldname: "cb3", fieldtype: "Column Break" },
+			{ fieldname: "mode_paiement", fieldtype: "Data", label: __("Mode paiement") },
+			{ fieldname: "quittance", fieldtype: "Data", label: __("Quittance") },
 			{ fieldname: "date_depot", fieldtype: "Datetime", label: __("Depose le"), default: frappe.datetime.now_datetime() },
 		],
 		primary_action_label: __("Deposer"),
@@ -136,7 +153,14 @@ function depose_dm(frm) {
 				method: "erpnext.custom_modules.entries.declaration_engine.depose_declaration",
 				args: {
 					name: frm.doc.name,
-					numero_recepisse: values.numero_recepisse,
+					numero_declaration: values.numero_declaration,
+					situation_paiement: values.situation_paiement,
+					acte: values.acte || 0,
+					date_liquidation: values.date_liquidation || "",
+					date_operation: values.date_operation || "",
+					mode_paiement: values.mode_paiement || "",
+					quittance: values.quittance || "",
+					montant_liquide: values.montant_liquide || 0,
 					date_depot: values.date_depot,
 				},
 				freeze: true,

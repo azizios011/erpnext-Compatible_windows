@@ -39,7 +39,7 @@ MENSUELLE_DOCTYPE = "Mensuelle"
 
 def _declaration_figures(entreprise: str, exercice: str) -> dict[int, dict]:
     """The Principale Declaration Transaction of each month as the recap's
-    Calculé payload (lines + totals)."""
+    Calculé payload (lines + totals + the portal receipt)."""
     rows: dict[int, dict] = {}
     declarations = frappe.get_all(
         DM_DOCTYPE,
@@ -62,6 +62,8 @@ def _declaration_figures(entreprise: str, exercice: str) -> dict[int, dict]:
             "total_timbre",
             "total_tcl",
             "total_a_payer",
+            "numero_declaration",
+            "montant_liquide",
         ],
         order_by="mois asc",
     )
@@ -88,10 +90,33 @@ def _declaration_figures(entreprise: str, exercice: str) -> dict[int, dict]:
             }
         )
 
+    portail_lines = frappe.get_all(
+        "Declaration Transaction Portail Ligne",
+        filters={
+            "parenttype": DM_DOCTYPE,
+            "parent": ("in", [row.name for row in declarations]),
+        },
+        fields=["parent", "impot", "montant_principal", "deduction", "taxe_due_ou_report", "penalites_retard", "total"],
+        order_by="idx asc",
+    )
+    portail_by_parent: dict[str, list[dict]] = {}
+    for line in portail_lines:
+        portail_by_parent.setdefault(line.parent, []).append(
+            {
+                "impot": line.impot,
+                "montant_principal": float(line.montant_principal or 0),
+                "deduction": float(line.deduction or 0),
+                "taxe_due_ou_report": float(line.taxe_due_ou_report or 0),
+                "penalites_retard": float(line.penalites_retard or 0),
+                "total": float(line.total or 0),
+            }
+        )
+
     for row in declarations:
         month = cint(row.mois)
         if not 1 <= month <= 12:
             continue
+        portal_lines = portail_by_parent.get(row.name, [])
         rows[month] = {
             "name": row.name,
             "status": row.status,
@@ -101,6 +126,8 @@ def _declaration_figures(entreprise: str, exercice: str) -> dict[int, dict]:
             "tva_a_payer": float(row.tva_a_payer or 0),
             "credit_suivant": float(row.credit_suivant or 0),
             "total_a_payer": float(row.total_a_payer or 0),
+            "numero_declaration": row.numero_declaration or "",
+            "portal": {"lines": portal_lines, "montant_liquide": float(row.montant_liquide or 0)} if portal_lines else None,
         }
     return rows
 
@@ -198,9 +225,15 @@ def build_report_data(context: dict) -> dict:
     entreprise, exercice = context["entreprise"], context["exercice"]
     calcule = _declaration_figures(entreprise, exercice)
     declare = _mensuelle_figures(entreprise, exercice)
+    liquide = {
+        month: {"lines": payload.get("portal", {}).get("lines") or [], "montant_liquide": payload.get("portal", {}).get("montant_liquide")}
+        for month, payload in calcule.items()
+        if payload.get("portal")
+    }
     recap = build_recap(
         calcule,
         {month: payload["lignes"] for month, payload in declare.items()},
+        liquide,
         tolerance=ECART_TOLERANCE,
     )
     dm_status = {
@@ -217,6 +250,15 @@ def build_report_data(context: dict) -> dict:
         "details": {
             "calcule": calcule,
             "declare": declare,
+        },
+        "portal": {
+            month: {
+                "numero_declaration": payload.get("numero_declaration", ""),
+                "montant_liquide": payload.get("portal", {}).get("montant_liquide")
+                if payload.get("portal")
+                else None,
+            }
+            for month, payload in calcule.items()
         },
     }
 
@@ -243,13 +285,23 @@ def _recap_columns() -> list[dict]:
     return columns
 
 
-SOURCE_KEYS = {"Calcule": "calcule", "Calculé": "calcule", "Declare": "declare", "Déclaré": "declare", "Ecarts": "ecarts", "Écarts": "ecarts"}
+SOURCE_KEYS = {
+    "Calcule": "calcule",
+    "Calculé": "calcule",
+    "Declare": "declare",
+    "Déclaré": "declare",
+    "Liquide": "liquide",
+    "Liquidé": "liquide",
+    "Ecarts": "ecarts",
+    "Écarts": "ecarts",
+}
 
 
 def execute(filters=None) -> tuple:
     """The RECAP grid as the native script-report table (the default view):
-    12 month rows per the Source filter + the totals row. Entreprise and
-    Exercice come from the dock context only."""
+    the 12 month rows per the Source filter + the totals row (for Écarts, one
+    totals row per comparison pair). Entreprise and Exercice come from the
+    dock context only."""
     filters = filters or {}
     context = require_context()
     check_ledger_read_permission()
@@ -257,8 +309,13 @@ def execute(filters=None) -> tuple:
 
     data = build_report_data(context)
     recap = data["recap"]
-    rows = list(recap["rows"][source_key])
-    totals = dict(recap["totals"][source_key])
-    totals["mois"] = _("TOTAL")
-    rows.append(totals)
+    if source_key == "ecarts":
+        rows = list(recap["rows"]["ecarts"])
+        for totals in (recap["totals"]["ecarts"] or {}).values():
+            rows.append(dict(totals))
+    else:
+        rows = list(recap["rows"][source_key])
+        totals = dict(recap["totals"][source_key])
+        totals["mois"] = _("TOTAL")
+        rows.append(totals)
     return _recap_columns(), rows, None, None, None

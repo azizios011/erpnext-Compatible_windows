@@ -353,6 +353,102 @@ class TestDeclarationComparison(unittest.TestCase):
 		self.assertEqual(total["ecart"], 8.313)
 
 
+# The January portal receipt ("Liquidé"): the portal recomputes the amounts,
+# so its own figures drift by +-0.001 from the declaration (RS 4153.109,
+# TVA 2284.074, total 7528.311 vs the declared 4153.11 / 2284.075 / 7528.313).
+PORTAL_JANUARY = {
+	"lines": [
+		{"impot": "Retenue a la Source", "montant_principal": 4153.109, "deduction": 0.0,
+		 "taxe_due_ou_report": 0.0, "penalites_retard": 0.0, "total": 4153.109},
+		{"impot": "TFP", "montant_principal": 273.098, "deduction": 0.0,
+		 "taxe_due_ou_report": 0.0, "penalites_retard": 0.0, "total": 273.098},
+		{"impot": "FOPROLOS", "montant_principal": 136.549, "deduction": 0.0,
+		 "taxe_due_ou_report": 0.0, "penalites_retard": 0.0, "total": 136.549},
+		{"impot": "TVA", "montant_principal": 2284.074, "deduction": 0.0,
+		 "taxe_due_ou_report": 0.0, "penalites_retard": 0.0, "total": 2284.074},
+		{"impot": "Droit de timbre", "montant_principal": 370.0, "deduction": 0.0,
+		 "taxe_due_ou_report": 0.0, "penalites_retard": 0.0, "total": 370.0},
+		{"impot": "TCL", "montant_principal": 311.481, "deduction": 0.0,
+		 "taxe_due_ou_report": 0.0, "penalites_retard": 0.0, "total": 311.481},
+		{"impot": "Reliquat minimum de perception", "montant_principal": 0.0, "deduction": 0.0,
+		 "taxe_due_ou_report": 0.0, "penalites_retard": 0.0, "total": 0.0},
+	],
+	"montant_liquide": 7528.311,
+	"numero_declaration": "2026-01-0001",
+}
+
+
+class TestLiquideComparison(unittest.TestCase):
+	"""The two Liquidé variances: Déclaré vs Liquidé, Calculé vs Liquidé."""
+
+	def setUp(self):
+		self.sheet_with_rubriques = {
+			**JANUARY,
+			"rubriques": [
+				{"code": "F1_1", "base": 13654.922, "montant": 2126.599},
+				{"code": "F1_3", "base": None, "montant": 57.639},
+				{"code": "F1_4_1", "base": 3266.886, "montant": 326.6876},
+				{"code": "F1_6", "base": 1190.0, "montant": 35.7},
+				{"code": "F1_17_1", "base": 160648.4, "montant": 1606.484},
+				{"code": "F2_1", "base": 13654.922, "montant": 273.09844},
+				{"code": "F3_1", "base": 13654.922, "montant": 136.54922},
+				{"code": "F5_1_1", "base": 1092.76, "montant": 76.4932},
+				{"code": "F5_1_3", "base": 129891.826, "montant": 24679.44694},
+				{"code": "F5_2_4", "base": 119602.155, "montant": 22471.865},
+				{"code": "F7", "base": 370.0, "montant": 370.0},
+				{"code": "F9_3_1", "base": 155740.5261, "montant": 311.4810523},
+				{"code": "TOTAL", "base": None, "montant": 7528.313452},
+			],
+		}
+		self.dm = {
+			"total_rs": 4153.11, "total_tfp": 273.098, "total_foprolos": 136.549,
+			"tva_a_payer": 2284.075, "total_timbre": 370.0, "total_tcl": 311.481,
+			"total_a_payer": 7528.313,
+		}
+
+	def test_january_portal_variances_stay_within_tolerance(self):
+		controls = check_declaration(self.sheet_with_rubriques, self.dm, PORTAL_JANUARY)
+		liquide_codes = [code for code in codes(controls) if code.startswith("LIQ_")]
+		self.assertEqual(liquide_codes, [], msg=f"ecarts inattendus: {controls}")
+
+	def test_both_variance_families_are_reported(self):
+		# a portal TVA line far off both sides: the two variance families fire
+		portal = {
+			"lines": [
+				{"impot": "TVA", "montant_principal": 2500.0, "deduction": 0.0,
+				 "taxe_due_ou_report": 0.0, "penalites_retard": 0.0, "total": 2500.0},
+			],
+			"montant_liquide": 7500.0,
+		}
+		controls = check_declaration(self.sheet_with_rubriques, self.dm, portal)
+		liquide_codes = [code for code in codes(controls) if code.startswith("LIQ_")]
+		self.assertIn("LIQ_DECL_TVA", liquide_codes)
+		self.assertIn("LIQ_CALC_TVA", liquide_codes)
+		self.assertIn("LIQ_DECL_TOTAL", liquide_codes)
+		self.assertIn("LIQ_CALC_TOTAL", liquide_codes)
+
+	def test_line_tolerance_is_005_and_total_tolerance_is_01(self):
+		from erpnext.custom_modules.facturation.mensuelle_checks import (
+			LIQUIDE_LINE_TOLERANCE,
+			LIQUIDE_TOTAL_TOLERANCE,
+		)
+		self.assertEqual(LIQUIDE_LINE_TOLERANCE, 0.005)
+		self.assertEqual(LIQUIDE_TOTAL_TOLERANCE, 0.01)
+		# a line drift of 0.008 passes nothing, a total drift of 0.008 still passes
+		portal = {
+			"lines": [{"impot": "TFP", "montant_principal": 273.106, "deduction": 0.0,
+				"taxe_due_ou_report": 0.0, "penalites_retard": 0.0, "total": 273.106}],
+			"montant_liquide": 7528.321,
+		}
+		controls = check_declaration(self.sheet_with_rubriques, self.dm, portal)
+		self.assertIn("LIQ_DECL_TFP", codes(controls))  # 273.106 - 273.09844 = 0.008 > 0.005
+		self.assertNotIn("LIQ_DECL_TOTAL", codes(controls))  # 7528.321 - 7528.313 = 0.008 <= 0.01
+
+	def test_no_portal_means_no_liquide_controls(self):
+		controls = check_declaration(self.sheet_with_rubriques, self.dm, None)
+		self.assertEqual([code for code in codes(controls) if code.startswith("LIQ_")], [])
+
+
 class TestStatusRules(unittest.TestCase):
 	def test_info_only_stays_conforme(self):
 		self.assertEqual(

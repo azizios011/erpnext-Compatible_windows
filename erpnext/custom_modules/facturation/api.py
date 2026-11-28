@@ -426,7 +426,8 @@ def import_mensuelle_workbook(file_url: str, overwrite: int = 0) -> dict:
 
 def _declaration_payload(entreprise: str, exercice: str, month: str) -> dict | None:
 	"""The month's Principale Declaration Transaction as the pure checks read
-	it (lines + totals), or None when the month was never computed."""
+	it (lines + totals + the portal receipt), or None when the month was never
+	computed."""
 	name = frappe.db.get_value(
 		DECLARATION_DOCTYPE,
 		{
@@ -456,6 +457,28 @@ def _declaration_payload(entreprise: str, exercice: str, month: str) -> dict | N
 		"tva_a_payer": float(doc.tva_a_payer or 0),
 		"credit_suivant": float(doc.credit_suivant or 0),
 		"total_a_payer": float(doc.total_a_payer or 0),
+		"total_rs": float(doc.total_rs or 0),
+		"total_tfp": float(doc.total_tfp or 0),
+		"total_foprolos": float(doc.total_foprolos or 0),
+		"total_timbre": float(doc.total_timbre or 0),
+		"total_tcl": float(doc.total_tcl or 0),
+		"portal": {
+			"lines": [
+				{
+					"impot": line.impot,
+					"montant_principal": float(line.montant_principal or 0),
+					"deduction": float(line.deduction or 0),
+					"taxe_due_ou_report": float(line.taxe_due_ou_report or 0),
+					"penalites_retard": float(line.penalites_retard or 0),
+					"total": float(line.total or 0),
+				}
+				for line in (doc.portail_lignes or [])
+			],
+			"montant_liquide": float(doc.montant_liquide or 0),
+			"numero_declaration": doc.numero_declaration or "",
+		}
+		if doc.numero_declaration
+		else None,
 	}
 
 
@@ -499,7 +522,8 @@ def verify_mensuelle(name: str) -> dict:
 
 	recap_row = payload["recap"].get(int(doc.period_month)) if doc.period_month else None
 	dm = _declaration_payload(doc.entreprise, doc.exercice, doc.period_month)
-	result = mensuelle_checks.run_checks(_sheet_check_payload(extracted), recap_row, dm)
+	portal = (dm or {}).get("portal")
+	result = mensuelle_checks.run_checks(_sheet_check_payload(extracted), recap_row, dm, portal=portal)
 
 	doc.set("controles", [])
 	for control in result["controls"]:

@@ -15,7 +15,7 @@ frappe.query_reports["Declaration Mensuelle"] = {
 			fieldname: "source",
 			label: __("Source"),
 			fieldtype: "Select",
-			options: "Calculé\nDéclaré\nÉcarts",
+			options: "Calculé\nDéclaré\nLiquidé\nÉcarts",
 			default: "Calculé",
 			reqd: 1,
 		},
@@ -217,6 +217,7 @@ function render_dm_dashboard(report, container) {
 	const labels = DM_MONTHS;
 	const calcule = data.recap.rows.calcule;
 	const declare = data.recap.rows.declare;
+	const liquide = data.recap.rows.liquide;
 	const num = (row, key) => row[key] || 0;
 
 	render_dm_chart("dm-chart-tva", __("TVA par mois"), "line", labels, [
@@ -232,9 +233,10 @@ function render_dm_dashboard(report, container) {
 		{ name: __("Timbre"), values: calcule.map((row) => num(row, "timbre")) },
 		{ name: __("TCL"), values: calcule.map((row) => num(row, "tcl")) },
 	], true);
-	render_dm_chart("dm-chart-total", __("Total calculé vs déclaré"), "line", labels, [
+	render_dm_chart("dm-chart-total", __("Total calculé vs déclaré vs liquidé"), "line", labels, [
 		{ name: __("Total calculé"), values: calcule.map((row) => num(row, "total")) },
 		{ name: __("Total déclaré"), values: declare.map((row) => num(row, "total")) },
+		{ name: __("Total liquidé"), values: liquide.map((row) => num(row, "total")) },
 	]);
 }
 
@@ -386,6 +388,10 @@ function render_dm_fiche(report, container) {
 
 	const meta = [];
 	if (calcule && calcule.name) meta.push(__("Declaration (Entries): {0} ({1})", [calcule.name, calcule.status]));
+	const portal = (data.portal || {})[month];
+	if (portal && portal.numero_declaration) {
+		meta.push(__("Recu portail: {0} — liquidé {1}", [portal.numero_declaration, dm_money(portal.montant_liquide)]));
+	}
 	if (declare && declare.name) meta.push(__("Mensuelle: {0} — contrôle {1}", [declare.name, declare.check_status]));
 	if (calcule && calcule.name) {
 		const label = frappe.utils.escape_html(__("Ouvrir la Declaration Transaction"));

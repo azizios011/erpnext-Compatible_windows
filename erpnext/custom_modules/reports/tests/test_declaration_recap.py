@@ -44,6 +44,7 @@ from erpnext.custom_modules.reports.declaration_recap_logic import (
 	dashboard_aggregates,
 	ecart_row,
 	row_from_declaration,
+	row_from_liquide,
 	row_from_mensuelle,
 	totals_row,
 )
@@ -157,11 +158,43 @@ class TestMonthRows(unittest.TestCase):
 		self.assertEqual(row["credit_suivant"], 1019.759)
 
 
+# The January portal receipt (the addendum's Liquidé figures).
+PORTAL_JANUARY = {
+	"lines": [
+		{"impot": "Retenue a la Source", "total": 4153.109},
+		{"impot": "TFP", "total": 273.098},
+		{"impot": "FOPROLOS", "total": 136.549},
+		{"impot": "TVA", "total": 2284.074},
+		{"impot": "Droit de timbre", "total": 370.0},
+		{"impot": "TCL", "total": 311.481},
+		{"impot": "Reliquat minimum de perception", "total": 0.0},
+	],
+	"montant_liquide": 7528.311,
+}
+
+
+class TestLiquideRows(unittest.TestCase):
+	def test_liquide_row_fills_the_receipt_columns(self):
+		row = row_from_liquide(1, PORTAL_JANUARY)
+		self.assertEqual(row["tva_a_payer"], 2284.074)
+		self.assertEqual(row["timbre"], 370.0)
+		self.assertEqual(row["tcl"], 311.481)
+		self.assertEqual(row["total"], 7528.311)
+		# the portal recomputes lump sums: no HT/RS breakdown on this side
+		self.assertIsNone(row["ht7"])
+		self.assertIsNone(row["irpp"])
+
+	def test_missing_portal_is_blank(self):
+		row = row_from_liquide(1, None)
+		self.assertEqual(row["mois"], "01")
+		self.assertIsNone(row["total"])
+
+
 class TestEcartRow(unittest.TestCase):
 	def test_ecart_is_declared_minus_calculated(self):
 		calcule = row_from_declaration(1, dm_payload())
 		declare = row_from_mensuelle(1, mensuelle_lignes())
-		row = ecart_row(1, calcule, declare)
+		row = ecart_row(1, declare, calcule)
 		# 76.4932 - 76.493 = 0.0002: below the millime precision, the cell reads 0.000
 		self.assertEqual(row["tva7"], 0.0)
 		self.assertEqual(row["gross"], 0.022)  # the declared gross vs the ledger
@@ -171,14 +204,14 @@ class TestEcartRow(unittest.TestCase):
 		calcule = row_from_declaration(1, dm_payload())
 		declare = row_from_mensuelle(1, mensuelle_lignes())
 		declare["tva_deductible"] = declare["tva_deductible"] + 5.0  # a real ecart
-		row = ecart_row(1, calcule, declare)
+		row = ecart_row(1, declare, calcule)
 		self.assertIn("tva_deductible", row["out_of_tolerance"])
 		self.assertNotIn("tva7", row["out_of_tolerance"])
 
 	def test_missing_side_stays_blank(self):
 		calcule = row_from_declaration(1, dm_payload())
 		declare = row_from_mensuelle(1, None)
-		row = ecart_row(1, calcule, declare)
+		row = ecart_row(1, declare, calcule)
 		self.assertIsNone(row["ht7"])
 		self.assertEqual(row["out_of_tolerance"], [])
 
@@ -233,6 +266,35 @@ class TestRecap(unittest.TestCase):
 			dashboard["rs_cumules"],
 			round(2126.599 + 57.639 + 1606.484 + 35.7 + 326.688, 3),
 		)
+
+	def test_liquide_rows_and_ecart_pairs(self):
+		recap = build_recap({1: dm_payload()}, {1: mensuelle_lignes()}, {1: PORTAL_JANUARY})
+		self.assertEqual(recap["rows"]["liquide"][0]["total"], 7528.311)
+		self.assertIsNone(recap["rows"]["liquide"][1]["total"])
+		# the écart table: three comparison pairs, the portal pairs only for
+		# the months that carry a receipt
+		pairs = recap["rows"]["ecarts"]
+		pair_labels = [row["mois"].split(" · ")[1] for row in pairs if row["mois"].startswith("0")]
+		self.assertIn("Déclaré vs Calculé", pair_labels)
+		self.assertIn("Déclaré vs Liquidé", pair_labels)
+		self.assertIn("Calculé vs Liquidé", pair_labels)
+		# January's portal variances: all inside the tolerances
+		january_liquide = [
+			row for row in pairs if row["mois"].startswith("01") and "Liquidé" in row["mois"]
+		]
+		for row in january_liquide:
+			self.assertEqual(row["out_of_tolerance"], [])
+		# the totals rows carry the pair tags
+		self.assertIn("TOTAL · Déclaré vs Liquidé", [row["mois"] for row in pairs])
+
+	def test_liquide_variance_feeds_ecart_months(self):
+		# a portal TVA far off the calculated one flags the month
+		portal = {
+			"lines": [{"impot": "TVA", "total": 2500.0}],
+			"montant_liquide": 7500.0,
+		}
+		recap = build_recap({1: dm_payload()}, {1: mensuelle_lignes()}, {1: portal})
+		self.assertIn(1, recap["ecart_months"])
 
 	def test_columns_in_axeane_order(self):
 		recap = build_recap({}, {})

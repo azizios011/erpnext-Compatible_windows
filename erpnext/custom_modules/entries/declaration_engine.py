@@ -26,11 +26,13 @@ from __future__ import annotations
 import html
 import frappe
 from datetime import date, timedelta
+from frappe.utils import cint, flt
 from decimal import ROUND_HALF_UP, Decimal
 
 LEDGER_DOCTYPE = "Ecriture Comptable"
 DM_DOCTYPE = "Declaration Transaction"
 DM_LINE_DOCTYPE = "Declaration Transaction Rubrique"
+DM_PORTAIL_LINE_DOCTYPE = "Declaration Transaction Portail Ligne"
 FAMILLE_DOCTYPE = "Famille Declaration"
 RUBRIQUE_DOCTYPE = "Rubrique Declaration"
 MENSUELLE_DOCTYPE = "Mensuelle"
@@ -842,35 +844,126 @@ def decloture_declaration(name: str) -> dict:
 
 
 @frappe.whitelist(methods=["POST"])
-def depose_declaration(name: str, numero_recepisse: str, date_depot: str = "") -> dict:
+def depose_declaration(
+    name: str,
+    numero_declaration: str = "",
+    date_depot: str = "",
+    situation_paiement: str = "Liquidee",
+    acte: int = 0,
+    date_liquidation: str = "",
+    date_operation: str = "",
+    mode_paiement: str = "",
+    quittance: str = "",
+    montant_liquide: float = 0.0,
+    portail_lignes: str = "",
+) -> dict:
     """Depot: Cloture -> Depose, irreversible, Accounts Manager (+ System
-    Manager) only."""
+    Manager) only. "Depose" means a portal receipt (e-tasrih) was recorded:
+    numero_declaration is required and the receipt's figures are stored. The
+    echeance is the rule date (the 20th of the following month for
+    télédéclaration entreprises, the 28th otherwise); a day that is not a
+    working day only warns, with the next working day named. Without
+    portail_lignes the receipt's lines are pre-filled from the declaration's
+    own computed totals (the accountant corrects them against the portal)."""
     frappe = _frappe()
     try:
+        import json as _json
+
+        from frappe import _
+
+        from erpnext.custom_modules.entries.declaration_portal import (
+            PORTAL_IMPOTS,
+            echeance_with_warning,
+        )
+
         roles = set(frappe.get_roles())
         if not (roles & {"Accounts Manager", "System Manager"}):
-            from frappe import _
-
             frappe.throw(_("Le depot est reserve aux Accounts Manager."), frappe.PermissionError)
 
         doc = _require_dm(name)
         if doc.status != STATUS_CLOTURE:
             raise ValueError(f"La declaration {name} est {doc.status}: seule une Cloture peut etre deposee.")
-        if not (numero_recepisse or "").strip():
-            raise ValueError("Le numero de recepisse est obligatoire au depot.")
+        if not (numero_declaration or "").strip():
+            raise ValueError("Le numero de declaration du portail e-tasrih est obligatoire au depot.")
+        if situation_paiement and situation_paiement not in ("Liquidee", "Payee", "Annulee"):
+            raise ValueError("situation_paiement doit valoir Liquidee, Payee ou Annulee.")
+
+        teledeclaration = cint(
+            frappe.db.get_value("Entreprise", doc.entreprise, "teledeclaration")
+        )
+        echeance, warning = echeance_with_warning(doc.annee, cint(doc.mois), bool(teledeclaration))
+
+        parsed_lignes = _json.loads(portail_lignes) if portail_lignes else []
+        if not parsed_lignes:
+            # convenience baseline: the declaration's own computed parts, in
+            # the portal's impot order — the accountant corrects against the
+            # portal's recomputed amounts
+            totals = {
+                "Retenue a la Source": doc.total_rs,
+                "TFP": doc.total_tfp,
+                "FOPROLOS": doc.total_foprolos,
+                "TVA": doc.tva_a_payer,
+                "Droit de timbre": doc.total_timbre,
+                "TCL": doc.total_tcl,
+                "Reliquat minimum de perception": 0.0,
+            }
+            parsed_lignes = [
+                {"impot": impot, "montant_principal": flt(totals.get(impot)), "deduction": 0.0,
+                 "taxe_due_ou_report": 0.0, "penalites_retard": 0.0,
+                 "total": flt(totals.get(impot))}
+                for impot in PORTAL_IMPOTS
+            ]
+        for line in parsed_lignes:
+            if line.get("impot") not in PORTAL_IMPOTS:
+                raise ValueError(f"impot inconnu: {line.get('impot')}")
 
         frappe.db.set_value(
             DM_DOCTYPE,
             doc.name,
             {
                 "status": STATUS_DEPOSE,
-                "numero_recepisse": numero_recepisse.strip(),
+                "numero_declaration": numero_declaration.strip(),
                 "depose_le": date_depot or frappe.utils.now_datetime(),
+                "acte": cint(acte),
+                "date_liquidation": date_liquidation or None,
+                "date_operation": date_operation or None,
+                "mode_paiement": (mode_paiement or "").strip(),
+                "quittance": (quittance or "").strip(),
+                "situation_paiement": situation_paiement or "Liquidee",
+                "montant_liquide": flt(montant_liquide, 3),
+                "echeance": echeance,
             },
             update_modified=False,
         )
+
+        # the receipt's lines replace any previous ones
+        frappe.db.delete(DM_PORTAIL_LINE_DOCTYPE, {"parenttype": DM_DOCTYPE, "parent": doc.name})
+        for index, line in enumerate(parsed_lignes, start=1):
+            frappe.get_doc(
+                {
+                    "doctype": DM_PORTAIL_LINE_DOCTYPE,
+                    "parent": doc.name,
+                    "parenttype": DM_DOCTYPE,
+                    "parentfield": "portail_lignes",
+                    "idx": index,
+                    "impot": line.get("impot"),
+                    "montant_principal": flt(line.get("montant_principal"), 3),
+                    "deduction": flt(line.get("deduction"), 3),
+                    "taxe_due_ou_report": flt(line.get("taxe_due_ou_report"), 3),
+                    "penalites_retard": flt(line.get("penalites_retard"), 3),
+                    "total": flt(line.get("total"), 3),
+                }
+            ).insert(ignore_permissions=True)
+
         _write_back_mensuelle(doc.name, doc.mensuelle, STATUS_DEPOSE)
-        return {"name": doc.name, "status": STATUS_DEPOSE}
+        if warning:
+            frappe.msgprint(_(warning), indicator="orange", alert=True)
+        return {
+            "name": doc.name,
+            "status": STATUS_DEPOSE,
+            "echeance": echeance.isoformat(),
+            "warning": warning,
+        }
     except ValueError as error:
         _throw(str(error))
 

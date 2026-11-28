@@ -105,6 +105,30 @@ def row_from_declaration(month: int, dm: dict | None) -> dict:
     return row
 
 
+def row_from_liquide(month: int, portal: dict | None) -> dict:
+    """The Liquidé row from the portal receipt: the per-impôt totals land on
+    the columns the receipt carries (TVA, DT, TCL) and the receipt's grand
+    total on TOTAL — the portal recomputes lump sums, not the recap's
+    breakdown."""
+    row = blank_month_row(month)
+    if not portal:
+        return row
+    for line in portal.get("lines") or []:
+        impot = line.get("impot")
+        total = line.get("total")
+        if total is None:
+            continue
+        if impot == "TVA":
+            row["tva_a_payer"] = float(total)
+        elif impot == "Droit de timbre":
+            row["timbre"] = float(total)
+        elif impot == "TCL":
+            row["tcl"] = float(total)
+    montant_liquide = portal.get("montant_liquide")
+    row["total"] = float(montant_liquide) if montant_liquide is not None else None
+    return row
+
+
 def row_from_mensuelle(month: int, lignes: list[dict] | None) -> dict:
     """The Déclaré row from one month's Mensuelle Ligne rows
     ({code_rubrique, base_declaree, montant_declare}). The TVA position and
@@ -160,21 +184,30 @@ def row_from_mensuelle(month: int, lignes: list[dict] | None) -> dict:
     return row
 
 
-def ecart_row(month: int, calcule_row: dict, declare_row: dict, tolerance: float = ECART_TOLERANCE) -> dict:
-    """The Écarts row: declared - calculated per column where BOTH sides
-    carry a figure; `out_of_tolerance` names the columns to highlight."""
+def ecart_row(month: int, left_row: dict, right_row: dict, tolerance: float = ECART_TOLERANCE) -> dict:
+    """One Écarts row: left - right per column where BOTH sides carry a
+    figure; `out_of_tolerance` names the columns to highlight."""
     row = blank_month_row(month)
     out: list[str] = []
     for key in NUMERIC_KEYS:
-        declared, calculated = declare_row.get(key), calcule_row.get(key)
-        if declared is None or calculated is None:
+        left, right = left_row.get(key), right_row.get(key)
+        if left is None or right is None:
             continue
-        ecart = round(float(declared) - float(calculated), 3)
+        ecart = round(float(left) - float(right), 3)
         row[key] = ecart
         if abs(ecart) > tolerance:
             out.append(key)
     row["out_of_tolerance"] = out
     return row
+
+
+# The Écarts comparison pairs, in display order: the original declared vs
+# calculated, then the two Liquidé variances the portal receipt adds.
+ECART_PAIRS: list[tuple[str, str, str]] = [
+    ("declare_calcule", "Déclaré vs Calculé", "declare", "calcule"),
+    ("declare_liquide", "Déclaré vs Liquidé", "declare", "liquide"),
+    ("calcule_liquide", "Calculé vs Liquidé", "calcule", "liquide"),
+]
 
 
 def totals_row(rows: list[dict]) -> dict:
@@ -190,20 +223,55 @@ def totals_row(rows: list[dict]) -> dict:
 def build_recap(
     calcule_rows: dict[int, dict],
     declare_rows: dict[int, dict],
+    liquide_rows: dict[int, dict] | None = None,
     tolerance: float = ECART_TOLERANCE,
 ) -> dict:
-    """The whole grid: 12 month rows per source + the écart view + the totals
-    row + the months whose écarts go beyond the tolerance.
+    """The whole grid: 12 month rows per source + the Écarts comparison pairs
+    + the totals rows + the months whose écarts go beyond the tolerance.
 
-    calcule_rows / declare_rows: {month: figures} as the frappe adapter
-    extracts them (missing months stay blank)."""
+    calcule_rows / declare_rows / liquide_rows: {month: figures} as the
+    frappe adapter extracts them (missing months stay blank). The Liquidé
+    pair rows only appear for months where the portal receipt carries a
+    figure."""
+    liquide_rows = liquide_rows or {}
     calcule = {month: row_from_declaration(month, calcule_rows.get(month)) for month in range(1, 13)}
     declare = {month: row_from_mensuelle(month, declare_rows.get(month)) for month in range(1, 13)}
-    ecarts = {
-        month: ecart_row(month, calcule[month], declare[month], tolerance) for month in range(1, 13)
-    }
+    liquide = {month: row_from_liquide(month, liquide_rows.get(month)) for month in range(1, 13)}
+
+    ecarts: dict[str, dict[int, dict]] = {}
+    for pair_key, _label, left_key, right_key in ECART_PAIRS:
+        left_rows = {"calcule": calcule, "declare": declare, "liquide": liquide}[left_key]
+        right_rows = {"calcule": calcule, "declare": declare, "liquide": liquide}[right_key]
+        ecarts[pair_key] = {
+            month: ecart_row(month, left_rows[month], right_rows[month], tolerance)
+            for month in range(1, 13)
+        }
+
+    # the flat Écarts table: per pair, the months where either side carries a
+    # figure, the MOIS cell naming the comparison
+    ecarts_flat: list[dict] = []
+    pair_totals: dict[str, dict] = {}
+    for pair_key, label, _left, _right in ECART_PAIRS:
+        present = [
+            row
+            for month, row in ecarts[pair_key].items()
+            if any(value is not None for key, value in row.items() if key not in ("mois", "out_of_tolerance"))
+        ]
+        if not present:
+            continue
+        for row in present:
+            tagged = dict(row)
+            tagged["mois"] = f"{row['mois']} · {label}"
+            ecarts_flat.append(tagged)
+        totals = totals_row(present)
+        totals["mois"] = f"TOTAL · {label}"
+        pair_totals[pair_key] = totals
+        ecarts_flat.append(totals)
+
     months_with_ecarts = [
-        month for month in range(1, 13) if ecarts[month]["out_of_tolerance"]
+        month
+        for month in range(1, 13)
+        if any(ecarts[pair][month]["out_of_tolerance"] for pair in ecarts)
     ]
     return {
         "months": list(range(1, 13)),
@@ -212,12 +280,14 @@ def build_recap(
         "rows": {
             "calcule": [calcule[month] for month in range(1, 13)],
             "declare": [declare[month] for month in range(1, 13)],
-            "ecarts": [ecarts[month] for month in range(1, 13)],
+            "liquide": [liquide[month] for month in range(1, 13)],
+            "ecarts": ecarts_flat,
         },
         "totals": {
             "calcule": totals_row(list(calcule.values())),
             "declare": totals_row(list(declare.values())),
-            "ecarts": totals_row(list(ecarts.values())),
+            "liquide": totals_row(list(liquide.values())),
+            "ecarts": pair_totals,
         },
         "ecart_months": months_with_ecarts,
     }

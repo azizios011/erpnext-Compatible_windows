@@ -32,6 +32,8 @@ if "frappe" not in sys.modules:
 		_frappe.whitelist = lambda **kwargs: (lambda fn: fn)
 		_utils = types.ModuleType("frappe.utils")
 		_utils.cstr = lambda value: str(value) if value is not None else ""
+		_utils.cint = lambda value: int(value or 0) if str(value).lstrip("-").isdigit() or isinstance(value, (int, float)) else 0
+		_utils.flt = lambda value, precision=None: round(float(value or 0), precision) if precision else float(value or 0)
 		_frappe.utils = _utils
 		sys.modules["frappe"] = _frappe
 		sys.modules["frappe.utils"] = _utils

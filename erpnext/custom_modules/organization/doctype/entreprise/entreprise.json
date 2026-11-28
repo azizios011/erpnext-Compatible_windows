@@ -90,7 +90,7 @@
   {
    "fieldname": "tab_general",
    "fieldtype": "Tab Break",
-   "label": "Informations G\u00e9n\u00e9rales"
+   "label": "Informations Générales"
   },
   {
    "fieldname": "pays",
@@ -287,7 +287,7 @@
   {
    "fieldname": "tab_financier",
    "fieldtype": "Tab Break",
-   "label": "Informations Financi\u00e8res"
+   "label": "Informations Financières"
   },
   {
    "fieldname": "capital_social",
@@ -520,10 +520,17 @@
    "in_list_view": 1,
    "read_only": 1,
    "label": "Utilisateurs"
+  },
+  {
+   "default": "1",
+   "description": "Entreprise dans le systeme de teledeclaration: echeance le 20 du mois suivant (28 sinon)",
+   "fieldname": "teledeclaration",
+   "fieldtype": "Check",
+   "label": "Teledeclaration"
   }
  ],
  "links": [],
- "modified": "2026-11-12 17:53:18.275",
+ "modified": "2026-11-28 16:00:00.000000",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Entreprise",

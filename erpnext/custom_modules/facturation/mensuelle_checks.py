@@ -300,9 +300,26 @@ def check_recap(sheet: dict, recap_row: dict | None) -> list[dict]:
     return controls
 
 
-def check_declaration(sheet: dict, dm: dict | None) -> list[dict]:
+# The Liquidé comparison: the portal receipt recomputes the amounts, so the
+# tolerance is wider on the total than on each impot line.
+LIQUIDE_LINE_TOLERANCE = 0.005
+LIQUIDE_TOTAL_TOLERANCE = 0.01
+
+LIQUIDE_LABELS = {
+    "rs": "Retenue a la Source",
+    "tfp": "TFP",
+    "foprolos": "FOPROLOS",
+    "tva": "TVA",
+    "timbre": "Droit de timbre",
+    "tcl": "TCL",
+}
+
+
+def check_declaration(sheet: dict, dm: dict | None, portal: dict | None = None) -> list[dict]:
     """C. The declared figures against the ledger-computed Declaration
-    Transaction of the same month (per rubrique base and amount + totals)."""
+    Transaction of the same month (per rubrique base and amount + totals),
+    and — when the portal receipt is recorded — both Liquidé variances
+    (Déclaré vs Liquidé, Calculé vs Liquidé) per impot line and total."""
     if dm is None:
         return [
             _control(
@@ -366,7 +383,82 @@ def check_declaration(sheet: dict, dm: dict | None) -> list[dict]:
         controls.append(
             _compare("DM_TVA_DUE", "TVA due declaree vs position TVA de la Declaration Transaction", abs(due), abs(expected or 0.0))
         )
+
+    if portal:
+        controls.extend(check_liquide(sheet, dm, portal))
     return [control for control in controls if control]
+
+
+def check_liquide(sheet: dict, dm: dict | None, portal: dict) -> list[dict]:
+    """The two Liquidé variances: the portal receipt's recomputed amounts vs
+    the declared figures AND vs the ledger-computed ones — per impot line
+    (0.005 TND) and on the total (0.01 TND)."""
+    from erpnext.custom_modules.entries.declaration_portal import (
+        LIQUIDE_LINE_TOLERANCE,
+        LIQUIDE_TOTAL_TOLERANCE,
+        calculated_impot_amounts,
+        declared_impot_amounts,
+        portal_line_totals,
+    )
+
+    controls: list[dict] = []
+    declared = declared_impot_amounts(sheet.get("rubriques"))
+    calculated = calculated_impot_amounts(dm)
+    liquide = portal_line_totals(portal)
+    liquide_total = (portal or {}).get("montant_liquide")
+
+    for key, label in LIQUIDE_LABELS.items():
+        liquidated = liquide.get(key)
+        if liquidated is None:
+            continue
+        declared_value = declared.get(key)
+        if declared_value is not None:
+            controls.append(
+                _compare(
+                    f"LIQ_DECL_{key.upper()}",
+                    f"{label}: montant declaré vs liquide (portail)",
+                    liquidated,
+                    declared_value,
+                    tolerance=LIQUIDE_LINE_TOLERANCE,
+                )
+            )
+        calculated_value = calculated.get(key)
+        if calculated_value is not None and dm:
+            controls.append(
+                _compare(
+                    f"LIQ_CALC_{key.upper()}",
+                    f"{label}: montant calcule (grand livre) vs liquide (portail)",
+                    liquidated,
+                    calculated_value,
+                    tolerance=LIQUIDE_LINE_TOLERANCE,
+                )
+            )
+
+    if liquide_total is not None:
+        declared_total = _figure(sheet, "total")
+        controls.append(
+            _compare(
+                "LIQ_DECL_TOTAL",
+                "Total a payer declaré vs liquide (portail)",
+                liquide_total,
+                declared_total,
+                tolerance=LIQUIDE_TOTAL_TOLERANCE,
+            )
+        )
+        if dm:
+            controls.append(
+                _compare(
+                    "LIQ_CALC_TOTAL",
+                    "Total a payer calcule (grand livre) vs liquide (portail)",
+                    liquide_total,
+                    dm.get("total_a_payer"),
+                    tolerance=LIQUIDE_TOTAL_TOLERANCE,
+                )
+            )
+    return [control for control in controls if control]
+
+
+
 
 
 def status_from_controls(controls: list[dict]) -> str:
@@ -380,10 +472,12 @@ def status_from_controls(controls: list[dict]) -> str:
     return STATUS_CONFORME
 
 
-def run_checks(sheet: dict, recap_row: dict | None, dm: dict | None, rates: dict | None = None) -> dict:
-    """The three check families over one extracted sheet."""
+def run_checks(
+    sheet: dict, recap_row: dict | None, dm: dict | None, rates: dict | None = None, portal: dict | None = None
+) -> dict:
+    """The check families over one extracted sheet."""
     controls: list[dict] = []
     controls.extend(check_sheet_arithmetic(sheet, rates))
     controls.extend(check_recap(sheet, recap_row))
-    controls.extend(check_declaration(sheet, dm))
+    controls.extend(check_declaration(sheet, dm, portal))
     return {"controls": controls, "status": status_from_controls(controls)}

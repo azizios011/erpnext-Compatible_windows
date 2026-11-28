@@ -1,0 +1,37 @@
+{
+ "actions": [],
+ "creation": "2026-11-28 16:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "impot",
+  "montant_principal",
+  "deduction",
+  "column_break_1",
+  "taxe_due_ou_report",
+  "penalites_retard",
+  "total"
+ ],
+ "fields": [
+  {"columns": 2, "fieldname": "impot", "fieldtype": "Select", "in_list_view": 1, "in_standard_filter": 1, "label": "Impot", "options": "Retenue a la Source\nTFP\nFOPROLOS\nTVA\nDroit de timbre\nTCL\nReliquat minimum de perception", "reqd": 1},
+  {"columns": 1, "fieldname": "montant_principal", "fieldtype": "Currency", "in_list_view": 1, "label": "Montant principal", "precision": "3"},
+  {"columns": 1, "fieldname": "deduction", "fieldtype": "Currency", "in_list_view": 1, "label": "Deduction", "precision": "3"},
+  {"fieldname": "column_break_1", "fieldtype": "Column Break"},
+  {"columns": 1, "fieldname": "taxe_due_ou_report", "fieldtype": "Currency", "in_list_view": 1, "label": "Taxe due ou report", "precision": "3"},
+  {"columns": 1, "fieldname": "penalites_retard", "fieldtype": "Currency", "in_list_view": 1, "label": "Penalites de retard", "precision": "3"},
+  {"columns": 1, "fieldname": "total", "fieldtype": "Currency", "in_list_view": 1, "label": "Total", "precision": "3"}
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-11-28 16:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Entries",
+ "name": "Declaration Transaction Portail Ligne",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
