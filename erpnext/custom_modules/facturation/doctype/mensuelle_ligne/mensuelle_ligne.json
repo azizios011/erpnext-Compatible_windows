@@ -1,0 +1,39 @@
+{
+ "actions": [],
+ "creation": "2026-11-28 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "code_rubrique",
+  "libelle",
+  "column_break_1",
+  "base_declaree",
+  "montant_declare",
+  "column_break_2",
+  "source_cell",
+  "raw_formula"
+ ],
+ "fields": [
+  {"fieldname": "code_rubrique", "fieldtype": "Data", "in_list_view": 1, "in_standard_filter": 1, "label": "Code rubrique", "read_only": 1},
+  {"fieldname": "libelle", "fieldtype": "Data", "in_list_view": 1, "label": "Libelle", "read_only": 1},
+  {"fieldname": "column_break_1", "fieldtype": "Column Break"},
+  {"fieldname": "base_declaree", "fieldtype": "Currency", "in_list_view": 1, "label": "Base declarée", "precision": "3", "read_only": 1},
+  {"fieldname": "montant_declare", "fieldtype": "Currency", "in_list_view": 1, "label": "Montant declaré", "precision": "3", "read_only": 1},
+  {"fieldname": "column_break_2", "fieldtype": "Column Break"},
+  {"description": "Cellule de la feuille source (ex: A17)", "fieldname": "source_cell", "fieldtype": "Data", "label": "Cellule source", "read_only": 1},
+  {"description": "Formule telle que saisie dans la feuille", "fieldname": "raw_formula", "fieldtype": "Small Text", "label": "Formule", "read_only": 1}
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-11-28 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Facturation",
+ "name": "Mensuelle Ligne",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

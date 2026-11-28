@@ -9,48 +9,279 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "tab_piece",
   "mvt",
   "journal",
   "entreprise",
   "exercice",
+  "cb_piece1",
   "posting_date",
   "period_month",
   "period_year",
+  "cb_piece2",
   "reference_number",
+  "status",
+  "cb_piece3",
   "attachment",
   "description",
-  "status",
+  "cb_piece4",
   "entry_doctype",
   "entry",
   "ocr_status",
-  "entry_status"
+  "entry_status",
+  "tab_declare",
+  "source_file",
+  "source_sheet",
+  "layout_profile",
+  "cb_dec1",
+  "sheet_file",
+  "declared_total",
+  "cb_dec2",
+  "check_status",
+  "checked_at",
+  "lignes_section",
+  "lignes",
+  "tab_controles",
+  "controles"
  ],
  "fields": [
-  {"fieldname": "mvt", "fieldtype": "Data", "read_only": 1, "label": "MVT"},
-  {"fieldname": "journal", "fieldtype": "Data", "read_only": 1, "label": "Journal"},
-  {"fieldname": "entreprise", "fieldtype": "Link", "options": "Entreprise", "read_only": 1, "hidden": 1, "search_index": 1, "label": "Entreprise"},
-  {"fieldname": "exercice", "fieldtype": "Link", "options": "Exercice", "read_only": 1, "hidden": 1, "search_index": 1, "label": "Exercice"},
-  {"fieldname": "posting_date", "fieldtype": "Date", "reqd": 1, "in_list_view": 1, "default": "Today", "label": "Date piece"},
-  {"fieldname": "period_month", "fieldtype": "Select", "label": "Period Month", "options": "01\n02\n03\n04\n05\n06\n07\n08\n09\n10\n11\n12"},
-  {"fieldname": "period_year", "fieldtype": "Int", "label": "Period Year"},
-  {"fieldname": "reference_number", "fieldtype": "Data", "label": "Reference Number"},
-  {"fieldname": "attachment", "fieldtype": "Attach", "label": "Attachment"},
-  {"fieldname": "description", "fieldtype": "Small Text", "in_list_view": 1, "label": "Description"},
-  {"fieldname": "status", "fieldtype": "Select", "options": "Pending\nProcessed\nRejected", "default": "Pending", "in_list_view": 1, "label": "Status"},
-  {"fieldname": "entry_doctype", "fieldtype": "Data", "read_only": 1, "hidden": 1, "label": "Entry Doctype"},
-  {"fieldname": "entry", "fieldtype": "Dynamic Link", "options": "entry_doctype", "read_only": 1, "label": "Entry"},
-  {"fieldname": "ocr_status", "fieldtype": "Select", "options": "Non traite\nEn cours\nTermine\nEchec", "default": "Non traite", "read_only": 1, "label": "S. OCR"},
-  {"fieldname": "entry_status", "fieldtype": "Select", "options": "Non saisie\nBrouillon\nComptabilisee", "default": "Non saisie", "read_only": 1, "in_list_view": 1, "label": "Entry Status"}
+  {
+   "fieldname": "tab_piece",
+   "fieldtype": "Tab Break",
+   "label": "Pièce"
+  },
+  {
+   "fieldname": "mvt",
+   "fieldtype": "Data",
+   "in_list_view": 0,
+   "read_only": 1,
+   "label": "MVT"
+  },
+  {
+   "fieldname": "journal",
+   "fieldtype": "Data",
+   "read_only": 1,
+   "label": "Journal"
+  },
+  {
+   "fieldname": "entreprise",
+   "fieldtype": "Link",
+   "options": "Entreprise",
+   "read_only": 1,
+   "label": "Entreprise"
+  },
+  {
+   "fieldname": "exercice",
+   "fieldtype": "Link",
+   "options": "Exercice",
+   "read_only": 1,
+   "label": "Exercice"
+  },
+  {
+   "fieldname": "cb_piece1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Date piece"
+  },
+  {
+   "fieldname": "period_month",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Periode",
+   "options": "01\n02\n03\n04\n05\n06\n07\n08\n09\n10\n11\n12",
+   "search_index": 1
+  },
+  {
+   "fieldname": "period_year",
+   "fieldtype": "Int",
+   "in_list_view": 0,
+   "label": "Annee",
+   "search_index": 1
+  },
+  {
+   "fieldname": "cb_piece2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reference_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Reference Number"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Pending\nProcessed\nRejected"
+  },
+  {
+   "fieldname": "cb_piece3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "attachment",
+   "fieldtype": "Attach",
+   "label": "Attachment"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "cb_piece4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "entry_doctype",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Entry Doctype"
+  },
+  {
+   "fieldname": "entry",
+   "fieldtype": "Dynamic Link",
+   "options": "entry_doctype",
+   "read_only": 1,
+   "label": "Entry"
+  },
+  {
+   "fieldname": "ocr_status",
+   "fieldtype": "Select",
+   "label": "S. OCR",
+   "options": "Non traite\nEn cours\nTermine\nEchec"
+  },
+  {
+   "fieldname": "entry_status",
+   "fieldtype": "Select",
+   "in_list_view": 0,
+   "label": "Entry Status",
+   "options": "Non saisie\nBrouillon\nComptabilisee"
+  },
+  {
+   "fieldname": "tab_declare",
+   "fieldtype": "Tab Break",
+   "label": "Déclaré"
+  },
+  {
+   "description": "Classeur source (xlsx)",
+   "fieldname": "source_file",
+   "fieldtype": "Data",
+   "label": "Fichier source",
+   "read_only": 1
+  },
+  {
+   "description": "Feuille mensuelle du classeur",
+   "fieldname": "source_sheet",
+   "fieldtype": "Data",
+   "label": "Feuille source",
+   "read_only": 1
+  },
+  {
+   "description": "Legacy (DM 01-06) ou Recent (DM 07+)",
+   "fieldname": "layout_profile",
+   "fieldtype": "Select",
+   "label": "Layout",
+   "options": "\nlegacy\nrecent",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_dec1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Copie valeurs de la feuille (fichier prive) pour la vue XLSX",
+   "fieldname": "sheet_file",
+   "fieldtype": "Attach",
+   "label": "Feuille (fichier)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "declared_total",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total déclaré",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_dec2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "check_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Contrôle",
+   "options": "Non verifie\nConforme\nAvertissements\nEcarts",
+   "search_index": 1
+  },
+  {
+   "fieldname": "checked_at",
+   "fieldtype": "Datetime",
+   "label": "Verifie le",
+   "read_only": 1
+  },
+  {
+   "collapsible": 0,
+   "fieldname": "lignes_section",
+   "fieldtype": "Section Break",
+   "label": "Figures déclarées"
+  },
+  {
+   "fieldname": "lignes",
+   "fieldtype": "Table",
+   "label": "Lignes",
+   "options": "Mensuelle Ligne"
+  },
+  {
+   "fieldname": "tab_controles",
+   "fieldtype": "Tab Break",
+   "label": "Contrôles"
+  },
+  {
+   "fieldname": "controles",
+   "fieldtype": "Table",
+   "label": "Controles",
+   "options": "Mensuelle Controle"
+  }
  ],
  "links": [],
- "modified": "2026-11-08 23:45:00.000000",
+ "modified": "2026-11-28 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "Facturation",
  "name": "Mensuelle",
  "owner": "Administrator",
  "permissions": [
-  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Accounts User", "share": 1, "write": 1},
-  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Accounts Manager", "share": 1, "write": 1}
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
+   "write": 1
+  }
  ],
  "sort_field": "posting_date",
  "sort_order": "DESC",

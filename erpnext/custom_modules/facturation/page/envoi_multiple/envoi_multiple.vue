@@ -53,6 +53,17 @@ const sending = ref(false);
 const dragging = ref(false);
 const file_input = ref(null);
 
+// Mensuelle workbooks: one Mensuelle per monthly sheet, confirmed through a
+// preview before anything is created (never auto-import)
+const is_mensuelle = computed(() => doctype.value === "Mensuelle");
+const previews = ref({}); // file_url -> {sheets: [...], recap_months: [...]}
+const overwrite = ref(false);
+const importing = ref(false);
+const preview_count = computed(() => Object.keys(previews.value).length);
+const can_import = computed(
+	() => preview_count.value > 0 && !importing.value && !items.value.some((item) => item.status === "error")
+);
+
 const month_options = computed(() => {
 	const y = parseInt(year.value, 10) || (exercice_debut ? exercice_debut.getFullYear() : new Date().getFullYear());
 	let first = 1;
@@ -99,7 +110,12 @@ const pending_items = computed(() => items.value.filter((item) => !item.done && 
 const uploading_count = computed(
 	() => items.value.filter((item) => item.status === "uploading").length
 );
-const can_send = computed(() => Boolean(month.value && doctype.value && pending_items.value.length));
+const can_send = computed(
+	() =>
+		Boolean(
+			doctype.value && pending_items.value.length && (is_mensuelle.value || (month.value && year.value))
+		)
+);
 const can_cancel = computed(() => uploading_count.value > 0);
 
 function status_of(item) {
@@ -224,6 +240,9 @@ function chunks(list, size) {
 async function send() {
 	if (!can_send.value || sending.value) return;
 	const target_doctype = doctype.value;
+	if (target_doctype === "Mensuelle") {
+		return mensuelle_flow();
+	}
 	const target_month = parseInt(month.value, 10);
 	const target_year = parseInt(year.value, 10);
 	sending.value = true;
@@ -281,6 +300,98 @@ async function send() {
 	sending.value = false;
 }
 
+// ── Mensuelle workbook flow ──────────────────────────────────────────────────
+// The workbook is SPLIT: one Mensuelle per monthly sheet (DM 01..dm 10);
+// RECAP and the scratch sheets are ignored. The preview lists month, layout
+// and errors per sheet and the user confirms before anything is created.
+async function mensuelle_flow() {
+	sending.value = true;
+	try {
+		const pending = items.value.filter((item) => !item.done && !item.error && !item.file_url);
+		for (const item of pending) {
+			item.status = "uploading";
+			await upload_one(item);
+		}
+		const ready = items.value.filter((item) => item.file_url && !item.done);
+		for (const item of ready) {
+			item.status = "uploading";
+			try {
+				const preview = await frappe.xcall(
+					"erpnext.custom_modules.facturation.api.preview_mensuelle_workbook",
+					{ file_url: item.file_url }
+				);
+				previews.value = { ...previews.value, [item.file_url]: preview || { sheets: [] } };
+				item.status = "uploaded";
+			} catch (error) {
+				item.error = error?.message || __("Analyse impossible");
+				item.status = "error";
+			}
+		}
+		summary.value = previews.value
+			? __("Classeurs analyses: {0} — confirmez l'import ci-dessous", [preview_count.value])
+			: "";
+	} finally {
+		sending.value = false;
+	}
+}
+
+async function import_workbooks() {
+	if (!can_import.value || importing.value) return;
+	importing.value = true;
+	try {
+		for (const [file_url, preview] of Object.entries(previews.value)) {
+			const item = items.value.find((q) => q.file_url === file_url);
+			try {
+				const result = await frappe.xcall(
+					"erpnext.custom_modules.facturation.api.import_mensuelle_workbook",
+					{ file_url, overwrite: overwrite.value ? 1 : 0 }
+				);
+				const created = (result?.results || []).filter((row) => row.ok && !row.skipped).length;
+				const skipped = (result?.results || []).filter((row) => row.skipped).length;
+				const failed = (result?.results || []).filter((row) => !row.ok).length;
+				if (item) {
+					item.done = true;
+					item.status = failed ? "error" : "sent";
+					item.docname = (result?.results || []).find((row) => row.ok && !row.skipped)?.name || "";
+					item.error = failed
+						? __("{} feuille(s) en erreur", [failed])
+						: skipped
+							? __("{} feuille(s) ignoree(s) (deja presentes)", [skipped])
+							: "";
+				}
+				summary.value = __("Mensuelles creees/remplacees: {0}, ignorees: {1}, echecs: {2}", [
+					created,
+					skipped,
+					failed,
+				]);
+			} catch (error) {
+				if (item) {
+					item.error = error?.message || __("Import impossible");
+					item.status = "error";
+				}
+			}
+		}
+		delete_imported_previews();
+	} finally {
+		importing.value = false;
+	}
+}
+
+function delete_imported_previews() {
+	const kept = {};
+	Object.entries(previews.value).forEach(([file_url, preview]) => {
+		const item = items.value.find((q) => q.file_url === file_url);
+		if (!item || !item.done) kept[file_url] = preview;
+	});
+	previews.value = kept;
+}
+
+function sheet_status_theme(sheet) {
+	if (!sheet.ok) return "red";
+	if (sheet.existing_mensuelle) return "orange";
+	return "green";
+}
+
 function cancel() {
 	items.value.forEach((item) => item.status === "uploading" && item.controller?.abort());
 	items.value.splice(0, items.value.length);
@@ -309,9 +420,22 @@ onMounted(async () => {
 <template>
 	<div class="h-full overflow-y-auto pb-10">
 		<div class="mx-auto w-full max-w-3xl px-6">
+			<!-- Mensuelle workbooks: the months come from the sheets -->
+			<div
+				v-if="is_mensuelle"
+				class="rounded-lg border border-surface-gray-2 bg-surface-gray-1 px-4 py-3 text-p-sm text-ink-gray-6"
+			>
+				{{
+					__(
+						"Classeur de declaration mensuelle: il est decoupe en une Mensuelle par feuille mensuelle (DM 01 a dm 10). L'onglet RECAP sert de controle et les feuilles de travail sont ignorees."
+					)
+				}}
+			</div>
+
 			<!-- Period and document type -->
 			<div class="grid grid-cols-1 gap-4 sm:grid-cols-[170px_120px_1fr]">
 				<FormControl
+					v-if="!is_mensuelle"
 					type="select"
 					:label="__('Mois')"
 					v-model="month"
@@ -320,7 +444,7 @@ onMounted(async () => {
 					size="md"
 					fill-width
 				/>
-				<FormControl type="number" :label="__('Annee')" v-model="year" size="md" fill-width />
+				<FormControl v-if="!is_mensuelle" type="number" :label="__('Annee')" v-model="year" size="md" fill-width />
 				<FormControl
 					type="select"
 					:label="__('Type document')"
@@ -396,11 +520,62 @@ onMounted(async () => {
 				</div>
 			</div>
 
+			<!-- Mensuelle workbook preview: one row per monthly sheet -->
+			<div v-if="preview_count" class="mt-6 space-y-4">
+				<div
+					v-for="(preview, file_url) in previews"
+					:key="file_url"
+					class="rounded-lg border border-surface-gray-2 bg-surface-white"
+				>
+					<div class="flex items-center justify-between border-b border-surface-gray-2 px-4 py-2">
+						<div class="text-p-medium text-ink-gray-9">{{ file_url.split('/').pop() }}</div>
+						<label class="flex items-center gap-2 text-p-sm text-ink-gray-6">
+							<input type="checkbox" v-model="overwrite" />
+							{{ __("Remplacer les documents Pending existants") }}
+						</label>
+					</div>
+					<table class="w-full border-collapse text-left">
+						<thead>
+							<tr class="bg-surface-gray-1 text-p-xs uppercase text-ink-gray-5">
+								<th class="px-4 py-2">{{ __("Feuille") }}</th>
+								<th class="px-4 py-2">{{ __("Mois") }}</th>
+								<th class="px-4 py-2">{{ __("Layout") }}</th>
+								<th class="px-4 py-2">{{ __("Mensuelle") }}</th>
+								<th class="px-4 py-2">{{ __("Declaration (Entries)") }}</th>
+								<th class="px-4 py-2">{{ __("Erreurs") }}</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-surface-gray-2">
+							<tr v-for="sheet in preview.sheets" :key="sheet.sheet">
+								<td class="px-4 py-2 text-p-sm text-ink-gray-9">{{ sheet.sheet }}</td>
+								<td class="px-4 py-2 text-p-sm text-ink-gray-7">{{ sheet.month }}</td>
+								<td class="px-4 py-2 text-p-sm text-ink-gray-7">{{ sheet.layout }}</td>
+								<td class="px-4 py-2 text-p-sm">
+									<Badge
+										variant="subtle"
+										size="sm"
+										:theme="sheet_status_theme(sheet)"
+										:label="sheet.existing_mensuelle ? sheet.existing_mensuelle + ' (' + sheet.existing_status + ')' : '—'"
+									/>
+								</td>
+								<td class="px-4 py-2 text-p-sm text-ink-gray-7">
+									{{ sheet.declaration ? sheet.declaration + ' (' + sheet.declaration_status + ')' : '—' }}
+								</td>
+								<td class="px-4 py-2 text-p-sm" :class="sheet.errors.length ? 'text-ink-red-6' : 'text-ink-gray-5'">
+									{{ sheet.errors.length ? sheet.errors.join(' ; ') : '—' }}
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<Button variant="solid" :label="__('Importer les declarations')" :loading="importing" :disabled="!can_import" @click="import_workbooks" />
+			</div>
+
 			<!-- Actions -->
 			<div class="mt-6 flex items-center gap-3">
 				<Button
 					variant="solid"
-					:label="__('Envoyer')"
+					:label="is_mensuelle ? __('Analyser') : __('Envoyer')"
 					:loading="sending"
 					:disabled="!can_send"
 					@click="send"

@@ -1,0 +1,37 @@
+{
+ "actions": [],
+ "creation": "2026-11-28 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "check_code",
+  "severity",
+  "message",
+  "column_break_1",
+  "declare",
+  "attendu",
+  "ecart"
+ ],
+ "fields": [
+  {"fieldname": "check_code", "fieldtype": "Data", "in_list_view": 1, "in_standard_filter": 1, "label": "Controle", "read_only": 1},
+  {"fieldname": "severity", "fieldtype": "Select", "in_list_view": 1, "in_standard_filter": 1, "label": "Gravite", "options": "Info\nAvertissement\nErreur", "read_only": 1},
+  {"fieldname": "message", "fieldtype": "Small Text", "in_list_view": 1, "label": "Message", "read_only": 1},
+  {"fieldname": "column_break_1", "fieldtype": "Column Break"},
+  {"fieldname": "declare", "fieldtype": "Currency", "in_list_view": 1, "label": "Declaré", "precision": "3", "read_only": 1},
+  {"fieldname": "attendu", "fieldtype": "Currency", "in_list_view": 1, "label": "Attendu", "precision": "3", "read_only": 1},
+  {"fieldname": "ecart", "fieldtype": "Currency", "in_list_view": 1, "label": "Ecart", "precision": "3", "read_only": 1}
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-11-28 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Facturation",
+ "name": "Mensuelle Controle",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
